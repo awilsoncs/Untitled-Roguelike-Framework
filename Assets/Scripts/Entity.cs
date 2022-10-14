@@ -1,9 +1,9 @@
-public class Mob : IUpdateable {
-    private IGameController gc;
+public class Entity : IEntity {
+    private IBoardController gc;
     private int id = 0;
     private int x, y = 0;
 
-    public Mob(IGameController gc, int id) {
+    public Entity(IBoardController gc, int id) {
         this.gc = gc;
         this.id = id;
     }
@@ -21,6 +21,15 @@ public class Mob : IUpdateable {
                 return;
             case "down":
                 Move(0, -1);
+                return;
+            case "save":
+                gc.SaveGame();
+                return;
+            case "load":
+                gc.LoadGame();
+                return;
+            case "reload":
+                gc.ReloadGame();
                 return;
         }
     }

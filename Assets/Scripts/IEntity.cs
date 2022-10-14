@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public interface IUpdateable {
+public interface IEntity {
     void Update();
 }
