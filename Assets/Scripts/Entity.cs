@@ -6,7 +6,7 @@ public class Entity : PersistableObject{
         this.id = id;
     }
 
-    public void Update() {
+    public void GameUpdate() {
         switch (BoardController.Instance.GetUserInputAction()) {
             case "right":
                 Move(1, 0);

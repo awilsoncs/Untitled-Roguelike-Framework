@@ -6,12 +6,12 @@ using UnityEngine;
 public class BoardController : PersistableObject
 {
     const int saveVersion = 0;
+    int turn = 0;
 
     List<Entity> entities;
     Dictionary<int, GameObject> entities_by_id;
     const float GRID_MULTIPLE = 0.5f;
 
-    [SerializeField] GameObject mainCharacterPawn;
     [SerializeField] PersistentStorage storage;
     [SerializeField] EntityFactory entityFactory;
 
@@ -27,7 +27,7 @@ public class BoardController : PersistableObject
 
     private void Update() {
         foreach (var entity in entities) {
-            entity.Update();
+            entity.GameUpdate();
         }
     }
 
@@ -49,13 +49,14 @@ public class BoardController : PersistableObject
     }
 
     public void SetPawnPosition(int id, int x, int y) {
-        Debug.Log($"Moving pawn {id} to ({x},{y})");
+        Debug.Log($"{turn}: Moving pawn {id} to ({x},{y})");
         Transform entity_transform = entities_by_id[id].transform;
         entity_transform.position = new Vector3(x*GRID_MULTIPLE, y*GRID_MULTIPLE, 0f);
     }
 
     public String GetUserInputAction() {
         // todo figure out why this moves twice
+        turn += 1;
         if (Input.GetKeyDown(KeyCode.LeftArrow)) return "left";
         if (Input.GetKeyDown(KeyCode.RightArrow)) return "right";
         if (Input.GetKeyDown(KeyCode.UpArrow)) return "up";
@@ -63,7 +64,10 @@ public class BoardController : PersistableObject
         if (Input.GetKeyDown(KeyCode.S)) return "save";
         if (Input.GetKeyDown(KeyCode.L)) return "load";
         if (Input.GetKeyDown(KeyCode.R)) return "reload";
-        else return "none";
+        else {
+            turn -= 1;
+            return "none";
+        }
     }
     
     public void SaveGame() {
