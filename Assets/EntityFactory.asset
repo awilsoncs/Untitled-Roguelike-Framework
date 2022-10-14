@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: EntityFactory
   m_EditorClassIdentifier: 
   prefabs:
-  - {fileID: 5946112211355885874, guid: b66d62e96b91707478b4d4460549da3d, type: 3}
+  - {fileID: 230708240065873088, guid: b66d62e96b91707478b4d4460549da3d, type: 3}
+  - {fileID: 5946112211355885874, guid: 6244643b809bc3d45a097846ae2b68a8, type: 3}

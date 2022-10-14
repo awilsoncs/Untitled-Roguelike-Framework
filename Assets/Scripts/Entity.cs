@@ -1,46 +1,46 @@
 public class Entity : PersistableObject{
     private int id = 0;
-    private int x, y = 0;
+    public int EntityType {get; set;}
+
+    public int ID {
+        get {
+            return id;
+        }
+        set {
+            this.id = value;
+        }
+    }
+
+    public int X { get; set; }
+    public int Y { get; set; }
 
     public Entity(int id) {
         this.id = id;
     }
 
-    public void GameUpdate() {
-        switch (BoardController.Instance.GetUserInputAction()) {
-            case "right":
-                Move(1, 0);
-                return;
-            case "left":
-                Move(-1, 0);
-                return;
-            case "up":
-                Move(0, 1);
-                return;
-            case "down":
-                Move(0, -1);
-                return;
-            case "save":
-                BoardController.Instance.SaveGame();
-                return;
-            case "load":
-                BoardController.Instance.LoadGame();
-                return;
-            case "reload":
-                BoardController.Instance.ReloadGame();
-                return;
-        }
+    public virtual void GameUpdate() {
+        // override
     }
 
     public void Move(int dx, int dy) {
-        x += dx;
-        y += dy;
-        BoardController.Instance.SetPawnPosition(id, x, y);
+        TeleportTo(X+dx, Y+dy);
+    }
+
+    public void TeleportTo(int x, int y) {
+        X = x;
+        Y = y;
+        BoardController.Instance.SetPawnPosition(id, X, Y);
     }
 
     public override void Save(GameDataWriter writer) {
+        writer.Write(ID);
+        writer.Write(X);
+        writer.Write(Y);
     }
 
     public override void Load(GameDataReader reader) {
+        ID = reader.ReadInt();
+        X = reader.ReadInt();
+        Y = reader.ReadInt();
     }
 }

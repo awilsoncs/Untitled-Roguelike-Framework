@@ -6,7 +6,6 @@ using UnityEngine;
 public class BoardController : PersistableObject
 {
     const int saveVersion = 0;
-    int turn = 0;
 
     List<Entity> entities;
     Dictionary<int, GameObject> entities_by_id;
@@ -34,14 +33,15 @@ public class BoardController : PersistableObject
     private void BeginGame() {
         entities = new List<Entity>();
         entities_by_id = new Dictionary<int, GameObject>();
-        CreateMainCharacter();
+        CreateEntityByIndex(0);
     }
 
-    private void CreateMainCharacter() {
-        var entity = entityFactory.Get(0);
+    public Entity CreateEntityByIndex(int n) {
+        var entity = entityFactory.Get(n);
         entities.Add(entity);
-        entities_by_id.Add(0, entity.gameObject);
-        SetPawnPosition(0, 0, 0);
+        entities_by_id.Add(entity.ID, entity.gameObject);
+        SetPawnPosition(entity.ID, 0, 0);
+        return entity;
     }
 
     public void LogMessage(String s) {
@@ -49,14 +49,13 @@ public class BoardController : PersistableObject
     }
 
     public void SetPawnPosition(int id, int x, int y) {
-        Debug.Log($"{turn}: Moving pawn {id} to ({x},{y})");
+        Debug.Log($"Moving pawn {id} to ({x},{y})");
         Transform entity_transform = entities_by_id[id].transform;
         entity_transform.position = new Vector3(x*GRID_MULTIPLE, y*GRID_MULTIPLE, 0f);
     }
 
     public String GetUserInputAction() {
-        // todo figure out why this moves twice
-        turn += 1;
+
         if (Input.GetKeyDown(KeyCode.LeftArrow)) return "left";
         if (Input.GetKeyDown(KeyCode.RightArrow)) return "right";
         if (Input.GetKeyDown(KeyCode.UpArrow)) return "up";
@@ -64,10 +63,8 @@ public class BoardController : PersistableObject
         if (Input.GetKeyDown(KeyCode.S)) return "save";
         if (Input.GetKeyDown(KeyCode.L)) return "load";
         if (Input.GetKeyDown(KeyCode.R)) return "reload";
-        else {
-            turn -= 1;
-            return "none";
-        }
+        if (Input.GetKeyDown(KeyCode.P)) return "spawn";
+        else return "none";
     }
     
     public void SaveGame() {
@@ -92,10 +89,23 @@ public class BoardController : PersistableObject
     }
 
     public override void Save(GameDataWriter writer) {
-        //
+        writer.Write(entities.Count);
+        foreach (var entity in entities) {
+            writer.Write(entity.EntityType);
+            entity.Save(writer);
+        }
     }
 
     public override void Load(GameDataReader reader) {
-        //
+        ClearGame();
+        var entityCount = reader.ReadInt();
+        for (int i = 0; i < entityCount; i++) {
+            var entityType = reader.ReadInt();
+            var entity = entityFactory.Get(entityType);
+            entity.Load(reader);
+            entities.Add(entity);
+            entities_by_id.Add(entity.ID, entity.gameObject);
+            SetPawnPosition(entity.ID, entity.X, entity.Y);
+        }
     }
 }

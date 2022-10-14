@@ -236,7 +236,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 374962d7d38badf4aa9c9c4f2ffb3470, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mainCharacterPawn: {fileID: 1652089016861564763, guid: 5b47740e4a1e1174a9712f667d5ecce9, type: 3}
   storage: {fileID: 1839148938}
   entityFactory: {fileID: 11400000, guid: 1ce881d253b637642a06eddf5857106d, type: 2}
 --- !u!4 &1768340208
