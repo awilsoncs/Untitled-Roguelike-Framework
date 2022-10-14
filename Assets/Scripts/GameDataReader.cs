@@ -19,15 +19,6 @@ public class GameDataReader {
 		return reader.ReadInt32();
 	}
 
-    public Quaternion ReadQuaternion () {
-		Quaternion value;
-		value.x = reader.ReadSingle();
-		value.y = reader.ReadSingle();
-		value.z = reader.ReadSingle();
-		value.w = reader.ReadSingle();
-		return value;
-	}
-
 	public Vector3 ReadVector3 () {
 		Vector3 value;
 		value.x = reader.ReadSingle();

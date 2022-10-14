@@ -1,15 +1,13 @@
-public class Entity : IEntity {
-    private IBoardController gc;
+public class Entity : PersistableObject{
     private int id = 0;
     private int x, y = 0;
 
-    public Entity(IBoardController gc, int id) {
-        this.gc = gc;
+    public Entity(int id) {
         this.id = id;
     }
 
     public void Update() {
-        switch (gc.GetUserInputAction()) {
+        switch (BoardController.Instance.GetUserInputAction()) {
             case "right":
                 Move(1, 0);
                 return;
@@ -23,13 +21,13 @@ public class Entity : IEntity {
                 Move(0, -1);
                 return;
             case "save":
-                gc.SaveGame();
+                BoardController.Instance.SaveGame();
                 return;
             case "load":
-                gc.LoadGame();
+                BoardController.Instance.LoadGame();
                 return;
             case "reload":
-                gc.ReloadGame();
+                BoardController.Instance.ReloadGame();
                 return;
         }
     }
@@ -37,6 +35,12 @@ public class Entity : IEntity {
     public void Move(int dx, int dy) {
         x += dx;
         y += dy;
-        gc.SetPawnPosition(id, x, y);
+        BoardController.Instance.SetPawnPosition(id, x, y);
+    }
+
+    public override void Save(GameDataWriter writer) {
+    }
+
+    public override void Load(GameDataReader reader) {
     }
 }
