@@ -54,8 +54,15 @@
     },
     "cSpell.words": [
         "gameobject",
+        "gameplay",
         "Scriptable",
         "updateable",
         "updateables"
+    ],
+    "grammarly.selectors": [
+        {
+            "language": "markdown",
+            "scheme": "file"
+        }
     ]
 }
