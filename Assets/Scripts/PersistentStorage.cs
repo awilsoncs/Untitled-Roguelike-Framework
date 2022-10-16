@@ -12,14 +12,15 @@ public class PersistentStorage : MonoBehaviour
 		using (
 			var writer = new BinaryWriter(File.Open(savePath, FileMode.Create))
 		) {
-			writer.Write(-version);
+			writer.Write(version);
 			o.Save(new GameDataWriter(writer));
 		}
+		Debug.Log($"Game saved to {savePath}");
 	}
 
 	public void Load (PersistableObject o) {
 		byte[] data = File.ReadAllBytes(savePath);
 		var reader = new BinaryReader(new MemoryStream(data));
-		o.Load(new GameDataReader(reader, -reader.ReadInt32()));
+		o.Load(new GameDataReader(reader, reader.ReadInt32()));
 	}  
 }
