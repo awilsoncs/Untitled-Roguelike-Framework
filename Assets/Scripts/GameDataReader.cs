@@ -19,6 +19,10 @@ public class GameDataReader {
 		return reader.ReadInt32();
 	}
 
+	public System.String ReadString() {
+		return reader.ReadString();
+	}
+
 	public Vector3 ReadVector3 () {
 		Vector3 value;
 		value.x = reader.ReadSingle();

@@ -11,7 +11,6 @@ public class BoardController : PersistableObject
     List<Entity> killList;
 
     [SerializeField] KeyCode createKey = KeyCode.C;
-    [SerializeField] KeyCode destroyKey = KeyCode.X;
     [SerializeField] KeyCode newGameKey = KeyCode.N;
     [SerializeField] KeyCode saveKey = KeyCode.S;
     [SerializeField] KeyCode loadKey = KeyCode.L;
@@ -29,9 +28,6 @@ public class BoardController : PersistableObject
 
     Random.State mainRandomState;
     bool inGameUpdateLoop;
-
-    // 2D map geometry
-    private int[][] mapCells;
 
     public static BoardController Instance { get; set; }
 
@@ -91,7 +87,7 @@ public class BoardController : PersistableObject
         mainRandomState = Random.state;
         Random.InitState(seed);
         // todo do we care that objects to kill are still in the kill list?
-        CreateEntityByIndex(0);
+        CreateEntityByName("player");
     }
 
     private void ClearGame() {
@@ -104,15 +100,12 @@ public class BoardController : PersistableObject
         entities_by_id.Clear();
     }
 
-    public Entity CreateEntityByIndex(int n) {
-        var entity = entityFactory.Get(n);
+    public Entity CreateEntityByName(System.String s) {
+        var entity = entityFactory.Get(s);
         entities.Add(entity);
         entities_by_id.Add(entity.ID, entity.gameObject);
         SetPawnPosition(entity.ID, 0, 0);
         return entity;
-    }
-
-    public void Reclaim(Entity e) {
     }
 
     public void LogMessage(System.String s) {
@@ -152,7 +145,6 @@ public class BoardController : PersistableObject
         writer.Write(entities.Count);
         writer.Write(Random.state);
         for (int i = 0; i < entities.Count; i++) {
-            writer.Write(entities[i].EntityType);
             writer.Write(entities[i].ID);
             entities[i].Save(writer);
         }
@@ -178,16 +170,12 @@ public class BoardController : PersistableObject
         Debug.Log($"Loading objects...");
         for (int i = 0; i < count; i++) {
             Debug.Log($">> Loading object {i}");
-            var entityType = reader.ReadInt();
-            Debug.Log($"read type: {entityType}");
 
             var entityID = reader.ReadInt();
             Debug.Log($"read ID: {entityID}");
-            var entity = entityFactory.Get(entityType);
+            var entity = entityFactory.Get();
 
-            Debug.Log($"Attempted to load entity: {entityType}, {entityID}");
             entity.ID = entityID;
-            entity.EntityType = entityType;
             entity.Load(reader);
 
             entities.Add(entity);

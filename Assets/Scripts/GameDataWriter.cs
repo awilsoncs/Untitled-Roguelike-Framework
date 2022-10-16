@@ -16,6 +16,10 @@ public class GameDataWriter {
         writer.Write(value);
     }
 
+    public void Write (System.String value) {
+        writer.Write(value);
+    }
+
     public void Write (Vector3 value) {
         writer.Write(value.x);
         writer.Write(value.y);
