@@ -6,7 +6,7 @@ public class BoardController : PersistableObject
 {
     const int saveVersion = 1;
     List<Entity> entities;
-    Dictionary<int, GameObject> entities_by_id;
+    Dictionary<int, Entity> entities_by_id;
     // Contains references to entities that need to be cleaned up after the game loop.
     List<Entity> killList;
 
@@ -39,7 +39,7 @@ public class BoardController : PersistableObject
         mainRandomState = Random.state;
         entities = new List<Entity>();
         killList = new List<Entity>();
-        entities_by_id = new Dictionary<int, GameObject>();
+        entities_by_id = new Dictionary<int, Entity>();
         BeginNewGame();
     }
 
@@ -57,6 +57,10 @@ public class BoardController : PersistableObject
             }
             killList.Clear();
         }
+    }
+
+    public Entity GetEntity(int id) {
+        return entities_by_id[id];
     }
 
     private void Kill (Entity entity) {
@@ -103,7 +107,7 @@ public class BoardController : PersistableObject
     public Entity CreateEntityByName(System.String s) {
         var entity = entityFactory.Get(s);
         entities.Add(entity);
-        entities_by_id.Add(entity.ID, entity.gameObject);
+        entities_by_id.Add(entity.ID, entity);
         SetPawnPosition(entity.ID, 0, 0);
         return entity;
     }
@@ -114,7 +118,7 @@ public class BoardController : PersistableObject
 
     public void SetPawnPosition(int id, int x, int y) {
         Debug.Log($"Moving pawn {id} to ({x},{y})");
-        Transform entity_transform = entities_by_id[id].transform;
+        Transform entity_transform = entities_by_id[id].gameObject.transform;
         entity_transform.position = new Vector3(x*GRID_MULTIPLE, y*GRID_MULTIPLE, 0f);
     }
 
@@ -179,7 +183,7 @@ public class BoardController : PersistableObject
             entity.Load(reader);
 
             entities.Add(entity);
-            entities_by_id.Add(entity.ID, entity.gameObject);
+            entities_by_id.Add(entity.ID, entity);
             SetPawnPosition(entity.ID, entity.X, entity.Y);
             Debug.Log($"<< Loaded object {i}");
         }

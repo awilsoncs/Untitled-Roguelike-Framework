@@ -55,6 +55,8 @@
     "cSpell.words": [
         "gameobject",
         "gameplay",
+        "GameUpdate",
+        "Persistable",
         "Scriptable",
         "updateable",
         "updateables"
