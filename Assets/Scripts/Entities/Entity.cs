@@ -26,13 +26,15 @@ public class Entity : PersistableObject{
     }
 
     public void Move(int dx, int dy) {
-        TeleportTo(X+dx, Y+dy);
+        if (BoardController.Instance.IsInBounds(X+dx, Y+dy)) {
+            TeleportTo(X+dx, Y+dy);
+        }
     }
 
     public void TeleportTo(int x, int y) {
+        BoardController.Instance.SetPawnPosition(ID, X, Y, x, y);
         X = x;
         Y = y;
-        BoardController.Instance.SetPawnPosition(ID, X, Y);
     }
 
     /*

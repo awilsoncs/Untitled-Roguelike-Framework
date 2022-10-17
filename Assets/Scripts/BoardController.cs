@@ -25,6 +25,7 @@ public class BoardController : PersistableObject
     // map bounds
     [SerializeField] int mapWidth = 10;
     [SerializeField] int mapHeight = 10;
+    Cell[][] map;
 
     Random.State mainRandomState;
     bool inGameUpdateLoop;
@@ -40,12 +41,19 @@ public class BoardController : PersistableObject
         entities = new List<Entity>();
         killList = new List<Entity>();
         entities_by_id = new Dictionary<int, Entity>();
+
+        map = new Cell[mapWidth][];
+        for (int i = 0; i < mapWidth; i++) {
+            map[i] = new Cell[mapHeight];
+            for (int j = 0; j < mapHeight; j++) {
+                map[i][j] = new Cell(i, j);
+            }
+        }
+
         BeginNewGame();
     }
 
     private void Update() {
-        // todo gather user input
-        // todo submit user action to main character
         inGameUpdateLoop = true;
         for (int i = 0; i < entities.Count; i++) {
             entities[i].GameUpdate();
@@ -116,10 +124,44 @@ public class BoardController : PersistableObject
         Debug.Log(s);
     }
 
+    /*
+    * Return true if a position is in bounds, false otherwise.
+    */
+    public bool IsInBounds(int x, int y) {
+        // todo straighten out the coordinate mismatch, game should be in map coords
+        int xOffset = mapWidth / 2;
+        int yOffset = mapHeight / 2;
+
+        int xReal = x+xOffset;
+        int yReal = y+yOffset;
+        return (
+            0 <= xReal && xReal < mapWidth
+            && 0 <= yReal && yReal < mapHeight
+        );
+    }
+
     public void SetPawnPosition(int id, int x, int y) {
         Debug.Log($"Moving pawn {id} to ({x},{y})");
-        Transform entity_transform = entities_by_id[id].gameObject.transform;
+        int xOffset = mapWidth / 2;
+        int yOffset = mapHeight / 2;
+        Entity entity = entities_by_id[id];
+        map[x+xOffset][y+yOffset].SetContents(entities_by_id[id]);
+        Transform entity_transform = entity.gameObject.transform;
         entity_transform.position = new Vector3(x*GRID_MULTIPLE, y*GRID_MULTIPLE, 0f);
+    }
+
+    public void SetPawnPosition(int id, int x0, int y0, int x1, int y1) {
+        int xOffset = mapWidth / 2;
+        int yOffset = mapHeight / 2;
+
+        // Unity world Coords and the map indices are misaligned by half the
+        // map dimension.
+        map[x0+xOffset][y0+yOffset].ClearContents();
+        Debug.Log($"Moving pawn {id} to ({x1},{y1})");
+        Entity entity = entities_by_id[id];
+        map[x1+xOffset][y1+yOffset].SetContents(entities_by_id[id]);
+        Transform entity_transform = entity.gameObject.transform;
+        entity_transform.position = new Vector3(x1*GRID_MULTIPLE, y1*GRID_MULTIPLE, 0f);
     }
 
     public System.String GetUserInputAction() {
