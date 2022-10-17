@@ -7,7 +7,7 @@ public abstract class EntityPart
 #endif
  {
     public int ID { get; set; }
-    public EntityPartType PartType { get; set; }
+    public abstract EntityPartType PartType {get;}
 
     // The owner entity
     public Entity Entity {get; set;}

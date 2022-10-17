@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// todo would these be better managed as pooled objects rather than factoried ones?
 public class Entity : PersistableObject{
     public int EntityType {get; set;}
     public int ID { get; set; }
@@ -37,7 +36,7 @@ public class Entity : PersistableObject{
     }
 
     /*
-    * Add a part to the entity's part set.
+    * Add a part to the entity's part list.
     */
     public void AddPart(EntityPart part) {
         parts.Add(part);
@@ -102,9 +101,9 @@ public class Entity : PersistableObject{
 
     public void Recycle() {
         for (int i = 0; i < parts.Count; i++) {
-            // todo
+            parts[i].Recycle();
         }
-        // todo do we need to clear lists?
+        parts.Clear();
         BoardController.Instance.entityFactory.Reclaim(this);
     }
 

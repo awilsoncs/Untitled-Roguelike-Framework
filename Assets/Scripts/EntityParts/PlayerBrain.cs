@@ -1,4 +1,7 @@
 public class PlayerBrain : EntityPart {
+
+    public override EntityPartType PartType => EntityPartType.PlayerBrain; 
+
     public override void GameUpdate() {
         switch (BoardController.Instance.GetUserInputAction()) {
             case "right":
