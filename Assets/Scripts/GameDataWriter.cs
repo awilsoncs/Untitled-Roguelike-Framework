@@ -11,6 +11,9 @@ public class GameDataWriter {
     public void Write (float value) {
         writer.Write(value);
     }
+    public void Write (bool value) {
+        writer.Write(value);
+    }
 
     public void Write (int value) {
         writer.Write(value);

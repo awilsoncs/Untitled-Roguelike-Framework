@@ -15,6 +15,10 @@ public class GameDataReader {
 		return reader.ReadSingle();
 	}
 
+	public bool ReadBool () {
+		return reader.ReadBoolean();
+	}
+
 	public int ReadInt () {
 		return reader.ReadInt32();
 	}

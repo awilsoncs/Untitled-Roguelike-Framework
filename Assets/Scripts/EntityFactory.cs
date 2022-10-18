@@ -16,6 +16,7 @@ public class EntityFactory : ScriptableObject {
         constructors = new Dictionary<string, EntityBuilder>();
         constructors.Add("player", this.GetPlayer);
         constructors.Add("crab", this.GetCrab);
+        constructors.Add("wall", this.GetWall);
     }    
 
     /*
@@ -54,14 +55,27 @@ public class EntityFactory : ScriptableObject {
         entity.AddPart(EntityPartPool<PlayerBrain>.Get());
         entity.SetSprite(sprites[0]);
         entity.SpriteIndex = 0;
+        entity.BlocksMove = true;
         return entity;
     }
 
     Entity GetCrab() {
+        Debug.Log("Entity factory producing a Crab!");
         var entity = Get();
         entity.name = "Crab";
         entity.SetSprite(sprites[1]);
         entity.SpriteIndex = 1;
+        entity.BlocksMove = true;
+        return entity;
+    }
+
+    Entity GetWall() {
+        Debug.Log("Entity factory producing a Wall!");
+        var entity = Get();
+        entity.name = "Wall";
+        entity.SetSprite(sprites[2]);
+        entity.SpriteIndex = 2;
+        entity.BlocksMove = true;
         return entity;
     }
 }

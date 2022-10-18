@@ -7,6 +7,7 @@ public class Entity : PersistableObject{
     public int X { get; set; }
     public int Y { get; set; }
     public int SpriteIndex {get; set;}
+    public bool BlocksMove { get; set; }
 
     private List<EntityPart> parts; 
     private SpriteRenderer spriteRenderer;
@@ -26,13 +27,13 @@ public class Entity : PersistableObject{
     }
 
     public void Move(int dx, int dy) {
-        if (BoardController.Instance.IsInBounds(X+dx, Y+dy)) {
+        if (BoardController.Instance.IsLegalMove(X+dx, Y+dy)) {
             TeleportTo(X+dx, Y+dy);
         }
     }
 
     public void TeleportTo(int x, int y) {
-        BoardController.Instance.SetPawnPosition(ID, X, Y, x, y);
+        BoardController.Instance.MovePawn(ID, X, Y, x, y);
         X = x;
         Y = y;
     }
@@ -65,6 +66,7 @@ public class Entity : PersistableObject{
         writer.Write(SpriteIndex);
         writer.Write(X);
         writer.Write(Y);
+        writer.Write(BlocksMove);
         writer.Write(parts.Count);
         for (int i = 0; i < parts.Count; i++) {
             writer.Write(parts[i].ID);
@@ -83,6 +85,7 @@ public class Entity : PersistableObject{
 
         X = reader.ReadInt();
         Y = reader.ReadInt();
+        BlocksMove = reader.ReadBool();
         var partCount = reader.ReadInt();
         if (partCount > 0) {
             Debug.Log($">> Entity {gameObject.name}::{ID} loading {partCount} parts...");
