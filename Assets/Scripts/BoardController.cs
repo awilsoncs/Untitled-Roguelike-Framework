@@ -13,6 +13,7 @@ public class BoardController : PersistableObject
     // Contains references to entities that need to be cleaned up after the game loop.
     List<Entity> killList;
 
+    [SerializeField] Camera mainCamera;
     [SerializeField] KeyCode createKey = KeyCode.C;
     [SerializeField] KeyCode newGameKey = KeyCode.N;
     [SerializeField] KeyCode saveKey = KeyCode.S;
@@ -21,17 +22,32 @@ public class BoardController : PersistableObject
     [SerializeField] KeyCode downKey = KeyCode.DownArrow;
     [SerializeField] KeyCode leftKey = KeyCode.LeftArrow;
     [SerializeField] KeyCode rightKey = KeyCode.RightArrow;
-
-    const float GRID_MULTIPLE = 0.5f;
     [SerializeField] PersistentStorage storage;
     [SerializeField] public EntityFactory entityFactory;
     // map bounds
-    [SerializeField] int mapWidth = 10;
-    [SerializeField] int mapHeight = 10;
+    [SerializeField] int mapWidth = 40;
+    [SerializeField] int mapHeight = 20;
+    public int MapWidth {
+        get {
+            return mapWidth;
+        }
+        set {
+            this.mapWidth = value;
+        }
+    }
+    public int MapHeight {
+        get {
+            return mapHeight;
+        }
+        set {
+            this.mapHeight = value;
+        }
+    }
     Cell[][] map;
+    const float GRID_MULTIPLE = 0.5f;
     Random.State mainRandomState;
     bool inGameUpdateLoop;
-
+    bool isViewDirty;
     public static BoardController Instance { get; set; }
 
     void OnEnable () {
@@ -51,7 +67,7 @@ public class BoardController : PersistableObject
                 map[i][j] = new Cell(i, j);
             }
         }
-
+        mainCamera.transform.position = new Vector3(mapWidth / (2 / GRID_MULTIPLE), mapHeight / (2 / GRID_MULTIPLE), -10);
         BeginNewGame();
     }
 
@@ -67,6 +83,7 @@ public class BoardController : PersistableObject
             }
             killList.Clear();
         }
+        RecalculateFOV();
     }
 
     private void Kill (Entity entity) {
@@ -108,7 +125,8 @@ public class BoardController : PersistableObject
         int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
         mainRandomState = Random.state;
         Random.InitState(seed);
-        var player = CreateEntityAtLocation("player", 0, 0);
+        DungeonBuilder.Build(this);
+        RecalculateFOVImmediately();
     }
 
     private void ClearGame() {
@@ -124,7 +142,7 @@ public class BoardController : PersistableObject
                 map[i][j].ClearContents();
             }
         }
-        // todo do we care about the kill list?
+        killList.Clear();
     }
 
     /// <summary>
@@ -152,14 +170,9 @@ public class BoardController : PersistableObject
     /// <param name="y">The vertical position to check</param>
     /// <returns>True if the position is in bounds, False otherwise</returns>
     private bool IsInBounds(int x, int y) {
-        int xOffset = mapWidth / 2;
-        int yOffset = mapHeight / 2;
-
-        int xReal = x+xOffset;
-        int yReal = y+yOffset;
         return (
-            0 <= xReal && xReal < mapWidth
-            && 0 <= yReal && yReal < mapHeight
+            0 <= x && x < mapWidth
+            && 0 <= y && y < mapHeight
         );
     }
 
@@ -175,20 +188,12 @@ public class BoardController : PersistableObject
 
     /// <summary>
     /// Provide a mapping from game coordinates to the map tiles.
-    /// 
-    /// Note: This may be worth resolving at some point in the future,
-    /// but, as long as the map remains internal to BoardController, it's
-    /// sufficient to route through GetCell().
     /// </summary>
     /// <param name="x">Horizontal coordinate in logical game coordinates.</param>
     /// <param name="y">Vertical coordinate in logical game coordinates.</param>
     /// <returns>Return the Cell at location (x, y)</returns>
     private Cell GetCell(int x, int y) {
-        int xOffset = mapWidth / 2;
-        int yOffset = mapHeight / 2;
-        int mapXDestination = x+xOffset;
-        int mapYDestination = y+yOffset;
-        return map[mapXDestination][mapYDestination];
+        return map[x][y];
     }
 
     /// <summary>
@@ -218,7 +223,6 @@ public class BoardController : PersistableObject
     /// <param name="y0">Original Vertical coordinate of the Entity</param>
     /// <param name="x1">Horizontal destination coordinate of the Entity</param>
     /// <param name="y1">Vertical destination coordinate of the Entity</param>
-
     public void MovePawn(int id, int x0, int y0, int x1, int y1) {
         // todo could simplify this by tracking last position on the entity
         // Get the two relevant cells.
@@ -237,11 +241,14 @@ public class BoardController : PersistableObject
 
         Entity entity = origin.ClearContents();
         PlacePawn(id, x1, y1);
-
     }
 
+    /// <summary>
+    /// Return a string of the user action. Some actions are intercepted by the
+    ///  BoardController and instead return none.
+    /// </summary>
+    /// <returns>A string descriptor of the user's action.</returns>
     public System.String GetUserInputAction() {
-
         if (Input.GetKeyDown(leftKey)) return "left";
         else if (Input.GetKeyDown(rightKey)) return "right";
         else if (Input.GetKeyDown(upKey)) return "up";
@@ -263,6 +270,27 @@ public class BoardController : PersistableObject
         return "none";
     }
 
+    /// <summary>
+    /// Call to schedule the FOV to be recalculated at the end of this game
+    /// loop.
+    /// </summary>
+    public void  RecalculateFOV() {
+        // recalculate will not be forced until 
+        if (inGameUpdateLoop) {
+            // handle all updates at once after the game update loop
+            isViewDirty = true;
+            return;
+        }
+        if (!isViewDirty) {
+            return;
+        }
+        RecalculateFOVImmediately();
+    }
+
+    private void RecalculateFOVImmediately() {
+        Debug.Log("Recalculating FOV!");
+    }
+
     public override void Save(GameDataWriter writer) {
         writer.Write(entities.Count);
         writer.Write(Random.state);
@@ -272,6 +300,10 @@ public class BoardController : PersistableObject
         }
     }
 
+    /// <summary>
+    /// todo
+    /// </summary>
+    /// <param name="reader"></param>
     public override void Load (GameDataReader reader) {
         int version = reader.Version;
         if (version > saveVersion) {
@@ -280,9 +312,11 @@ public class BoardController : PersistableObject
 		}
         ClearGame();
         LoadGame(reader);
+        RecalculateFOVImmediately();
     }
 
     void LoadGame (GameDataReader reader) {
+        // Perform all logic related to loading the game into the BoardController.
         int version = reader.Version;
         Debug.Log($"Loader version {version}");
         int count = reader.ReadInt();

@@ -8,6 +8,7 @@ public class Entity : PersistableObject{
     public int Y { get; set; }
     public int SpriteIndex {get; set;}
     public bool BlocksMove { get; set; }
+    public bool BlocksSight { get; set; }
 
     private List<EntityPart> parts; 
     private SpriteRenderer spriteRenderer;
@@ -67,6 +68,7 @@ public class Entity : PersistableObject{
         writer.Write(X);
         writer.Write(Y);
         writer.Write(BlocksMove);
+        writer.Write(BlocksSight);
         writer.Write(parts.Count);
         for (int i = 0; i < parts.Count; i++) {
             writer.Write(parts[i].ID);
@@ -86,6 +88,7 @@ public class Entity : PersistableObject{
         X = reader.ReadInt();
         Y = reader.ReadInt();
         BlocksMove = reader.ReadBool();
+        BlocksSight = reader.ReadBool();
         var partCount = reader.ReadInt();
         if (partCount > 0) {
             Debug.Log($">> Entity {gameObject.name}::{ID} loading {partCount} parts...");

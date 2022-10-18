@@ -76,6 +76,7 @@ public class EntityFactory : ScriptableObject {
         entity.SetSprite(sprites[2]);
         entity.SpriteIndex = 2;
         entity.BlocksMove = true;
+        entity.BlocksSight = true;
         return entity;
     }
 }

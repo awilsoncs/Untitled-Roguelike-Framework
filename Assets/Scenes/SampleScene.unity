@@ -236,6 +236,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 374962d7d38badf4aa9c9c4f2ffb3470, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 519420031}
   createKey: 99
   newGameKey: 110
   saveKey: 115
@@ -246,8 +247,8 @@ MonoBehaviour:
   rightKey: 275
   storage: {fileID: 1839148938}
   entityFactory: {fileID: 11400000, guid: 1ce881d253b637642a06eddf5857106d, type: 2}
-  mapWidth: 10
-  mapHeight: 10
+  mapWidth: 42
+  mapHeight: 20
 --- !u!4 &1768340208
 Transform:
   m_ObjectHideFlags: 0

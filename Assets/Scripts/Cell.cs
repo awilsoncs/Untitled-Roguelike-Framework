@@ -22,7 +22,7 @@ public class Cell {
 
     public void PutContents(Entity entity) {
         if (contents != null) {
-            Debug.LogError("Attempted to set a full cell!");
+            Debug.LogError("Attempted to set a filled cell!");
             return;
         }
         this.contents = entity;
@@ -35,6 +35,11 @@ public class Cell {
     }
 
     public bool IsPassable() {
+        Debug.Log("Bonk!");
         return (contents == null || !contents.BlocksMove);
+    }
+
+    public bool IsTransparent() {
+        return (contents == null || !contents.BlocksSight);
     }
 }
