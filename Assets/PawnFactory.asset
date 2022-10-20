@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37b6b6c52650a2d4f97f0562ac9e620e, type: 3}
+  m_Name: PawnFactory
+  m_EditorClassIdentifier: 
+  prefab: {fileID: -2218740590236994241, guid: b66d62e96b91707478b4d4460549da3d, type: 3}
+  sprites:
+  - name: player
+    sprite: {fileID: 21300000, guid: 550bdbdaa8d2c494999f3d57d834c3a4, type: 3}
+  - name: crab
+    sprite: {fileID: 21300000, guid: df070a5ff57cdef408b9604d2643c6d4, type: 3}
+  - name: wall
+    sprite: {fileID: 21300000, guid: 0069d8a60bd0eaa40ad9044b0f3d6449, type: 3}

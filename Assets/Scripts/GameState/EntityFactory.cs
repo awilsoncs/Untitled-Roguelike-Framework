@@ -1,14 +1,11 @@
-using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-[CreateAssetMenu]
-public class EntityFactory : ScriptableObject {
+public class EntityFactory {
 // todo implement pooling behavior
     private int idCounter = 0;
 
     private delegate Entity EntityBuilder();
-    [SerializeField] List<Sprite> sprites;
     
     Dictionary<String, EntityBuilder> constructors;
 
@@ -23,11 +20,7 @@ public class EntityFactory : ScriptableObject {
     * Get a bare entity.
     */
     public Entity Get() {
-        var gameObject = new GameObject();
-        gameObject.name = "base entity";
-        gameObject.AddComponent<SpriteRenderer>();
-        var entity = gameObject.AddComponent<Entity>();
-        return entity;
+        return new Entity();
     }
 
     /*
@@ -39,44 +32,31 @@ public class EntityFactory : ScriptableObject {
         return entity;
     }
 
-    public Sprite GetSpriteByIndex(int i) {
-        return sprites[i];
-    }
-
-    public void Reclaim (Entity entity) {
-        Destroy(entity.gameObject);
-    }
+    public void Reclaim (Entity entity) {}
 
     // short term hardcoded delegates
     Entity GetPlayer() {
-        Debug.Log("Entity factory producing a Player!");
         var entity = Get();
-        entity.name = "Player";
-        entity.AddPart(EntityPartPool<PlayerBrain>.Get());
-        entity.SetSprite(sprites[0]);
-        entity.SpriteIndex = 0;
+        entity.Name = "Player";
         entity.BlocksMove = true;
+        entity.Appearance = "player";
         return entity;
     }
 
     Entity GetCrab() {
-        Debug.Log("Entity factory producing a Crab!");
         var entity = Get();
-        entity.name = "Crab";
-        entity.SetSprite(sprites[1]);
-        entity.SpriteIndex = 1;
+        entity.Name = "Crab";
         entity.BlocksMove = true;
+        entity.Appearance = "crab";
         return entity;
     }
 
     Entity GetWall() {
-        Debug.Log("Entity factory producing a Wall!");
         var entity = Get();
-        entity.name = "Wall";
-        entity.SetSprite(sprites[2]);
-        entity.SpriteIndex = 2;
+        entity.Name = "Wall";
         entity.BlocksMove = true;
         entity.BlocksSight = true;
+        entity.Appearance = "wall";
         return entity;
     }
 }

@@ -246,7 +246,7 @@ MonoBehaviour:
   leftKey: 276
   rightKey: 275
   storage: {fileID: 1839148938}
-  entityFactory: {fileID: 11400000, guid: 1ce881d253b637642a06eddf5857106d, type: 2}
+  pawnFactory: {fileID: 11400000, guid: 238ac37a55e7faf47b514bc96b04b66d, type: 2}
   mapWidth: 42
   mapHeight: 20
 --- !u!4 &1768340208

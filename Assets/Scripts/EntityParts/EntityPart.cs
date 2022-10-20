@@ -13,7 +13,7 @@ IEntityPart
     // The owner entity
     public IEntity Entity {get; set;}
 
-    public virtual void GameUpdate(IBoardController bc) {}
+    public virtual void GameUpdate(IGameState gs) {}
     public abstract void Recycle();
 
     public abstract void Load(GameDataReader reader);

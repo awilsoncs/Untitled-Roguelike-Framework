@@ -1,72 +1,47 @@
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-/// <summary>
-/// Represent the logical space of the game.
-/// </summary>
-[DisallowMultipleComponent]
-public class BoardController : PersistableObject, IBoardController
-{
-    const int saveVersion = 1;
+public partial class GameState : IGameState {
     List<IEntity> entities;
     Dictionary<int, IEntity> entities_by_id;
     // Contains references to entities that need to be cleaned up after the game loop.
     List<IEntity> killList;
-
-    [SerializeField] Camera mainCamera;
-    [SerializeField] KeyCode createKey = KeyCode.C;
-    [SerializeField] KeyCode newGameKey = KeyCode.N;
-    [SerializeField] KeyCode saveKey = KeyCode.S;
-    [SerializeField] KeyCode loadKey = KeyCode.L;
-    [SerializeField] KeyCode upKey = KeyCode.UpArrow;
-    [SerializeField] KeyCode downKey = KeyCode.DownArrow;
-    [SerializeField] KeyCode leftKey = KeyCode.LeftArrow;
-    [SerializeField] KeyCode rightKey = KeyCode.RightArrow;
-    [SerializeField] PersistentStorage storage;
-    [SerializeField] public EntityFactory entityFactory;
-    // map bounds
-    [SerializeField] int mapWidth = 40;
-    [SerializeField] int mapHeight = 20;
-    public int MapWidth {
-        get {
-            return mapWidth;
-        }
-        set {
-            this.mapWidth = value;
-        }
-    }
-    public int MapHeight {
-        get {
-            return mapHeight;
-        }
-        set {
-            this.mapHeight = value;
-        }
-    }
+    EntityFactory entityFactory;
+    public int MapWidth {get; set;}
+    public int MapHeight {get; set;}
     Cell[][] map;
-    const float GRID_MULTIPLE = 0.5f;
-    Random.State mainRandomState;
     bool inGameUpdateLoop;
-    bool isViewDirty;
-    
-    private void Start() {
-        mainRandomState = Random.state;
+    bool isFieldOfViewDirty;
+    // The character controlled by player input.
+    Entity playerAgent;
+    // Interface through which client updates are posted.
+    IGameClient gameClient;
+
+    /// <summary>
+    /// Create a new GameState.
+    /// </summary>
+    /// <param name="client"></param>
+    /// <param name="mapWidth"></param>
+    /// <param name="mapHeight"></param>
+    public GameState(IGameClient client, int mapWidth, int mapHeight) {
+        MapWidth = mapWidth;
+        MapHeight = mapHeight;
         entities = new List<IEntity>();
         killList = new List<IEntity>();
         entities_by_id = new Dictionary<int, IEntity>();
 
-        map = new Cell[mapWidth][];
-        for (int i = 0; i < mapWidth; i++) {
-            map[i] = new Cell[mapHeight];
-            for (int j = 0; j < mapHeight; j++) {
-                map[i][j] = new Cell(i, j);
+        map = new Cell[MapWidth][];
+        for (int i = 0; i < MapWidth; i++) {
+            map[i] = new Cell[MapHeight];
+            for (int j = 0; j < MapHeight; j++) {
+                map[i][j] = new Cell();
             }
         }
-        mainCamera.transform.position = new Vector3(mapWidth / (2 / GRID_MULTIPLE), mapHeight / (2 / GRID_MULTIPLE), -10);
-        BeginNewGame();
+        gameClient = client;
+        entityFactory = new EntityFactory();
     }
 
-    private void Update() {
+    private void GameUpdate() {
         inGameUpdateLoop = true;
         for (int i = 0; i < entities.Count; i++) {
             entities[i].GameUpdate(this);
@@ -78,7 +53,6 @@ public class BoardController : PersistableObject, IBoardController
             }
             killList.Clear();
         }
-        RecalculateFOV();
     }
 
     private void Kill (IEntity entity) {
@@ -112,61 +86,29 @@ public class BoardController : PersistableObject, IBoardController
             possibleLocation.ClearContents();
         }
         entity.Recycle(entityFactory);
+
+        // todo notify the GameView that this entity has been killed
+        // todo update pawns in GameView
     }
 
-    private void BeginNewGame() {
-        // Set up the new game seed
-        Random.state = mainRandomState;
-        int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
-        mainRandomState = Random.state;
-        Random.InitState(seed);
-        DungeonBuilder.Build(this);
-        RecalculateFOVImmediately();
+    private Cell GetCell(int x, int y) {
+        return map[x][y];
     }
 
-    private void ClearGame() {
-        // Clean up the existing scene objects
-        for (int i = 0; i < entities.Count; i++) {
-            entities[i].Recycle(entityFactory);
-        }
-
-        entities.Clear();
-        entities_by_id.Clear();
-        for (int i = 0; i < mapWidth; i++) {
-            for (int j = 0; j < mapHeight; j++) {
-                map[i][j].ClearContents();
-            }
-        }
-        killList.Clear();
-    }
-
-    /// <summary>
+        /// <summary>
     /// Create an entity at a given location using the factory blueprint name.
     /// </summary>
     /// <param name="blueprintName">The name of the Entity type in the factory</param>
     /// <param name="x">The horizontal coordinate at which to create the Entity</param>
     /// <param name="y">The vertical coordinate at which to create the Entity</param>
     /// <returns>A reference to the created Entity</returns>
-    public Entity CreateEntityAtLocation(System.String blueprintName, int x, int y) {
+    public IEntity CreateEntityAtLocation(String blueprintName, int x, int y) {
         // todo abstract entities with no location
         var entity = entityFactory.Get(blueprintName);
         entities.Add(entity);
         entities_by_id.Add(entity.ID, entity);
-        PlacePawn(entity.ID, x, y);
+        gameClient.EntityCreated(entity.ID, blueprintName, x, y);
         return entity;
-    }
-
-    /// <summary>
-    /// Return whether a position in game coordinates is in bounds.
-    /// </summary>
-    /// <param name="x">The horizontal coordinate to check</param>
-    /// <param name="y">The vertical position to check</param>
-    /// <returns>True if the position is in bounds, False otherwise</returns>
-    private bool IsInBounds(int x, int y) {
-        return (
-            0 <= x && x < mapWidth
-            && 0 <= y && y < mapHeight
-        );
     }
 
     /// <summary>
@@ -180,13 +122,16 @@ public class BoardController : PersistableObject, IBoardController
     }
 
     /// <summary>
-    /// Provide a mapping from game coordinates to the map tiles.
+    /// Return whether a position in game coordinates is in bounds.
     /// </summary>
-    /// <param name="x">Horizontal coordinate in logical game coordinates.</param>
-    /// <param name="y">Vertical coordinate in logical game coordinates.</param>
-    /// <returns>Return the Cell at location (x, y)</returns>
-    private Cell GetCell(int x, int y) {
-        return map[x][y];
+    /// <param name="x">The horizontal coordinate to check</param>
+    /// <param name="y">The vertical position to check</param>
+    /// <returns>True if the position is in bounds, False otherwise</returns>
+    private bool IsInBounds(int x, int y) {
+        return (
+            0 <= x && x < MapWidth
+            && 0 <= y && y < MapHeight
+        );
     }
 
     /// <summary>
@@ -195,18 +140,18 @@ public class BoardController : PersistableObject, IBoardController
     /// <param name="id">ID of the entity to move</param>
     /// <param name="x">Horizontal destination coordinate of the Entity</param>
     /// <param name="y">Vertical destination coordinate of the Entity</param>
-    public void PlacePawn(int id, int x, int y) {
-        Debug.Log($"Moving pawn {id} to ({x},{y})");
+    public void PlaceEntity(int id, int x, int y) {
         IEntity entity = entities_by_id[id];
         Cell destination = GetCell(x, y);
         IEntity contentsToKill = destination.ClearContents();
         if (contentsToKill != null) {
+            gameClient.EntityKilled(contentsToKill.ID);
             Kill(contentsToKill);
         }
         entity.X = x;
         entity.Y = y;
         destination.PutContents(entity);
-        entity.SetSpritePosition(x*GRID_MULTIPLE, y*GRID_MULTIPLE);
+        gameClient.EntityMoved(id, x, y);
     }
 
     /// <summary>
@@ -217,7 +162,7 @@ public class BoardController : PersistableObject, IBoardController
     /// <param name="y0">Original Vertical coordinate of the Entity</param>
     /// <param name="x1">Horizontal destination coordinate of the Entity</param>
     /// <param name="y1">Vertical destination coordinate of the Entity</param>
-    public void MovePawn(int id, int x0, int y0, int x1, int y1) {
+    public void MoveEntity(int id, int x0, int y0, int x1, int y1) {
         // todo could simplify this by tracking last position on the entity
         // todo would be nice if Entities didn't even need to know where they were
         if (!IsLegalMove(x1, y1)) {
@@ -230,7 +175,6 @@ public class BoardController : PersistableObject, IBoardController
 
         if (origin.GetContents() != entities_by_id[id]) {
             // Defensive coding, we shouldn't do anything if the IDs don't match.
-            Debug.LogError("Attempt to move mismatched pawn id.");
             return;
         }
 
@@ -239,34 +183,7 @@ public class BoardController : PersistableObject, IBoardController
         }
 
         IEntity entity = origin.ClearContents();
-        PlacePawn(id, x1, y1);
-    }
-
-    /// <summary>
-    /// Return a string of the user action. Some actions are intercepted by the
-    ///  BoardController and instead return none.
-    /// </summary>
-    /// <returns>A string descriptor of the user's action.</returns>
-    public System.String GetUserInputAction() {
-        if (Input.GetKeyDown(leftKey)) return "left";
-        else if (Input.GetKeyDown(rightKey)) return "right";
-        else if (Input.GetKeyDown(upKey)) return "up";
-        else if (Input.GetKeyDown(downKey)) return "down";
-        else if (Input.GetKeyDown(saveKey)) {
-            Debug.Log("Player asked for save...");
-            storage.Save(this, saveVersion);
-        }
-        else if (Input.GetKeyDown(loadKey)) {
-            Debug.Log("Player asked for load...");
-            storage.Load(this);
-        }
-        else if (Input.GetKeyDown(newGameKey)) {
-            Debug.Log("Player asked for a reload...");
-            ClearGame();
-            BeginNewGame();
-        }
-        else if (Input.GetKeyDown(createKey)) return "spawn";
-        return "none";
+        PlaceEntity(id, x1, y1);
     }
 
     /// <summary>
@@ -277,26 +194,23 @@ public class BoardController : PersistableObject, IBoardController
         // recalculate will not be forced until 
         if (inGameUpdateLoop) {
             // handle all updates at once after the game update loop
-            isViewDirty = true;
+            isFieldOfViewDirty = true;
             return;
         }
-        if (!isViewDirty) {
+        if (!isFieldOfViewDirty) {
             return;
         }
         RecalculateFOVImmediately();
     }
 
     private void RecalculateFOVImmediately() {
-        Debug.Log("Recalculating FOV!");
-        isViewDirty = false;
+        isFieldOfViewDirty = false;
     }
 
-    public override void Save(GameDataWriter writer) {
+    public void Save (GameDataWriter writer) {
         writer.Write(entities.Count);
-        writer.Write(Random.state);
         for (int i = 0; i < entities.Count; i++) {
             writer.Write(entities[i].ID);
-            writer.Write(entities[i].SpriteIndex);
             entities[i].Save(writer);
         }
     }
@@ -305,13 +219,7 @@ public class BoardController : PersistableObject, IBoardController
     /// todo
     /// </summary>
     /// <param name="reader"></param>
-    public override void Load (GameDataReader reader) {
-        int version = reader.Version;
-        if (version > saveVersion) {
-			Debug.LogError("Unsupported future save version " + version);
-			return;
-		}
-        ClearGame();
+    public void Load (GameDataReader reader) {
         LoadGame(reader);
         RecalculateFOVImmediately();
     }
@@ -319,30 +227,23 @@ public class BoardController : PersistableObject, IBoardController
     void LoadGame (GameDataReader reader) {
         // Perform all logic related to loading the game into the BoardController.
         int version = reader.Version;
-        Debug.Log($"Loader version {version}");
+        // Debug.Log($"Loader version {version}");
         int count = reader.ReadInt();
-        Debug.Log($"Object count {count}");
-        Random.State state = reader.ReadRandomState();
-
-        Debug.Log($"Loading objects...");
+        // Debug.Log($"Object count {count}");
+        // Debug.Log($"Loading objects...");
         for (int i = 0; i < count; i++) {
-            Debug.Log($">> Loading object {i}");
+            // Debug.Log($">> Loading object {i}");
 
             var entityID = reader.ReadInt();
             var entity = entityFactory.Get();
-            // todo it may be wise to eventually move the sprite off of the entity entirely
-            var spriteIndex = reader.ReadInt();
-            entity.SetSprite(entityFactory.GetSpriteByIndex(spriteIndex));
-            entity.SpriteIndex = spriteIndex;
-
             entity.ID = entityID;
             entity.Load(reader);
 
             entities.Add(entity);
             entities_by_id.Add(entity.ID, entity);
-            PlacePawn(entity.ID, entity.X, entity.Y);
-            Debug.Log($"<< Loaded object {i}");
+            PlaceEntity(entity.ID, entity.X, entity.Y);
+            // Debug.Log($"<< Loaded object {i}");
         }
-        Debug.Log("Done loading objects.");
+        // Debug.Log("Done loading objects.");
     }
 }

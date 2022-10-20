@@ -1,28 +1,25 @@
 using System.Collections.Generic;
-using UnityEngine;
 
-public class Entity : PersistableObject, IEntity {
+/// <summary>
+/// Represent the logical component of a game piece. Should remain agnostic to the game engine.
+/// </summary>
+public class Entity : IPersistableObject, IEntity {
     public int ID { get; set; }
+    public string Name { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
-    public int SpriteIndex {get; set;}
+    public string Appearance {get; set;}
     public bool BlocksMove { get; set; }
     public bool BlocksSight { get; set; }
-
     private List<IEntityPart> parts; 
-    private SpriteRenderer spriteRenderer;
 
     public Entity() {
         parts = new List<IEntityPart>();
     }
 
-    private void OnEnable() {
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
-    }
-
-    public virtual void GameUpdate(IBoardController bc) {
+    public virtual void GameUpdate(IGameState gameState) {
         for (int i = 0; i < parts.Count; i++) {
-            parts[i].GameUpdate(bc);
+            parts[i].GameUpdate(gameState);
         }
     }
 
@@ -44,17 +41,9 @@ public class Entity : PersistableObject, IEntity {
         part.Entity = null;
     }
 
-    public void SetSprite(Sprite sprite) {
-        spriteRenderer.sprite = sprite;
-    }
-
-    public void SetSpritePosition(float x, float y) {
-        gameObject.transform.position = new Vector3(x, y, 0f);
-    }
-
-    public override void Save(GameDataWriter writer) {
-        base.Save(writer);
-        writer.Write(gameObject.name);
+    public void Save(GameDataWriter writer) {
+        writer.Write(Name);
+        writer.Write(Appearance);
         writer.Write(X);
         writer.Write(Y);
         writer.Write(BlocksMove);
@@ -67,16 +56,17 @@ public class Entity : PersistableObject, IEntity {
         }
     }
 
-    public override void Load(GameDataReader reader) {
-        base.Load(reader);
-        gameObject.name = reader.ReadString();
+    public void Load(GameDataReader reader) {
+        Name = reader.ReadString();
+        Appearance = reader.ReadString();
         X = reader.ReadInt();
         Y = reader.ReadInt();
         BlocksMove = reader.ReadBool();
         BlocksSight = reader.ReadBool();
         var partCount = reader.ReadInt();
         if (partCount > 0) {
-            Debug.Log($">> Entity {gameObject.name}::{ID} loading {partCount} parts...");
+            // todo abstract out these debug calls
+            //gameClient.LogMessage($">> Entity {Name}::{ID} loading {partCount} parts...");
             for (int i = 0; i < partCount; i++) {
                 var partId = reader.ReadInt();
                 IEntityPart part = 
@@ -85,9 +75,9 @@ public class Entity : PersistableObject, IEntity {
                 part.Entity = this;
                 part.Load(reader);
             }
-            Debug.Log($">> Entity {gameObject.name}::{ID} done loading parts...");
+            //Debug.Log($">> Entity {Name}::{ID} done loading parts...");
         } else {
-            Debug.Log($">> Entity {gameObject.name}::{ID}  has no parts to load...");
+            //Debug.Log($">> Entity {Name}::{ID}  has no parts to load...");
         }
         
     }

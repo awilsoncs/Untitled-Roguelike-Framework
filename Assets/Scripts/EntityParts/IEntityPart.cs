@@ -8,9 +8,10 @@ public interface IEntityPart : IPersistableObject
     // The owner entity
     IEntity Entity {get; set;}
 
-    void GameUpdate(IBoardController bc) {}
+    void GameUpdate(IGameState gameState) {}
     void Recycle();
 
+// todo figure out how to remove this engine reference
 #if UNITY_EDITOR
     // marked by pools to indicate this object has been reclaimed
     // see OnEnable.

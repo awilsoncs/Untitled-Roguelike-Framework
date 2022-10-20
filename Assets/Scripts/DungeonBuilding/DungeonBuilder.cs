@@ -1,13 +1,13 @@
 public static class DungeonBuilder {
-    public static void Build(BoardController bc) {
-        for (int i = 0; i < bc.MapWidth; i++) {
-            bc.CreateEntityAtLocation("wall", i, 0);
-            bc.CreateEntityAtLocation("wall", i, bc.MapHeight - 1);
+    public static void Build(IGameState gs) {
+        for (int i = 0; i < gs.MapWidth; i++) {
+            gs.CreateEntityAtLocation("wall", i, 0);
+            gs.CreateEntityAtLocation("wall", i, gs.MapHeight - 1);
         }
-        for (int i = 1; i < bc.MapHeight - 1; i++) {
-            bc.CreateEntityAtLocation("wall", 0, i);
-            bc.CreateEntityAtLocation("wall", bc.MapWidth - 1, i);
+        for (int i = 1; i < gs.MapHeight - 1; i++) {
+            gs.CreateEntityAtLocation("wall", 0, i);
+            gs.CreateEntityAtLocation("wall", gs.MapWidth - 1, i);
         }
-        bc.CreateEntityAtLocation("player", bc.MapWidth / 2, bc.MapHeight / 2);
+        gs.CreateEntityAtLocation("player", gs.MapWidth / 2, gs.MapHeight / 2);
     }
 }

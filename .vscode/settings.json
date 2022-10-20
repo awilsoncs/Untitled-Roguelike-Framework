@@ -58,6 +58,7 @@
         "gameplay",
         "GameUpdate",
         "Persistable",
+        "pluggable",
         "Scriptable",
         "updateable",
         "updateables"
