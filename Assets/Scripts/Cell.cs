@@ -9,18 +9,18 @@ public class Cell {
     int x, y = 0;
 
     // this item takes up the majority of the space here.
-    Entity contents;
+    IEntity contents;
 
     public Cell(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Entity GetContents() {
+    public IEntity GetContents() {
         return contents;
     }
 
-    public void PutContents(Entity entity) {
+    public void PutContents(IEntity entity) {
         if (contents != null) {
             Debug.LogError("Attempted to set a filled cell!");
             return;
@@ -28,14 +28,13 @@ public class Cell {
         this.contents = entity;
     }
 
-    public Entity ClearContents() {
-        Entity entity = this.contents;
+    public IEntity ClearContents() {
+        IEntity entity = this.contents;
         this.contents = null;
         return entity;
     }
 
     public bool IsPassable() {
-        Debug.Log("Bonk!");
         return (contents == null || !contents.BlocksMove);
     }
 

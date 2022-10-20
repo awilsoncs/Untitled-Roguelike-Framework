@@ -3,7 +3,7 @@ public enum EntityPartType {
 }
 
 public static class EntityPartTypeMethods {
-    public static EntityPart GetInstance (this EntityPartType type) {
+    public static IEntityPart GetInstance (this EntityPartType type) {
         switch (type) {
             case EntityPartType.PlayerBrain:
                 return EntityPartPool<PlayerBrain>.Get();

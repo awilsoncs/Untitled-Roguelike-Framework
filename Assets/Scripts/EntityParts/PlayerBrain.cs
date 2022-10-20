@@ -2,26 +2,30 @@ public class PlayerBrain : EntityPart {
 
     public override EntityPartType PartType => EntityPartType.PlayerBrain; 
 
-    public override void GameUpdate() {
-        switch (BoardController.Instance.GetUserInputAction()) {
+    public override void GameUpdate(IBoardController bc) {
+        var x = Entity.X;
+        var y = Entity.Y;
+        switch (bc.GetUserInputAction()) {
             case "right":
-                Entity.Move(1, 0);
+                bc.MovePawn(Entity.ID, x, y, x+1, y);
                 return;
             case "left": 
-                Entity.Move(-1, 0);
+                bc.MovePawn(Entity.ID, x, y, x-1, y);
                 return;
             case "up":
-                Entity.Move(0, 1);
+                bc.MovePawn(Entity.ID, x, y, x, y+1);
                 return;
-            case "down":
-                Entity.Move(0, -1);
+            case "down": 
+                bc.MovePawn(Entity.ID, x, y, x, y-1);
                 return;
             case "spawn":
-                var entity = BoardController.Instance.CreateEntityAtLocation(
-                    "crab", Entity.X+1, Entity.Y+1);
+                var entity = bc.CreateEntityAtLocation("crab", x+1, y+1);
                 return;
         }
     }
+
+
+
     public override void Recycle()
     {
         // todo detail entity death cycle

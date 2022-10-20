@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class PersistableObject : MonoBehaviour {
+public class PersistableObject : MonoBehaviour, IPersistableObject {
     public virtual void Save (GameDataWriter writer) {
         writer.Write(transform.localPosition);
         writer.Write(transform.localScale);

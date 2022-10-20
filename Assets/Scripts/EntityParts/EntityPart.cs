@@ -1,18 +1,19 @@
 using UnityEngine;
 
-public abstract class EntityPart  
+public abstract class EntityPart : 
 #if UNITY_EDITOR
 // Support pool rebuilding on editor hot reload. See EntityPart::OnEnable
-: ScriptableObject 
+ScriptableObject,
 #endif
+IEntityPart
  {
     public int ID { get; set; }
     public abstract EntityPartType PartType {get;}
 
     // The owner entity
-    public Entity Entity {get; set;}
+    public IEntity Entity {get; set;}
 
-    public virtual void GameUpdate() {}
+    public virtual void GameUpdate(IBoardController bc) {}
     public abstract void Recycle();
 
     public abstract void Load(GameDataReader reader);

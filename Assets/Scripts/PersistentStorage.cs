@@ -8,7 +8,7 @@ public class PersistentStorage : MonoBehaviour
 		savePath = Path.Combine(Application.persistentDataPath, "saveFile");
 	}
 
-	public void Save (PersistableObject o, int version) {
+	public void Save (IPersistableObject o, int version) {
 		using (
 			var writer = new BinaryWriter(File.Open(savePath, FileMode.Create))
 		) {
@@ -18,7 +18,7 @@ public class PersistentStorage : MonoBehaviour
 		Debug.Log($"Game saved to {savePath}");
 	}
 
-	public void Load (PersistableObject o) {
+	public void Load (IPersistableObject o) {
 		byte[] data = File.ReadAllBytes(savePath);
 		var reader = new BinaryReader(new MemoryStream(data));
 		o.Load(new GameDataReader(reader, reader.ReadInt32()));

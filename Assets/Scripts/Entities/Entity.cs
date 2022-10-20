@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Entity : PersistableObject{
-    public int EntityType {get; set;}
+public class Entity : PersistableObject, IEntity {
     public int ID { get; set; }
     public int X { get; set; }
     public int Y { get; set; }
@@ -10,33 +9,21 @@ public class Entity : PersistableObject{
     public bool BlocksMove { get; set; }
     public bool BlocksSight { get; set; }
 
-    private List<EntityPart> parts; 
+    private List<IEntityPart> parts; 
     private SpriteRenderer spriteRenderer;
 
     public Entity() {
-        parts = new List<EntityPart>();
+        parts = new List<IEntityPart>();
     }
 
     private void OnEnable() {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
     }
 
-    public virtual void GameUpdate() {
+    public virtual void GameUpdate(IBoardController bc) {
         for (int i = 0; i < parts.Count; i++) {
-            parts[i].GameUpdate();
+            parts[i].GameUpdate(bc);
         }
-    }
-
-    public void Move(int dx, int dy) {
-        if (BoardController.Instance.IsLegalMove(X+dx, Y+dy)) {
-            TeleportTo(X+dx, Y+dy);
-        }
-    }
-
-    public void TeleportTo(int x, int y) {
-        BoardController.Instance.MovePawn(ID, X, Y, x, y);
-        X = x;
-        Y = y;
     }
 
     /*
@@ -61,10 +48,13 @@ public class Entity : PersistableObject{
         spriteRenderer.sprite = sprite;
     }
 
+    public void SetSpritePosition(float x, float y) {
+        gameObject.transform.position = new Vector3(x, y, 0f);
+    }
+
     public override void Save(GameDataWriter writer) {
         base.Save(writer);
         writer.Write(gameObject.name);
-        writer.Write(SpriteIndex);
         writer.Write(X);
         writer.Write(Y);
         writer.Write(BlocksMove);
@@ -80,11 +70,6 @@ public class Entity : PersistableObject{
     public override void Load(GameDataReader reader) {
         base.Load(reader);
         gameObject.name = reader.ReadString();
-        var spriteIndex = reader.ReadInt();
-
-        SpriteIndex = spriteIndex;
-        SetSprite(BoardController.Instance.entityFactory.GetSpriteByIndex(spriteIndex));
-
         X = reader.ReadInt();
         Y = reader.ReadInt();
         BlocksMove = reader.ReadBool();
@@ -94,7 +79,7 @@ public class Entity : PersistableObject{
             Debug.Log($">> Entity {gameObject.name}::{ID} loading {partCount} parts...");
             for (int i = 0; i < partCount; i++) {
                 var partId = reader.ReadInt();
-                EntityPart part = 
+                IEntityPart part = 
                         ((EntityPartType)reader.ReadInt()).GetInstance();
                 parts.Add(part);
                 part.Entity = this;
@@ -107,12 +92,12 @@ public class Entity : PersistableObject{
         
     }
 
-    public void Recycle() {
+    public void Recycle(EntityFactory entityFactory) {
         for (int i = 0; i < parts.Count; i++) {
             parts[i].Recycle();
         }
         parts.Clear();
-        BoardController.Instance.entityFactory.Reclaim(this);
+        entityFactory.Reclaim(this);
     }
 
 }

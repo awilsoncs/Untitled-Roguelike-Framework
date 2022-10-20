@@ -5,13 +5,13 @@ using UnityEngine;
 /// Represent the logical space of the game.
 /// </summary>
 [DisallowMultipleComponent]
-public class BoardController : PersistableObject
+public class BoardController : PersistableObject, IBoardController
 {
     const int saveVersion = 1;
-    List<Entity> entities;
-    Dictionary<int, Entity> entities_by_id;
+    List<IEntity> entities;
+    Dictionary<int, IEntity> entities_by_id;
     // Contains references to entities that need to be cleaned up after the game loop.
-    List<Entity> killList;
+    List<IEntity> killList;
 
     [SerializeField] Camera mainCamera;
     [SerializeField] KeyCode createKey = KeyCode.C;
@@ -48,17 +48,12 @@ public class BoardController : PersistableObject
     Random.State mainRandomState;
     bool inGameUpdateLoop;
     bool isViewDirty;
-    public static BoardController Instance { get; set; }
-
-    void OnEnable () {
-        Instance = this;
-	}
     
     private void Start() {
         mainRandomState = Random.state;
-        entities = new List<Entity>();
-        killList = new List<Entity>();
-        entities_by_id = new Dictionary<int, Entity>();
+        entities = new List<IEntity>();
+        killList = new List<IEntity>();
+        entities_by_id = new Dictionary<int, IEntity>();
 
         map = new Cell[mapWidth][];
         for (int i = 0; i < mapWidth; i++) {
@@ -74,7 +69,7 @@ public class BoardController : PersistableObject
     private void Update() {
         inGameUpdateLoop = true;
         for (int i = 0; i < entities.Count; i++) {
-            entities[i].GameUpdate();
+            entities[i].GameUpdate(this);
         }
         inGameUpdateLoop = false;
         if (killList.Count > 0) {
@@ -86,7 +81,7 @@ public class BoardController : PersistableObject
         RecalculateFOV();
     }
 
-    private void Kill (Entity entity) {
+    private void Kill (IEntity entity) {
         // Eventually, perform actions related to clearing the BoardController
         // of the entity and recycle the entity
         if (inGameUpdateLoop) {
@@ -101,7 +96,7 @@ public class BoardController : PersistableObject
         }
     }
 
-    private void KillImmediately (Entity entity) {
+    private void KillImmediately (IEntity entity) {
         // Generally, should only be called from Kill and during Update cleanup.
         // swap and pop the desired entity to avoid rearranging the whole tail
         // todo can remove this scan by maintaining the index on the entity
@@ -116,7 +111,7 @@ public class BoardController : PersistableObject
         if (possibleLocation.GetContents() == entity) {
             possibleLocation.ClearContents();
         }
-        entity.Recycle();
+        entity.Recycle(entityFactory);
     }
 
     private void BeginNewGame() {
@@ -132,7 +127,7 @@ public class BoardController : PersistableObject
     private void ClearGame() {
         // Clean up the existing scene objects
         for (int i = 0; i < entities.Count; i++) {
-            entities[i].Recycle();
+            entities[i].Recycle(entityFactory);
         }
 
         entities.Clear();
@@ -156,9 +151,7 @@ public class BoardController : PersistableObject
         // todo abstract entities with no location
         var entity = entityFactory.Get(blueprintName);
         entities.Add(entity);
-        entities_by_id.Add(entity.ID, entity);  
-        entity.X = x;
-        entity.Y = y;
+        entities_by_id.Add(entity.ID, entity);
         PlacePawn(entity.ID, x, y);
         return entity;
     }
@@ -204,15 +197,16 @@ public class BoardController : PersistableObject
     /// <param name="y">Vertical destination coordinate of the Entity</param>
     public void PlacePawn(int id, int x, int y) {
         Debug.Log($"Moving pawn {id} to ({x},{y})");
-        Entity entity = entities_by_id[id];
+        IEntity entity = entities_by_id[id];
         Cell destination = GetCell(x, y);
-        Entity contentsToKill = destination.ClearContents();
+        IEntity contentsToKill = destination.ClearContents();
         if (contentsToKill != null) {
             Kill(contentsToKill);
         }
+        entity.X = x;
+        entity.Y = y;
         destination.PutContents(entity);
-        Transform entity_transform = entity.gameObject.transform;
-        entity_transform.position = new Vector3(x*GRID_MULTIPLE, y*GRID_MULTIPLE, 0f);
+        entity.SetSpritePosition(x*GRID_MULTIPLE, y*GRID_MULTIPLE);
     }
 
     /// <summary>
@@ -225,7 +219,12 @@ public class BoardController : PersistableObject
     /// <param name="y1">Vertical destination coordinate of the Entity</param>
     public void MovePawn(int id, int x0, int y0, int x1, int y1) {
         // todo could simplify this by tracking last position on the entity
-        // Get the two relevant cells.
+        // todo would be nice if Entities didn't even need to know where they were
+        if (!IsLegalMove(x1, y1)) {
+            // This move isn't legal.
+            return;
+        }
+
         Cell origin = GetCell(x0, y0);
         Cell destination = GetCell(x1, y1);
 
@@ -239,7 +238,7 @@ public class BoardController : PersistableObject
             return;
         }
 
-        Entity entity = origin.ClearContents();
+        IEntity entity = origin.ClearContents();
         PlacePawn(id, x1, y1);
     }
 
@@ -289,6 +288,7 @@ public class BoardController : PersistableObject
 
     private void RecalculateFOVImmediately() {
         Debug.Log("Recalculating FOV!");
+        isViewDirty = false;
     }
 
     public override void Save(GameDataWriter writer) {
@@ -296,6 +296,7 @@ public class BoardController : PersistableObject
         writer.Write(Random.state);
         for (int i = 0; i < entities.Count; i++) {
             writer.Write(entities[i].ID);
+            writer.Write(entities[i].SpriteIndex);
             entities[i].Save(writer);
         }
     }
@@ -329,6 +330,10 @@ public class BoardController : PersistableObject
 
             var entityID = reader.ReadInt();
             var entity = entityFactory.Get();
+            // todo it may be wise to eventually move the sprite off of the entity entirely
+            var spriteIndex = reader.ReadInt();
+            entity.SetSprite(entityFactory.GetSpriteByIndex(spriteIndex));
+            entity.SpriteIndex = spriteIndex;
 
             entity.ID = entityID;
             entity.Load(reader);
