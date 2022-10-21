@@ -6,10 +6,6 @@ public partial class Game : PersistableObject {
         gameState.Save(writer);
     }
 
-    /// <summary>
-    /// Load the game from the save file.
-    /// </summary>
-    /// <param name="reader"></param>
     public override void Load (GameDataReader reader) {
         int version = reader.Version;
         if (version > saveVersion) {

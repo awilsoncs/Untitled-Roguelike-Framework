@@ -17,6 +17,7 @@ public partial class Game : PersistableObject
     [SerializeField] KeyCode leftKey = KeyCode.LeftArrow;
     [SerializeField] KeyCode rightKey = KeyCode.RightArrow;
     [SerializeField] PersistentStorage storage;
+ 
     // map bounds
     [SerializeField] int mapWidth = 40;
     [SerializeField] int mapHeight = 20;
@@ -43,26 +44,28 @@ public partial class Game : PersistableObject
     private void Start() {
         // todo figure out how to get randomness to the server
         mainRandomState = Random.state;
+        // roughly halfway across the map
         mainCamera.transform.position = new Vector3(mapWidth / (2 / GRID_MULTIPLE), mapHeight / (2 / GRID_MULTIPLE), -10);
-        gameState = new GameState(this, MapWidth, MapHeight);
+        // perform initial setup
         pawns = new List<Pawn>();
         pawns_by_id = new Dictionary<int, Pawn>();
+        gameState = new GameState(this, mapWidth, mapHeight);
         BeginNewGame();
     }
 
     private void Update() {
         HandleUserInput();
-        // UpdateView();
     }
 
     private void BeginNewGame() {
-        // Set up the new game seed
+        // set up the new game seed
         Random.state = mainRandomState;
         int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
         mainRandomState = Random.state;
         Random.InitState(seed);
-        gameState = new GameState(this, mapWidth, mapHeight);
-        DungeonBuilder.Build(gameState);
+
+        // todo this should be on the server side
+        gameState.PushCommand(new StartGameCommand());
     }
 
     private void ClearGame() {

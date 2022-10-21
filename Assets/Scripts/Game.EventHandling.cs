@@ -28,6 +28,7 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityMoved(EntityMovedEvent ev) {
+        // todo losing the id link after load, likely not being created correctly.
         Pawn pawn = pawns_by_id[ev.EntityID];
         int x = ev.Position.Item1;
         int y = ev.Position.Item2;
@@ -41,6 +42,7 @@ public partial class Game : IGameClient {
         pawn.EntityId = id;
         pawns.Add(pawn);
         pawn.gameObject.name = $"Pawn::{id} {appearance}";
+        Debug.Log($"Pawn created {id}::{appearance}");
         pawns_by_id[id] = pawn;
     }
 

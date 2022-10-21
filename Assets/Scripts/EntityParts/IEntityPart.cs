@@ -2,16 +2,34 @@ using UnityEngine;
 
 public interface IEntityPart : IPersistableObject
  {
-    int ID { get; set; }
+    /// <summary>
+    /// The unique identifier of the part within game space.
+    /// </summary>
+    int Id { get; set; }
+
+    /// <summary>
+    /// A descriptor of the part type (for serialization).
+    /// </summary>
     EntityPartType PartType {get;}
 
-    // The owner entity
+    /// <summary>
+    /// The IEntity to which this is attached.
+    /// </summary>
     IEntity Entity {get; set;}
 
+    /// <summary>
+    /// Perform game loop updates.
+    /// </summary>
+    /// <param name="gameState">A reference to the state of the game.</param>
     void GameUpdate(IGameState gameState) {}
+
+    /// <summary>
+    /// Reclaim this IEntityPart
+    /// </summary>
     void Recycle();
 
-// todo figure out how to remove this engine reference
+// unity reference inside the no-unity zone, but required for editor-specific
+// behavior
 #if UNITY_EDITOR
     // marked by pools to indicate this object has been reclaimed
     // see OnEnable.

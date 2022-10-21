@@ -23,18 +23,12 @@ public class Entity : IPersistableObject, IEntity {
         }
     }
 
-    /*
-    * Add a part to the entity's part list.
-    */
-    public void AddPart(EntityPart part) {
+    public void AddPart(IEntityPart part) {
         parts.Add(part);
         part.Entity = this;
     }
 
-    /*
-    * Remove a part from the entity's part set.
-    */
-    public void RemovePart(EntityPart part) {
+    public void RemovePart(IEntityPart part) {
         // todo improve this to use the end swap strategy
         // todo improve this to be reclaimed by the factory
         parts.Remove(part);
@@ -50,7 +44,7 @@ public class Entity : IPersistableObject, IEntity {
         writer.Write(BlocksSight);
         writer.Write(parts.Count);
         for (int i = 0; i < parts.Count; i++) {
-            writer.Write(parts[i].ID);
+            writer.Write(parts[i].Id);
             writer.Write((int)parts[i].PartType);
             parts[i].Save(writer);
         }
@@ -78,8 +72,7 @@ public class Entity : IPersistableObject, IEntity {
             //Debug.Log($">> Entity {Name}::{ID} done loading parts...");
         } else {
             //Debug.Log($">> Entity {Name}::{ID}  has no parts to load...");
-        }
-        
+        }        
     }
 
     public void Recycle(EntityFactory entityFactory) {

@@ -201,6 +201,7 @@ public partial class GameState : IGameState {
             writer.Write(entities[i].ID);
             entities[i].Save(writer);
         }
+        writer.Write(mainCharacter.ID);
     }
 
     /// <summary>
@@ -229,9 +230,13 @@ public partial class GameState : IGameState {
 
             entities.Add(entity);
             entitiesById.Add(entity.ID, entity);
+            gameClient.PostEvent(
+                new EntityCreatedEvent(entity.ID, entity.Appearance)
+            );
             PlaceEntity(entity.ID, entity.X, entity.Y);
             // Debug.Log($"<< Loaded object {i}");
         }
+        mainCharacter = entitiesById[reader.ReadInt()];
         // Debug.Log("Done loading objects.");
     }
 }

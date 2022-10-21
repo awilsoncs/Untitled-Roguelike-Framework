@@ -9,6 +9,9 @@ public partial class GameState : IGameState {
             case GameCommandType.Move:
                 HandleMoveCommand((MoveCommand)cm);
                 return;
+            case GameCommandType.StartGame:
+                HandleStartGameCommand((StartGameCommand)cm);
+                return;
             default:
                 gameClient.PostEvent(new MessageLoggedEvent($"Unknown command type {cm.CommandType}"));
                 return;
@@ -23,5 +26,10 @@ public partial class GameState : IGameState {
             return;
         }
         MoveEntity(mainCharacter.ID, mainCharacter.X+mx, mainCharacter.Y+my);
+    }
+
+    private void HandleStartGameCommand(StartGameCommand cm) {
+        gameClient.PostEvent(new MessageLoggedEvent("Game starting!"));
+        DungeonBuilder.Build(this);
     }
 }

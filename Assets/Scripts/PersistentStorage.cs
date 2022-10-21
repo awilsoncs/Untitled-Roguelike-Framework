@@ -1,6 +1,9 @@
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Specify a save path and set up a binary interface to it.
+/// </summary>
 public class PersistentStorage : MonoBehaviour
 {
     string savePath;
