@@ -28,7 +28,6 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityMoved(EntityMovedEvent ev) {
-        // todo losing the id link after load, likely not being created correctly.
         Pawn pawn = pawns_by_id[ev.EntityID];
         int x = ev.Position.Item1;
         int y = ev.Position.Item2;

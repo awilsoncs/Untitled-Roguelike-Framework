@@ -64,12 +64,10 @@ public partial class Game : PersistableObject
         mainRandomState = Random.state;
         Random.InitState(seed);
 
-        // todo this should be on the server side
         gameState.PushCommand(new StartGameCommand());
     }
 
     private void ClearGame() {
-        // todo consider asking the gameState to reset itself
         gameState = new GameState(this, mapWidth, mapHeight);
         foreach (var pawn in pawns) {
             pawn.Recycle(pawnFactory);
