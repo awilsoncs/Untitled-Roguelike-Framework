@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Define a set of GameState update events provided as callbacks to the GameState.
+/// Define a set of GameState update commands provided as callbacks to the GameState.
 /// </summary>
 public interface IGameState : IPersistableObject {
     /// <summary>

@@ -117,7 +117,7 @@ public partial class GameState : IGameState {
     /// <param name="x">The horizontal coordinate to check</param>
     /// <param name="y">The vertical position to check</param>
     /// <returns>True if the position is legal to step to, False otherwise</returns>
-    public bool IsLegalMove(int x, int y) {
+    private bool IsLegalMove(int x, int y) {
         return IsInBounds(x, y) && GetCell(x, y).IsPassable();
     }
 
@@ -140,7 +140,7 @@ public partial class GameState : IGameState {
     /// <param name="id">ID of the entity to move</param>
     /// <param name="x">Horizontal destination coordinate of the Entity</param>
     /// <param name="y">Vertical destination coordinate of the Entity</param>
-    public void PlaceEntity(int id, int x, int y) {
+    private void PlaceEntity(int id, int x, int y) {
         IEntity entity = entities_by_id[id];
         Cell destination = GetCell(x, y);
         IEntity contentsToKill = destination.ClearContents();
@@ -162,7 +162,7 @@ public partial class GameState : IGameState {
     /// <param name="y0">Original Vertical coordinate of the Entity</param>
     /// <param name="x1">Horizontal destination coordinate of the Entity</param>
     /// <param name="y1">Vertical destination coordinate of the Entity</param>
-    public void MoveEntity(int id, int x0, int y0, int x1, int y1) {
+    private void MoveEntity(int id, int x0, int y0, int x1, int y1) {
         // todo could simplify this by tracking last position on the entity
         // todo would be nice if Entities didn't even need to know where they were
         if (!IsLegalMove(x1, y1)) {
