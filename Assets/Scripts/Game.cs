@@ -16,6 +16,7 @@ public partial class Game : PersistableObject
     [SerializeField] KeyCode downKey = KeyCode.DownArrow;
     [SerializeField] KeyCode leftKey = KeyCode.LeftArrow;
     [SerializeField] KeyCode rightKey = KeyCode.RightArrow;
+    [SerializeField] KeyCode spawnKey = KeyCode.C;
     [SerializeField] PersistentStorage storage;
  
     // map bounds
@@ -41,6 +42,7 @@ public partial class Game : PersistableObject
     IRandomGenerator rngPlugin;
     Random.State mainRandomState;
     IGameState gameState;
+    IEntityFactory entityFactory;
     
     private void Start() {
         // todo figure out how to get randomness to the server
@@ -51,7 +53,8 @@ public partial class Game : PersistableObject
         pawns = new List<Pawn>();
         pawns_by_id = new Dictionary<int, Pawn>();
         rngPlugin = new UnityRandom();
-        gameState = new GameState(this, rngPlugin, mapWidth, mapHeight);
+        entityFactory = new EntityFactory();
+        gameState = new GameState(this, rngPlugin, entityFactory, mapWidth, mapHeight);
         BeginNewGame();
     }
 
@@ -70,7 +73,7 @@ public partial class Game : PersistableObject
     }
 
     private void ClearGame() {
-        gameState = new GameState(this, rngPlugin, mapWidth, mapHeight);
+        gameState = new GameState(this, rngPlugin, entityFactory, mapWidth, mapHeight);
         foreach (var pawn in pawns) {
             pawn.Recycle(pawnFactory);
         }

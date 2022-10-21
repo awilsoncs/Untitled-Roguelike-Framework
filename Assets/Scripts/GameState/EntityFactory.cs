@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-public class EntityFactory {
+public class EntityFactory : IEntityFactory {
 // todo implement pooling behavior
     private int idCounter = 0;
-
     private delegate Entity EntityBuilder();
     
     Dictionary<String, EntityBuilder> constructors;

@@ -12,8 +12,8 @@ public partial class Game : PersistableObject {
 			Debug.LogError("Unsupported future save version " + version);
 			return;
 		}
+        Random.state = reader.ReadRandomState();
         ClearGame();
-        Random.State state = reader.ReadRandomState();
         gameState.Load(reader);
     }
 }

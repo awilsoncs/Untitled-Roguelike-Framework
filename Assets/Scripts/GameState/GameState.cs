@@ -6,7 +6,6 @@ public partial class GameState : IGameState {
     Dictionary<int, IEntity> entitiesById;
     // Contains references to entities that need to be cleaned up after the game loop.
     List<IEntity> killList;
-    EntityFactory entityFactory;
     public int MapWidth {get; set;}
     public int MapHeight {get; set;}
     Cell[][] map;
@@ -14,29 +13,41 @@ public partial class GameState : IGameState {
     bool isFieldOfViewDirty;
     // The character controlled by player input.
     Entity playerAgent;
+    IEntity mainCharacter;
     // Interface through which client updates are posted.
     IGameClient gameClient;
-    IEntity mainCharacter;
     public IRandomGenerator RNG {get;}
+    IEntityFactory entityFactory;
+
 
     /// <summary>
     /// Create a new GameState.
     /// </summary>
     /// <param name="client">Client communication port</param>
     /// <param name="random">Random number plugin</param>
+    /// todo
     /// <param name="mapWidth"></param>
     /// <param name="mapHeight"></param>
-    public GameState(IGameClient client, IRandomGenerator random, int mapWidth, int mapHeight) {
+    public GameState(
+        IGameClient client,
+        IRandomGenerator random,
+        IEntityFactory entityFactory,
+        int mapWidth,
+        int mapHeight
+    ) {
         if (random == null) {
-            client.PostEvent(new GameErrorEvent("GameState random plugin is null!"));
+            PostError("GameState random plugin is null!");
         }
-
         MapWidth = mapWidth;
         MapHeight = mapHeight;
         entities = new List<IEntity>();
         killList = new List<IEntity>();
         entitiesById = new Dictionary<int, IEntity>();
+
+        // perform injections
         RNG = random;
+        this.entityFactory = entityFactory;
+        gameClient = client;
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -45,8 +56,6 @@ public partial class GameState : IGameState {
                 map[i][j] = new Cell();
             }
         }
-        gameClient = client;
-        entityFactory = new EntityFactory();
     }
 
     private void GameUpdate() {
@@ -156,7 +165,7 @@ public partial class GameState : IGameState {
         // todo would be nice if Entities didn't even need to know where they were
         if (!IsLegalMove(x, y)) {
             // This move isn't legal.
-            gameClient.PostEvent(new GameErrorEvent("Attempted illegal move..."));
+            PostError("Attempted illegal move...");
             return;
         }
 
@@ -166,14 +175,12 @@ public partial class GameState : IGameState {
 
         if (origin.GetContents() != entitiesById[id]) {
             // Defensive coding, we shouldn't do anything if the IDs don't match.
-            gameClient.PostEvent(
-                new GameErrorEvent($"Attempted to move wrong entity {id} vs {origin.GetContents()}")
-            );
+            PostError($"Attempted to move wrong entity {id} vs {origin.GetContents()}");
             return;
         }
 
         if (origin.GetContents() == destination.GetContents()) {
-            gameClient.PostEvent(new GameErrorEvent("Attempted no-op move..."));
+            PostError("Attempted no-op move...");
             return;
         }
 
@@ -200,6 +207,10 @@ public partial class GameState : IGameState {
 
     private void RecalculateFOVImmediately() {
         isFieldOfViewDirty = false;
+    }
+
+    private void PostError(string message) {
+        gameClient.PostEvent(new GameErrorEvent(message));
     }
 
     public void Save (GameDataWriter writer) {

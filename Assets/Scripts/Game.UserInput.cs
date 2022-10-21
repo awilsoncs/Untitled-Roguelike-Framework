@@ -6,6 +6,7 @@ public partial class Game : IGameClient {
         else if (Input.GetKeyDown(rightKey)) Move(1, 0);
         else if (Input.GetKeyDown(upKey)) Move(0, 1);
         else if (Input.GetKeyDown(downKey)) Move(0, -1);
+        else if (Input.GetKeyDown(spawnKey)) SpawnCrab();
         else if (Input.GetKeyDown(saveKey)) {
             Debug.Log("Player asked for save...");
             storage.Save(this, saveVersion);
@@ -23,5 +24,9 @@ public partial class Game : IGameClient {
 
     private void Move(int x, int y) {
         gameState.PushCommand(new MoveCommand(x, y));
+    }
+
+    private void SpawnCrab() {
+        gameState.PushCommand(DebugCommand.SpawnCrab());
     }
 }

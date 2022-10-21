@@ -75,7 +75,7 @@ public class Entity : IPersistableObject, IEntity {
         }        
     }
 
-    public void Recycle(EntityFactory entityFactory) {
+    public void Recycle(IEntityFactory entityFactory) {
         for (int i = 0; i < parts.Count; i++) {
             parts[i].Recycle();
         }

@@ -1,4 +1,5 @@
 public enum GameCommandType {
     StartGame,
-    Move
+    Move,
+    Debug
 }

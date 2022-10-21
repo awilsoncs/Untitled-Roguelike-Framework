@@ -12,8 +12,11 @@ public partial class GameState : IGameState {
             case GameCommandType.StartGame:
                 HandleStartGameCommand((StartGameCommand)cm);
                 return;
+            case GameCommandType.Debug:
+                HandleDebugCommand((DebugCommand)cm);
+                return;
             default:
-                gameClient.PostEvent(new GameErrorEvent($"Unknown command type {cm.CommandType}"));
+                PostError($"Unknown command type {cm.CommandType}");
                 return;
         }
     }
@@ -22,7 +25,7 @@ public partial class GameState : IGameState {
         int mx = cm.Direction.Item1;
         int my = cm.Direction.Item2;
         if (mainCharacter == null) {
-            gameClient.PostEvent(new GameErrorEvent("mainCharacter has not been set!"));
+            PostError("mainCharacter has not been set!");
             return;
         }
         MoveEntity(mainCharacter.ID, mainCharacter.X+mx, mainCharacter.Y+my);
@@ -30,10 +33,25 @@ public partial class GameState : IGameState {
 
     private void HandleStartGameCommand(StartGameCommand cm) {
         if (RNG == null) {
-            gameClient.PostEvent(new GameErrorEvent("Cannot begin game without RNG."));
+            PostError("Cannot begin game without RNG.");
             return;
         }
         DungeonBuilder.Build(this, RNG);
         gameClient.PostEvent(new GameStartedEvent());
+    }
+
+    private void HandleDebugCommand(DebugCommand cm) {
+        switch (cm.Method) {
+            case DebugCommand.DebugMethod.SpawnCrab:
+                CreateEntityAtPosition(
+                    "crab",
+                    RNG.GetInt(1, MapWidth-2),
+                    RNG.GetInt(1, MapHeight-2)
+                );
+                return;
+            default:
+                PostError($"Unknown debug method {cm.Method}");
+                return;
+        }
     }
 }

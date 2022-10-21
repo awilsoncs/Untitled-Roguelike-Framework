@@ -63,5 +63,5 @@ public interface IEntity : IPersistableObject {
     /// </summary>
     /// <param name="entityFactory">A reference to a factory that can dispose 
     /// of this entity properly.</param>
-    void Recycle(EntityFactory entityFactory);
+    void Recycle(IEntityFactory entityFactory);
 }
