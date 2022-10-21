@@ -53,7 +53,7 @@ public partial class Game : PersistableObject, IGameClient
 
     private void Update() {
         HandleUserInput();
-        UpdateView();
+        // UpdateView();
     }
 
     private void BeginNewGame() {
@@ -68,7 +68,10 @@ public partial class Game : PersistableObject, IGameClient
     private void ClearGame() {
         // todo consider asking the gameState to reset itself
         gameState = new GameState(this, mapWidth, mapHeight);
-        // todo clean up pawns
-        ClearView();
+        foreach (var pawn in pawns) {
+            pawn.Recycle(pawnFactory);
+        }
+        pawns.Clear();
+        pawns_by_id.Clear();
     }
 }

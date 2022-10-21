@@ -1,7 +1,6 @@
 /// <summary>
-/// Cells provide a geometric container for game objects.
-/// 
-/// Cells do NOT provide any object management functionality.
+/// Cells provide a geometric container for game objects. Cells do NOT provide
+/// any object management functionality.
 /// </summary>
 public class Cell {
     // this item takes up the majority of the space here.

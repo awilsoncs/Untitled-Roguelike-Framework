@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public partial class GameState : IGameState {
     List<IEntity> entities;
-    Dictionary<int, IEntity> entities_by_id;
+    Dictionary<int, IEntity> entitiesById;
     // Contains references to entities that need to be cleaned up after the game loop.
     List<IEntity> killList;
     EntityFactory entityFactory;
@@ -16,6 +16,7 @@ public partial class GameState : IGameState {
     Entity playerAgent;
     // Interface through which client updates are posted.
     IGameClient gameClient;
+    Entity mainCharacter;
 
     /// <summary>
     /// Create a new GameState.
@@ -28,7 +29,7 @@ public partial class GameState : IGameState {
         MapHeight = mapHeight;
         entities = new List<IEntity>();
         killList = new List<IEntity>();
-        entities_by_id = new Dictionary<int, IEntity>();
+        entitiesById = new Dictionary<int, IEntity>();
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -80,7 +81,7 @@ public partial class GameState : IGameState {
             entities[index] = entities[lastIndex];
         }
         entities.RemoveAt(lastIndex);
-        entities_by_id.Remove(entity.ID);
+        entitiesById.Remove(entity.ID);
         Cell possibleLocation = GetCell(entity.X, entity.Y);
         if (possibleLocation.GetContents() == entity) {
             possibleLocation.ClearContents();
@@ -106,8 +107,8 @@ public partial class GameState : IGameState {
         // todo abstract entities with no location
         var entity = entityFactory.Get(blueprintName);
         entities.Add(entity);
-        entities_by_id.Add(entity.ID, entity);
-        gameClient.EntityCreated(entity.ID, blueprintName, x, y);
+        entitiesById.Add(entity.ID, entity);
+        gameClient.PostEvent(new EntityCreatedEvent(entity.ID, blueprintName, x, y));
         return entity;
     }
 
@@ -141,39 +142,37 @@ public partial class GameState : IGameState {
     /// <param name="x">Horizontal destination coordinate of the Entity</param>
     /// <param name="y">Vertical destination coordinate of the Entity</param>
     private void PlaceEntity(int id, int x, int y) {
-        IEntity entity = entities_by_id[id];
+        IEntity entity = entitiesById[id];
         Cell destination = GetCell(x, y);
         IEntity contentsToKill = destination.ClearContents();
         if (contentsToKill != null) {
-            gameClient.EntityKilled(contentsToKill.ID);
+            gameClient.PostEvent(new EntityKilledEvent(contentsToKill.ID));
             Kill(contentsToKill);
         }
         entity.X = x;
         entity.Y = y;
         destination.PutContents(entity);
-        gameClient.EntityMoved(id, x, y);
+        gameClient.PostEvent(new EntityMovedEvent(id, x, y));
     }
 
     /// <summary>
     /// Moves an Entity from one place on the Board to another.
     /// </summary>
     /// <param name="id">ID of the entity to move</param>
-    /// <param name="x0">Original Horizontal coordinate of the Entity</param>
-    /// <param name="y0">Original Vertical coordinate of the Entity</param>
-    /// <param name="x1">Horizontal destination coordinate of the Entity</param>
-    /// <param name="y1">Vertical destination coordinate of the Entity</param>
-    private void MoveEntity(int id, int x0, int y0, int x1, int y1) {
-        // todo could simplify this by tracking last position on the entity
+    /// <param name="x1">New horizontal destination coordinate of the Entity</param>
+    /// <param name="y1">New vertical destination coordinate of the Entity</param>
+    private void MoveEntity(int id, int x, int y) {
         // todo would be nice if Entities didn't even need to know where they were
-        if (!IsLegalMove(x1, y1)) {
+        if (!IsLegalMove(x, y)) {
             // This move isn't legal.
             return;
         }
 
-        Cell origin = GetCell(x0, y0);
-        Cell destination = GetCell(x1, y1);
+        IEntity entity = entitiesById[id];
+        Cell origin = GetCell(entity.X, entity.Y);
+        Cell destination = GetCell(x, y);
 
-        if (origin.GetContents() != entities_by_id[id]) {
+        if (origin.GetContents() != entitiesById[id]) {
             // Defensive coding, we shouldn't do anything if the IDs don't match.
             return;
         }
@@ -182,8 +181,8 @@ public partial class GameState : IGameState {
             return;
         }
 
-        IEntity entity = origin.ClearContents();
-        PlaceEntity(id, x1, y1);
+        origin.ClearContents();
+        PlaceEntity(id, x, y);
     }
 
     /// <summary>
@@ -240,7 +239,7 @@ public partial class GameState : IGameState {
             entity.Load(reader);
 
             entities.Add(entity);
-            entities_by_id.Add(entity.ID, entity);
+            entitiesById.Add(entity.ID, entity);
             PlaceEntity(entity.ID, entity.X, entity.Y);
             // Debug.Log($"<< Loaded object {i}");
         }
