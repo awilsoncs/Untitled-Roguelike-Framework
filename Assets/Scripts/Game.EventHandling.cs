@@ -18,8 +18,8 @@ public partial class Game : IGameClient {
             case GameEventType.EntityKilled:
                 HandleEntityKilled((EntityKilledEvent)ev);
                 return;
-            case GameEventType.MessageLogged:
-                HandleMessageLogged((MessageLoggedEvent)ev);
+            case GameEventType.GameError:
+                HandleGameErrorEvent((GameErrorEvent)ev);
                 return;
             default:
                 Debug.Log($"Unhandled GameEventType {ev.EventType}");
@@ -60,7 +60,7 @@ public partial class Game : IGameClient {
         pawn.Recycle(pawnFactory);
     }
     
-    private void HandleMessageLogged(MessageLoggedEvent ev) {
+    private void HandleGameErrorEvent(GameErrorEvent ev) {
         string message = ev.Message;
         Debug.Log(message);
     }

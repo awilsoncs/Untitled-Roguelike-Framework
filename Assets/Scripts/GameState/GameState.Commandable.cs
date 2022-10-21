@@ -13,7 +13,7 @@ public partial class GameState : IGameState {
                 HandleStartGameCommand((StartGameCommand)cm);
                 return;
             default:
-                gameClient.PostEvent(new MessageLoggedEvent($"Unknown command type {cm.CommandType}"));
+                gameClient.PostEvent(new GameErrorEvent($"Unknown command type {cm.CommandType}"));
                 return;
         }
     }
@@ -22,14 +22,14 @@ public partial class GameState : IGameState {
         int mx = cm.Direction.Item1;
         int my = cm.Direction.Item2;
         if (mainCharacter == null) {
-            gameClient.PostEvent(new MessageLoggedEvent("mainCharacter has not been set!"));
+            gameClient.PostEvent(new GameErrorEvent("mainCharacter has not been set!"));
             return;
         }
         MoveEntity(mainCharacter.ID, mainCharacter.X+mx, mainCharacter.Y+my);
     }
 
     private void HandleStartGameCommand(StartGameCommand cm) {
-        gameClient.PostEvent(new MessageLoggedEvent("Game starting!"));
         DungeonBuilder.Build(this);
+        gameClient.PostEvent(new GameStartedEvent());
     }
 }

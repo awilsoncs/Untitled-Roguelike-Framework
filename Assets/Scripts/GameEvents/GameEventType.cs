@@ -2,5 +2,7 @@ public enum GameEventType {
     EntityMoved,
     EntityCreated,
     EntityKilled,
-    MessageLogged
+    MainCharacterChanged,
+    GameError,
+    GameStarted
 }

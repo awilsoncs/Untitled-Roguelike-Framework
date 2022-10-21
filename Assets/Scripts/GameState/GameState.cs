@@ -149,7 +149,7 @@ public partial class GameState : IGameState {
         // todo would be nice if Entities didn't even need to know where they were
         if (!IsLegalMove(x, y)) {
             // This move isn't legal.
-            gameClient.PostEvent(new MessageLoggedEvent("Attempted illegal move..."));
+            gameClient.PostEvent(new GameErrorEvent("Attempted illegal move..."));
             return;
         }
 
@@ -160,13 +160,13 @@ public partial class GameState : IGameState {
         if (origin.GetContents() != entitiesById[id]) {
             // Defensive coding, we shouldn't do anything if the IDs don't match.
             gameClient.PostEvent(
-                new MessageLoggedEvent($"Attempted to move wrong entity {id} vs {origin.GetContents()}")
+                new GameErrorEvent($"Attempted to move wrong entity {id} vs {origin.GetContents()}")
             );
             return;
         }
 
         if (origin.GetContents() == destination.GetContents()) {
-            gameClient.PostEvent(new MessageLoggedEvent("Attempted no-op move..."));
+            gameClient.PostEvent(new GameErrorEvent("Attempted no-op move..."));
             return;
         }
 

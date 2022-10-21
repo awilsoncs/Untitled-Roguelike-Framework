@@ -2,7 +2,7 @@ using System;
 public partial class GameState : IGameState {
     public void SetMainCharacter(int id) {
         IEntity entity = entitiesById[id];
-        gameClient.PostEvent(new MessageLoggedEvent($"Setting main character to {entity.Name}"));
+        gameClient.PostEvent(new MainCharacterChangedEvent(id));
         mainCharacter = entity;
     }
 
