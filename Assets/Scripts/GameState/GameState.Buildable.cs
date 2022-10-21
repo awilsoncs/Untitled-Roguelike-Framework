@@ -1,5 +1,6 @@
 using System;
 public partial class GameState : IGameState {
+    
     public void SetMainCharacter(int id) {
         IEntity entity = entitiesById[id];
         gameClient.PostEvent(new MainCharacterChangedEvent(id));
@@ -18,7 +19,7 @@ public partial class GameState : IGameState {
         var entity = entityFactory.Get(blueprintName);
         entities.Add(entity);
         entitiesById.Add(entity.ID, entity);
-        gameClient.PostEvent(new EntityCreatedEvent(entity.ID, blueprintName));
+        gameClient.PostEvent(new EntityCreatedEvent(entity));
         PlaceEntity(entity.ID, x, y);
         return entity.ID;
     }

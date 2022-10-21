@@ -35,8 +35,9 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityCreated(EntityCreatedEvent ev) {
-        int id = ev.EntityID;
-        string appearance = ev.Appearance;
+        IEntity entity = ev.Entity;
+        int id = entity.ID;
+        string appearance = entity.Appearance;
         Pawn pawn = pawnFactory.Get(appearance);
         pawn.EntityId = id;
         pawns.Add(pawn);
@@ -62,6 +63,6 @@ public partial class Game : IGameClient {
     
     private void HandleGameErrorEvent(GameErrorEvent ev) {
         string message = ev.Message;
-        Debug.Log(message);
+        Debug.LogError(message);
     }
 }

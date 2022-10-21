@@ -38,6 +38,7 @@ public partial class Game : PersistableObject
         }
     }
 
+    IRandomGenerator rngPlugin;
     Random.State mainRandomState;
     IGameState gameState;
     
@@ -49,7 +50,8 @@ public partial class Game : PersistableObject
         // perform initial setup
         pawns = new List<Pawn>();
         pawns_by_id = new Dictionary<int, Pawn>();
-        gameState = new GameState(this, mapWidth, mapHeight);
+        rngPlugin = new UnityRandom();
+        gameState = new GameState(this, rngPlugin, mapWidth, mapHeight);
         BeginNewGame();
     }
 
@@ -68,7 +70,7 @@ public partial class Game : PersistableObject
     }
 
     private void ClearGame() {
-        gameState = new GameState(this, mapWidth, mapHeight);
+        gameState = new GameState(this, rngPlugin, mapWidth, mapHeight);
         foreach (var pawn in pawns) {
             pawn.Recycle(pawnFactory);
         }

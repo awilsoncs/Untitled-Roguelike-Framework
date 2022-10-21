@@ -1,5 +1,5 @@
 public static class DungeonBuilder {
-    public static void Build(IBuildable gs) {
+    public static void Build(IBuildable gs, IRandomGenerator rng) {
         for (int i = 0; i < gs.MapWidth; i++) {
             gs.CreateEntityAtPosition("wall", i, 0);
             gs.CreateEntityAtPosition("wall", i, gs.MapHeight - 1);
@@ -10,5 +10,11 @@ public static class DungeonBuilder {
         }
         int mainCharId = gs.CreateEntityAtPosition("player", gs.MapWidth / 2, gs.MapHeight / 2);
         gs.SetMainCharacter(mainCharId);
+
+        for (int i = 0; i < 4; i++) {
+            int x = rng.GetInt(1, gs.MapWidth-2);
+            int y = rng.GetInt(1, gs.MapHeight-2);
+            gs.CreateEntityAtPosition("crab", x, y);
+        }
     }
 }

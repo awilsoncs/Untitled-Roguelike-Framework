@@ -17,19 +17,26 @@ public partial class GameState : IGameState {
     // Interface through which client updates are posted.
     IGameClient gameClient;
     IEntity mainCharacter;
+    public IRandomGenerator RNG {get;}
 
     /// <summary>
     /// Create a new GameState.
     /// </summary>
-    /// <param name="client"></param>
+    /// <param name="client">Client communication port</param>
+    /// <param name="random">Random number plugin</param>
     /// <param name="mapWidth"></param>
     /// <param name="mapHeight"></param>
-    public GameState(IGameClient client, int mapWidth, int mapHeight) {
+    public GameState(IGameClient client, IRandomGenerator random, int mapWidth, int mapHeight) {
+        if (random == null) {
+            client.PostEvent(new GameErrorEvent("GameState random plugin is null!"));
+        }
+
         MapWidth = mapWidth;
         MapHeight = mapHeight;
         entities = new List<IEntity>();
         killList = new List<IEntity>();
         entitiesById = new Dictionary<int, IEntity>();
+        RNG = random;
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -216,13 +223,8 @@ public partial class GameState : IGameState {
     void LoadGame (GameDataReader reader) {
         // Perform all logic related to loading the game into the BoardController.
         int version = reader.Version;
-        // Debug.Log($"Loader version {version}");
         int count = reader.ReadInt();
-        // Debug.Log($"Object count {count}");
-        // Debug.Log($"Loading objects...");
         for (int i = 0; i < count; i++) {
-            // Debug.Log($">> Loading object {i}");
-
             var entityID = reader.ReadInt();
             var entity = entityFactory.Get();
             entity.ID = entityID;
@@ -230,13 +232,9 @@ public partial class GameState : IGameState {
 
             entities.Add(entity);
             entitiesById.Add(entity.ID, entity);
-            gameClient.PostEvent(
-                new EntityCreatedEvent(entity.ID, entity.Appearance)
-            );
+            gameClient.PostEvent(new EntityCreatedEvent(entity));
             PlaceEntity(entity.ID, entity.X, entity.Y);
-            // Debug.Log($"<< Loaded object {i}");
         }
         mainCharacter = entitiesById[reader.ReadInt()];
-        // Debug.Log("Done loading objects.");
     }
 }

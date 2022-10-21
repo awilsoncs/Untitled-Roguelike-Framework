@@ -29,7 +29,11 @@ public partial class GameState : IGameState {
     }
 
     private void HandleStartGameCommand(StartGameCommand cm) {
-        DungeonBuilder.Build(this);
+        if (RNG == null) {
+            gameClient.PostEvent(new GameErrorEvent("Cannot begin game without RNG."));
+            return;
+        }
+        DungeonBuilder.Build(this, RNG);
         gameClient.PostEvent(new GameStartedEvent());
     }
 }
