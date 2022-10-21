@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public partial class Game : PersistableObject, IGameClient {
+public partial class Game : IGameClient {
     private void HandleUserInput() {
-        if (Input.GetKeyDown(leftKey)) gameState.MoveLeft();
-        else if (Input.GetKeyDown(rightKey)) gameState.MoveRight();
-        else if (Input.GetKeyDown(upKey)) gameState.MoveUp();
-        else if (Input.GetKeyDown(downKey)) gameState.MoveDown();
+        if (Input.GetKeyDown(leftKey)) Move(-1, 0);
+        else if (Input.GetKeyDown(rightKey)) Move(1, 0);
+        else if (Input.GetKeyDown(upKey)) Move(0, 1);
+        else if (Input.GetKeyDown(downKey)) Move(0, -1);
         else if (Input.GetKeyDown(saveKey)) {
             Debug.Log("Player asked for save...");
             storage.Save(this, saveVersion);
@@ -19,6 +19,9 @@ public partial class Game : PersistableObject, IGameClient {
             ClearGame();
             BeginNewGame();
         }
-        else if (Input.GetKeyDown(createKey)) gameState.SpawnCrab();
+    }
+
+    private void Move(int x, int y) {
+        gameState.PushCommand(new MoveCommand(x, y));
     }
 }

@@ -16,7 +16,7 @@ public partial class GameState : IGameState {
     Entity playerAgent;
     // Interface through which client updates are posted.
     IGameClient gameClient;
-    Entity mainCharacter;
+    IEntity mainCharacter;
 
     /// <summary>
     /// Create a new GameState.
@@ -96,22 +96,6 @@ public partial class GameState : IGameState {
         return map[x][y];
     }
 
-        /// <summary>
-    /// Create an entity at a given location using the factory blueprint name.
-    /// </summary>
-    /// <param name="blueprintName">The name of the Entity type in the factory</param>
-    /// <param name="x">The horizontal coordinate at which to create the Entity</param>
-    /// <param name="y">The vertical coordinate at which to create the Entity</param>
-    /// <returns>A reference to the created Entity</returns>
-    public IEntity CreateEntityAtLocation(String blueprintName, int x, int y) {
-        // todo abstract entities with no location
-        var entity = entityFactory.Get(blueprintName);
-        entities.Add(entity);
-        entitiesById.Add(entity.ID, entity);
-        gameClient.PostEvent(new EntityCreatedEvent(entity.ID, blueprintName, x, y));
-        return entity;
-    }
-
     /// <summary>
     /// Return whether this tile can legally be stepped into.
     /// </summary>
@@ -165,6 +149,7 @@ public partial class GameState : IGameState {
         // todo would be nice if Entities didn't even need to know where they were
         if (!IsLegalMove(x, y)) {
             // This move isn't legal.
+            gameClient.PostEvent(new MessageLoggedEvent("Attempted illegal move..."));
             return;
         }
 
@@ -174,10 +159,14 @@ public partial class GameState : IGameState {
 
         if (origin.GetContents() != entitiesById[id]) {
             // Defensive coding, we shouldn't do anything if the IDs don't match.
+            gameClient.PostEvent(
+                new MessageLoggedEvent($"Attempted to move wrong entity {id} vs {origin.GetContents()}")
+            );
             return;
         }
 
         if (origin.GetContents() == destination.GetContents()) {
+            gameClient.PostEvent(new MessageLoggedEvent("Attempted no-op move..."));
             return;
         }
 

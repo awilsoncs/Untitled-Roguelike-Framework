@@ -5,11 +5,10 @@ using UnityEngine;
 /// Represent the logical space of the game.
 /// </summary>
 [DisallowMultipleComponent]
-public partial class Game : PersistableObject, IGameClient
+public partial class Game : PersistableObject
 {
     const int saveVersion = 1;
     [SerializeField] Camera mainCamera;
-    [SerializeField] KeyCode createKey = KeyCode.C;
     [SerializeField] KeyCode newGameKey = KeyCode.N;
     [SerializeField] KeyCode saveKey = KeyCode.S;
     [SerializeField] KeyCode loadKey = KeyCode.L;
@@ -62,6 +61,7 @@ public partial class Game : PersistableObject, IGameClient
         int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
         mainRandomState = Random.state;
         Random.InitState(seed);
+        gameState = new GameState(this, mapWidth, mapHeight);
         DungeonBuilder.Build(gameState);
     }
 

@@ -2,6 +2,7 @@ using System;
 
 public interface IEntity : IPersistableObject {
     int ID { get; set; }
+    string Name { get; set; }
     int X { get; set; }
     int Y { get; set; }
     String Appearance {get; set;}

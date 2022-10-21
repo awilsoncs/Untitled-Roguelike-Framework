@@ -1,13 +1,14 @@
 public static class DungeonBuilder {
-    public static void Build(IGameState gs) {
+    public static void Build(IBuildable gs) {
         for (int i = 0; i < gs.MapWidth; i++) {
-            gs.CreateEntityAtLocation("wall", i, 0);
-            gs.CreateEntityAtLocation("wall", i, gs.MapHeight - 1);
+            gs.CreateEntityAtPosition("wall", i, 0);
+            gs.CreateEntityAtPosition("wall", i, gs.MapHeight - 1);
         }
         for (int i = 1; i < gs.MapHeight - 1; i++) {
-            gs.CreateEntityAtLocation("wall", 0, i);
-            gs.CreateEntityAtLocation("wall", gs.MapWidth - 1, i);
+            gs.CreateEntityAtPosition("wall", 0, i);
+            gs.CreateEntityAtPosition("wall", gs.MapWidth - 1, i);
         }
-        gs.CreateEntityAtLocation("player", gs.MapWidth / 2, gs.MapHeight / 2);
+        int mainCharId = gs.CreateEntityAtPosition("player", gs.MapWidth / 2, gs.MapHeight / 2);
+        gs.SetMainCharacter(mainCharId);
     }
 }

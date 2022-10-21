@@ -1,6 +1,6 @@
 public enum GameEventType {
-    EntityMovedEvent,
-    EntityCreatedEvent,
-    EntityKilledEvent,
-    MessageLoggedEvent
+    EntityMoved,
+    EntityCreated,
+    EntityKilled,
+    MessageLogged
 }
