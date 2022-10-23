@@ -24,6 +24,9 @@ public partial class Game : IGameClient {
             case GameEventType.GameError:
                 HandleGameErrorEvent((GameErrorEvent)ev);
                 return;
+            case GameEventType.FieldOfViewUpdated:
+                HandleFieldOfViewUpdatedEvent((FieldOfViewUpdatedEvent)ev);
+                return;
             default:
                 Debug.Log($"Unhandled GameEventType {ev.EventType}");
                 return; 
@@ -69,11 +72,18 @@ public partial class Game : IGameClient {
     ) {
         int id = ev.EntityID;
         bool newVis = ev.NewVisibility;
-        pawns_by_id[id].gameObject.SetActive(newVis);
+        pawns_by_id[id].IsVisible = newVis;
+        if (usingFOV || newVis) {
+            pawns_by_id[id].gameObject.SetActive(newVis);
+        }
     }
     
     private void HandleGameErrorEvent(GameErrorEvent ev) {
         string message = ev.Message;
         Debug.LogError(message);
+    }
+
+    private void HandleFieldOfViewUpdatedEvent(FieldOfViewUpdatedEvent ev) {
+        Debug.Log("Field of view was updated.");
     }
 }

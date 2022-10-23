@@ -38,6 +38,7 @@ public class PawnFactory : ScriptableObject {
         GameObject pawnObject = new GameObject();
         pawnObject.AddComponent<SpriteRenderer>();
         Pawn pawn = pawnObject.AddComponent<Pawn>();
+        pawn.IsVisible = true;
 
         if (!spriteMap.ContainsKey(appearance)) {
             Debug.LogError($"Sprite map does not contain '{appearance}'. Check the PawnFactory.");

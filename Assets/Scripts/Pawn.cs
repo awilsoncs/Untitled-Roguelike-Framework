@@ -4,6 +4,7 @@ using UnityEngine;
 public class Pawn : MonoBehaviour {
     public int EntityId { get; set; }
     private SpriteRenderer spriteRenderer;
+    public bool IsVisible {get; set;}
 
     private void OnEnable() {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();

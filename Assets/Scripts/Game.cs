@@ -9,16 +9,7 @@ public partial class Game : PersistableObject
 {
     const int saveVersion = 1;
     [SerializeField] Camera mainCamera;
-    [SerializeField] KeyCode newGameKey = KeyCode.N;
-    [SerializeField] KeyCode saveKey = KeyCode.S;
-    [SerializeField] KeyCode loadKey = KeyCode.L;
-    [SerializeField] KeyCode upKey = KeyCode.UpArrow;
-    [SerializeField] KeyCode downKey = KeyCode.DownArrow;
-    [SerializeField] KeyCode leftKey = KeyCode.LeftArrow;
-    [SerializeField] KeyCode rightKey = KeyCode.RightArrow;
-    [SerializeField] KeyCode spawnKey = KeyCode.C;
     [SerializeField] PersistentStorage storage;
- 
     // map bounds
     [SerializeField] int mapWidth = 40;
     [SerializeField] int mapHeight = 20;
@@ -41,8 +32,10 @@ public partial class Game : PersistableObject
 
     IRandomGenerator rngPlugin;
     Random.State mainRandomState;
+    // todo shouldn't this be ICommandable?
     IGameState gameState;
     IEntityFactory entityFactory;
+    IFieldOfView fieldOfView;
     
     private void Start() {
         // todo figure out how to get randomness to the server
@@ -54,7 +47,15 @@ public partial class Game : PersistableObject
         pawns_by_id = new Dictionary<int, Pawn>();
         rngPlugin = new UnityRandom();
         entityFactory = new EntityFactory();
-        gameState = new GameState(this, rngPlugin, entityFactory, mapWidth, mapHeight);
+        fieldOfView = new RaycastingFOV();
+        gameState = new GameState(
+            this,
+            rngPlugin,
+            entityFactory,
+            fieldOfView,
+            mapWidth,
+            mapHeight
+        );
         BeginNewGame();
     }
 
@@ -73,7 +74,14 @@ public partial class Game : PersistableObject
     }
 
     private void ClearGame() {
-        gameState = new GameState(this, rngPlugin, entityFactory, mapWidth, mapHeight);
+        gameState = new GameState(
+            this,
+            rngPlugin,
+            entityFactory,
+            fieldOfView,
+            mapWidth,
+            mapHeight
+        );
         foreach (var pawn in pawns) {
             pawn.Recycle(pawnFactory);
         }

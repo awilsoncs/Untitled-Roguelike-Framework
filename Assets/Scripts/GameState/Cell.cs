@@ -27,7 +27,8 @@ public class Cell {
         return (contents == null || !contents.BlocksMove);
     }
 
-    public bool IsTransparent() {
-        return (contents == null || !contents.BlocksSight);
+    public bool IsTransparent
+    { 
+        get {return (contents == null || !contents.BlocksSight);}
     }
 }

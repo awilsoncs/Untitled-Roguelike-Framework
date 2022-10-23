@@ -18,6 +18,7 @@ public partial class GameState : IGameState {
     IGameClient gameClient;
     public IRandomGenerator RNG {get;}
     IEntityFactory entityFactory;
+    IFieldOfView fieldOfView;
 
 
     /// <summary>
@@ -32,11 +33,14 @@ public partial class GameState : IGameState {
         IGameClient client,
         IRandomGenerator random,
         IEntityFactory entityFactory,
+        IFieldOfView fieldOfView,
         int mapWidth,
         int mapHeight
     ) {
         if (random == null) {
             PostError("GameState random plugin is null!");
+        } else if (fieldOfView == null) {
+            PostError("Field of View plugin is null");
         }
         MapWidth = mapWidth;
         MapHeight = mapHeight;
@@ -48,6 +52,7 @@ public partial class GameState : IGameState {
         RNG = random;
         this.entityFactory = entityFactory;
         gameClient = client;
+        this.fieldOfView = fieldOfView;
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -111,7 +116,7 @@ public partial class GameState : IGameState {
         // todo update pawns in GameView
     }
 
-    private Cell GetCell(int x, int y) {
+    public Cell GetCell(int x, int y) {
         return map[x][y];
     }
 
@@ -187,6 +192,10 @@ public partial class GameState : IGameState {
             return;
         }
 
+        // todo this isn't REALLY necessary. One alternative would be to store 
+        // the info in cells and update the entity that moves into the cell
+        // FOV should only CHANGE when the player moves.
+        isFieldOfViewDirty = true;
         origin.ClearContents();
         PlaceEntity(id, x, y);
     }
@@ -210,6 +219,19 @@ public partial class GameState : IGameState {
 
     private void RecalculateFOVImmediately() {
         isFieldOfViewDirty = false;
+        IFieldOfViewQueryResult result = fieldOfView.CalculateFOV(
+            this, mainCharacter.X, mainCharacter.Y);
+        for(int x = 0; x < MapWidth; x++) {
+            for (int y = 0; y < MapHeight; y++) {
+                bool isVisible = result.IsVisible(x, y);
+                IEntity entity = GetCell(x, y).GetContents();
+                if (entity != null && entity.IsVisible != isVisible) {
+                    entity.IsVisible = isVisible;
+                    PostEvent(new EntityVisibilityChangedEvent(entity.ID, entity.IsVisible));
+                }
+            }
+        }
+        PostEvent(new FieldOfViewUpdatedEvent());
     }
 
     private void PostEvent(IGameEvent ev) {

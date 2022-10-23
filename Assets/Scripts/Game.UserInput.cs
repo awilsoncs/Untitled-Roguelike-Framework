@@ -1,12 +1,23 @@
 using UnityEngine;
 
 public partial class Game : IGameClient {
+    [SerializeField] KeyCode newGameKey = KeyCode.N;
+    [SerializeField] KeyCode saveKey = KeyCode.S;
+    [SerializeField] KeyCode loadKey = KeyCode.L;
+    [SerializeField] KeyCode upKey = KeyCode.UpArrow;
+    [SerializeField] KeyCode downKey = KeyCode.DownArrow;
+    [SerializeField] KeyCode leftKey = KeyCode.LeftArrow;
+    [SerializeField] KeyCode rightKey = KeyCode.RightArrow;
+    [SerializeField] KeyCode spawnKey = KeyCode.C;
+    [SerializeField] KeyCode mapKey = KeyCode.M;
+    private bool usingFOV = true;
     private void HandleUserInput() {
         if (Input.GetKeyDown(leftKey)) Move(-1, 0);
         else if (Input.GetKeyDown(rightKey)) Move(1, 0);
         else if (Input.GetKeyDown(upKey)) Move(0, 1);
         else if (Input.GetKeyDown(downKey)) Move(0, -1);
         else if (Input.GetKeyDown(spawnKey)) SpawnCrab();
+        else if (Input.GetKeyDown(mapKey)) ToggleFieldOfView();
         else if (Input.GetKeyDown(saveKey)) {
             Debug.Log("Player asked for save...");
             storage.Save(this, saveVersion);
@@ -28,5 +39,17 @@ public partial class Game : IGameClient {
 
     private void SpawnCrab() {
         gameState.PushCommand(DebugCommand.SpawnCrab());
+    }
+
+    private void ToggleFieldOfView() {
+        usingFOV = !usingFOV;
+        if (usingFOV) {
+            Debug.Log("Debug: FOV on");
+        } else {
+            Debug.Log("Debug: FOV off");
+        }
+        for (int i = 0; i < pawns.Count; i++) {
+            pawns[i].gameObject.SetActive(pawns[i].IsVisible || !usingFOV);
+        }
     }
 }

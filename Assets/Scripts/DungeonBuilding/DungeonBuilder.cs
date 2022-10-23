@@ -16,5 +16,11 @@ public static class DungeonBuilder {
             int y = rng.GetInt(1, gs.MapHeight-2);
             gs.CreateEntityAtPosition("crab", x, y);
         }
+
+        for (int i = 0; i < 4; i++) {
+            int x = rng.GetInt(1, gs.MapWidth-2);
+            int y = rng.GetInt(1, gs.MapHeight-2);
+            gs.CreateEntityAtPosition("wall", x, y);
+        }
     }
 }

@@ -1,7 +1,6 @@
 public class DebugCommand : IGameCommand {
     public enum DebugMethod {
-        SpawnCrab,
-        RevealMap
+        SpawnCrab
     }
 
     public GameCommandType CommandType => GameCommandType.Debug;
@@ -14,9 +13,5 @@ public class DebugCommand : IGameCommand {
 
     public static DebugCommand SpawnCrab() {
         return new DebugCommand(DebugMethod.SpawnCrab);
-    }
-
-    public static DebugCommand RevealMap() {
-        return new DebugCommand(DebugMethod.RevealMap);
     }
 }

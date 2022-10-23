@@ -11,6 +11,7 @@ public class Entity : IPersistableObject, IEntity {
     public string Appearance {get; set;}
     public bool BlocksMove { get; set; }
     public bool BlocksSight { get; set; }
+    public bool IsVisible { get; set; }
     private List<IEntityPart> parts; 
 
     public Entity() {

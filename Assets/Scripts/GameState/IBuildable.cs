@@ -5,6 +5,7 @@
 public interface IBuildable {
     void SetMainCharacter(int id);
     int CreateEntityAtPosition(string appearance, int x, int y);
+    Cell GetCell(int x, int y);
     int MapWidth {get;}
     int MapHeight {get;}
 }

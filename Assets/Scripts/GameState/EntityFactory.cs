@@ -38,7 +38,9 @@ public class EntityFactory : IEntityFactory {
         var entity = Get();
         entity.Name = "Player";
         entity.BlocksMove = true;
+        entity.BlocksSight = false;
         entity.Appearance = "player";
+        entity.IsVisible = true;
         return entity;
     }
 
@@ -46,7 +48,9 @@ public class EntityFactory : IEntityFactory {
         var entity = Get();
         entity.Name = "Crab";
         entity.BlocksMove = true;
+        entity.BlocksSight = false;
         entity.Appearance = "crab";
+        entity.IsVisible = true;
         return entity;
     }
 
@@ -56,6 +60,7 @@ public class EntityFactory : IEntityFactory {
         entity.BlocksMove = true;
         entity.BlocksSight = true;
         entity.Appearance = "wall";
+        entity.IsVisible = true;
         return entity;
     }
 }

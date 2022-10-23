@@ -5,5 +5,6 @@ public enum GameEventType {
     EntityVisibilityChanged,
     MainCharacterChanged,
     GameError,
-    GameStarted
+    GameStarted,
+    FieldOfViewUpdated
 }

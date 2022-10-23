@@ -29,6 +29,7 @@ public partial class GameState : IGameState {
             return;
         }
         MoveEntity(mainCharacter.ID, mainCharacter.X+mx, mainCharacter.Y+my);
+        RecalculateFOV();
     }
 
     private void HandleStartGameCommand(StartGameCommand cm) {

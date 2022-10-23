@@ -41,6 +41,11 @@ public interface IEntity : IPersistableObject {
     bool BlocksSight { get; set; }
 
     /// <summary>
+    /// Whether the entity is currently visible to the player.
+    /// </summary>
+    bool IsVisible { get; set; }
+
+    /// <summary>
     /// Perform game loop updates.
     /// </summary>
     /// <param name="gameState">A reference to the game state.</param>

@@ -62,6 +62,7 @@
         "GameUpdate",
         "Persistable",
         "pluggable",
+        "Raycasting",
         "Scriptable",
         "supercede",
         "updateable",
