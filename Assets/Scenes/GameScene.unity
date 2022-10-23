@@ -240,8 +240,9 @@ MonoBehaviour:
   storage: {fileID: 1839148938}
   mapWidth: 42
   mapHeight: 20
-  randomGeneratorPlugin: {fileID: 11400000, guid: 0f0b756e275d0a44a9cd519a88ae3e35, type: 2}
-  fieldOfViewPlugin: {fileID: 11400000, guid: 061b63f164c24fa4f8bb8c859b8fa251, type: 2}
+  backendPlugins:
+    randomPlugin: {fileID: 11400000, guid: 0f0b756e275d0a44a9cd519a88ae3e35, type: 2}
+    fieldOfViewPlugin: {fileID: 11400000, guid: 061b63f164c24fa4f8bb8c859b8fa251, type: 2}
   pawnFactory: {fileID: 11400000, guid: 238ac37a55e7faf47b514bc96b04b66d, type: 2}
   newGameKey: 110
   saveKey: 115

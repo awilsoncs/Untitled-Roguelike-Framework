@@ -35,8 +35,9 @@ public partial class Game : PersistableObject
     IGameState gameState;
     IEntityFactory entityFactory;
 
-    [SerializeField] RandomGeneratorPlugin randomGeneratorPlugin;
-    [SerializeField] FieldOfViewPlugin fieldOfViewPlugin;
+    [SerializeField]
+    [Tooltip("Custom behavior to inject into the game controller.")]
+    BackendPlugins backendPlugins;
     
     private void Start() {
         // todo figure out how to get randomness to the server
@@ -49,9 +50,9 @@ public partial class Game : PersistableObject
         entityFactory = new EntityFactory();
         gameState = new GameState(
             this,
-            randomGeneratorPlugin.Impl,
+            backendPlugins.randomPlugin.Impl,
             entityFactory,
-            fieldOfViewPlugin.Impl,
+            backendPlugins.fieldOfViewPlugin.Impl,
             mapWidth,
             mapHeight
         );
@@ -75,9 +76,9 @@ public partial class Game : PersistableObject
     private void ClearGame() {
         gameState = new GameState(
             this,
-            randomGeneratorPlugin.Impl,
+            backendPlugins.randomPlugin.Impl,
             entityFactory,
-            fieldOfViewPlugin.Impl,
+            backendPlugins.fieldOfViewPlugin.Impl,
             mapWidth,
             mapHeight
         );
