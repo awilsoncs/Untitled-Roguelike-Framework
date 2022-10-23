@@ -27,6 +27,9 @@ public partial class Game : IGameClient {
             case GameEventType.FieldOfViewUpdated:
                 HandleFieldOfViewUpdatedEvent((FieldOfViewUpdatedEvent)ev);
                 return;
+            case GameEventType.MainCharacterChanged:
+                HandleMainCharacterChangedEvent((MainCharacterChangedEvent)ev);
+                return;
             default:
                 Debug.Log($"Unhandled GameEventType {ev.EventType}");
                 return; 
@@ -38,6 +41,18 @@ public partial class Game : IGameClient {
         int x = ev.Position.Item1;
         int y = ev.Position.Item2;
         pawn.transform.position = new Vector3(x*GRID_MULTIPLE, y*GRID_MULTIPLE, 0f);
+
+        // Below code is for smart client actions (bump attack instead of attempt move)
+        if (entityPosition.ContainsKey(ev.EntityID)) {
+            (int x0, int y0) = entityPosition[ev.EntityID];
+            entityMap[x0][y0] = (-1, false);
+        }
+        entityPosition[ev.EntityID] = (x, y);
+        entityMap[x][y] = (ev.EntityID, true);
+
+        if (ev.EntityID == mainCharacterId) {
+            mainCharacterPosition = (x, y);
+        }
     }
 
     private void HandleEntityCreated(EntityCreatedEvent ev) {
@@ -50,6 +65,9 @@ public partial class Game : IGameClient {
         pawn.gameObject.name = $"Pawn::{id} {appearance}";
         Debug.Log($"Pawn created {id}::{appearance}");
         pawns_by_id[id] = pawn;
+        if(!entity.IsVisible && usingFOV) {
+            pawn.gameObject.SetActive(false);
+        }
     }
 
     private void HandleEntityKilled(EntityKilledEvent ev) {
@@ -85,5 +103,10 @@ public partial class Game : IGameClient {
 
     private void HandleFieldOfViewUpdatedEvent(FieldOfViewUpdatedEvent ev) {
         Debug.Log("Field of view was updated.");
+    }
+
+    private void HandleMainCharacterChangedEvent(MainCharacterChangedEvent ev) {
+        mainCharacterId = ev.Id;
+        mainCharacterPosition = entityPosition[mainCharacterId];
     }
 }

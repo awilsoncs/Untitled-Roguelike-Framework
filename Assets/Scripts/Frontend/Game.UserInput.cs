@@ -33,8 +33,15 @@ public partial class Game : IGameClient {
         }
     }
 
-    private void Move(int x, int y) {
-        gameState.PushCommand(new MoveCommand(x, y));
+    private void Move(int mx, int my) {
+        int x = mainCharacterPosition.Item1 + mx;
+        int y = mainCharacterPosition.Item2 + my;
+        if (entityMap[x][y].Item1 >= 0 && entityMap[x][y].Item2) {
+            // this is an enemy, bump attack instead
+            gameState.PushCommand(new AttackCommand(entityMap[x][y].Item1));
+        } else {
+            gameState.PushCommand(new MoveCommand(mx, my));
+        }
     }
 
     private void SpawnCrab() {

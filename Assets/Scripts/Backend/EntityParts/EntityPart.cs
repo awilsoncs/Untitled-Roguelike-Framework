@@ -13,8 +13,13 @@ IEntityPart
     public IEntity Entity {get; set;}
     public virtual void GameUpdate(IGameState gs) {}
     public abstract void Recycle();
-    public abstract void Load(GameDataReader reader);
-    public abstract void Save(GameDataWriter writer);
+    public virtual void Load(GameDataReader reader) {
+        Id = reader.ReadInt();
+    }
+
+    public virtual void Save(GameDataWriter writer) {
+        writer.Write(Id);
+    }
 
 #if UNITY_EDITOR
     // marked by pools to indicate this object has been reclaimed

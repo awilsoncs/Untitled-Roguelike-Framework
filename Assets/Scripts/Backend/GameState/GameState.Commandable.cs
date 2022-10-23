@@ -9,6 +9,9 @@ public partial class GameState : IGameState {
             case GameCommandType.Move:
                 HandleMoveCommand((MoveCommand)cm);
                 return;
+            case GameCommandType.Attack:
+                HandleAttackCommand((AttackCommand)cm);
+                return;
             case GameCommandType.StartGame:
                 HandleStartGameCommand((StartGameCommand)cm);
                 return;
@@ -16,7 +19,7 @@ public partial class GameState : IGameState {
                 HandleDebugCommand((DebugCommand)cm);
                 return;
             default:
-                PostError($"Unknown command type {cm.CommandType}");
+                PostError($"Unrecognized command {cm.CommandType}");
                 return;
         }
     }
@@ -32,9 +35,18 @@ public partial class GameState : IGameState {
         RecalculateFOV();
     }
 
+    private void HandleAttackCommand(AttackCommand cm) {
+        // todo perform the attack calculations
+        PostEvent(new EntityAttackedEvent(mainCharacter.ID, cm.Defender));
+    }
+
     private void HandleStartGameCommand(StartGameCommand cm) {
         if (RNG == null) {
             PostError("Cannot begin game without RNG.");
+            return;
+        }
+        if (fieldOfView == null) {
+            PostError("Cannot begin game without FOV plugin.");
             return;
         }
         DungeonBuilder.Build(this, RNG);

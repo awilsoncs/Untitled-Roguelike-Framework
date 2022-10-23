@@ -1,4 +1,5 @@
 public enum GameEventType {
+    EntityAttacked,
     EntityMoved,
     EntityCreated,
     EntityKilled,

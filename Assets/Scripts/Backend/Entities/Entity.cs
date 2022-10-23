@@ -36,6 +36,12 @@ public class Entity : IPersistableObject, IEntity {
         part.Entity = null;
     }
 
+    public T GetPart<T>() where T : IEntityPart {
+        // Find a matching part and return it.
+        // todo could make this a map to speed up the lookup.
+        return (T) parts.Find((x) => {return x.GetType() is T;});
+    }
+
     public void Save(GameDataWriter writer) {
         writer.Write(Name);
         writer.Write(Appearance);
@@ -43,6 +49,7 @@ public class Entity : IPersistableObject, IEntity {
         writer.Write(Y);
         writer.Write(BlocksMove);
         writer.Write(BlocksSight);
+        writer.Write(IsVisible);
         writer.Write(parts.Count);
         for (int i = 0; i < parts.Count; i++) {
             writer.Write(parts[i].Id);
@@ -58,6 +65,7 @@ public class Entity : IPersistableObject, IEntity {
         Y = reader.ReadInt();
         BlocksMove = reader.ReadBool();
         BlocksSight = reader.ReadBool();
+        IsVisible = reader.ReadBool();
         var partCount = reader.ReadInt();
         if (partCount > 0) {
             // todo abstract out these debug calls

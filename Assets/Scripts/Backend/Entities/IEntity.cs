@@ -64,9 +64,18 @@ public interface IEntity : IPersistableObject {
     void RemovePart(IEntityPart part);
 
     /// <summary>
+    /// Return a part of the given type.
+    /// </summary>
+    /// <typeparam name="T">An IEntityPArt.</typeparam>
+    /// <returns></returns>
+    T GetPart<T>() where T : IEntityPart;
+
+    /// <summary>
     /// Recycle this entity at the given factory.
     /// </summary>
     /// <param name="entityFactory">A reference to a factory that can dispose 
     /// of this entity properly.</param>
     void Recycle(IEntityFactory entityFactory);
+
+    
 }

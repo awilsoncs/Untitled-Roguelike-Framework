@@ -35,6 +35,12 @@ public partial class Game : PersistableObject
     IGameState gameState;
     IEntityFactory entityFactory;
 
+    int mainCharacterId;
+    (int, int) mainCharacterPosition;
+    // track attackable enemies so that we can attack instead of attempt to move
+    (int, bool)[][] entityMap;
+    Dictionary<int, (int, int)> entityPosition;
+
     [SerializeField]
     [Tooltip("Custom behavior to inject into the game controller.")]
     BackendPlugins backendPlugins;
@@ -56,6 +62,7 @@ public partial class Game : PersistableObject
             mapWidth,
             mapHeight
         );
+        ClearEnemyPositions();
         BeginNewGame();
     }
 
@@ -69,8 +76,19 @@ public partial class Game : PersistableObject
         int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
         mainRandomState = Random.state;
         Random.InitState(seed);
-
+        ClearEnemyPositions();
         gameState.PushCommand(new StartGameCommand());
+    }
+
+    private void ClearEnemyPositions() {
+        entityMap = new (int, bool)[mapWidth][]; 
+        for (int i = 0; i < mapWidth; i++) {
+            entityMap[i] = new (int, bool)[mapHeight];
+            for (int j = 0; j < mapHeight; j++) {
+                entityMap[i][j] = (-1, false);
+            }
+        }
+        entityPosition = new Dictionary<int, (int, int)>();
     }
 
     private void ClearGame() {
