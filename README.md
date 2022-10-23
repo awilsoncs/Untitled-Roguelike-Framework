@@ -5,7 +5,7 @@ URF is a flexible framework for building turn-based, tile-based games in Unity.
 URF is separated into a back end and a front end.
 
 ### Plugins
-Here you will find a collection of plugins for modifying framework behavior.
+Here you will find a collection of ScriptableObject plugins that you may use out-of-the-box for modifying framework behavior. The implementation for a plugin is defined elsewhere in the codebase. You may click through the inspector reference to find it.
 
 ### Scripts / Backend
 The backend defines gameplay rules handling for the framework. The core of it is defined in `Assets\Scripts\Backend\GameState\GameState.cs`.
