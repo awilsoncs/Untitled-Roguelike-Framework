@@ -30,11 +30,12 @@ public partial class Game : PersistableObject
         }
     }
 
-    IRandomGenerator rngPlugin;
     Random.State mainRandomState;
     // todo shouldn't this be ICommandable?
     IGameState gameState;
     IEntityFactory entityFactory;
+
+    [SerializeField] RandomGeneratorPlugin randomGeneratorPlugin;
     [SerializeField] FieldOfViewPlugin fieldOfViewPlugin;
     
     private void Start() {
@@ -45,11 +46,10 @@ public partial class Game : PersistableObject
         // perform initial setup
         pawns = new List<Pawn>();
         pawns_by_id = new Dictionary<int, Pawn>();
-        rngPlugin = new UnityRandom();
         entityFactory = new EntityFactory();
         gameState = new GameState(
             this,
-            rngPlugin,
+            randomGeneratorPlugin.Impl,
             entityFactory,
             fieldOfViewPlugin.Impl,
             mapWidth,
@@ -75,7 +75,7 @@ public partial class Game : PersistableObject
     private void ClearGame() {
         gameState = new GameState(
             this,
-            rngPlugin,
+            randomGeneratorPlugin.Impl,
             entityFactory,
             fieldOfViewPlugin.Impl,
             mapWidth,
