@@ -35,7 +35,7 @@ public partial class Game : PersistableObject
     // todo shouldn't this be ICommandable?
     IGameState gameState;
     IEntityFactory entityFactory;
-    IFieldOfView fieldOfView;
+    [SerializeField] FieldOfViewPlugin fieldOfViewPlugin;
     
     private void Start() {
         // todo figure out how to get randomness to the server
@@ -47,12 +47,11 @@ public partial class Game : PersistableObject
         pawns_by_id = new Dictionary<int, Pawn>();
         rngPlugin = new UnityRandom();
         entityFactory = new EntityFactory();
-        fieldOfView = new RaycastingFOV();
         gameState = new GameState(
             this,
             rngPlugin,
             entityFactory,
-            fieldOfView,
+            fieldOfViewPlugin.Impl,
             mapWidth,
             mapHeight
         );
@@ -78,7 +77,7 @@ public partial class Game : PersistableObject
             this,
             rngPlugin,
             entityFactory,
-            fieldOfView,
+            fieldOfViewPlugin.Impl,
             mapWidth,
             mapHeight
         );

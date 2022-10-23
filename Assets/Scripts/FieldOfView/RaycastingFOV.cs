@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 
-
 /// <summary>
 /// Performs FOV calculation by raycasting to edge tiles.
 /// </summary>

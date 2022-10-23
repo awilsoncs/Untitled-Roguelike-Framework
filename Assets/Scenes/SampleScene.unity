@@ -237,7 +237,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 519420031}
-  createKey: 99
+  storage: {fileID: 1839148938}
+  mapWidth: 42
+  mapHeight: 20
+  fieldOfViewPlugin: {fileID: 11400000, guid: 061b63f164c24fa4f8bb8c859b8fa251, type: 2}
+  pawnFactory: {fileID: 11400000, guid: 238ac37a55e7faf47b514bc96b04b66d, type: 2}
   newGameKey: 110
   saveKey: 115
   loadKey: 108
@@ -245,10 +249,8 @@ MonoBehaviour:
   downKey: 274
   leftKey: 276
   rightKey: 275
-  storage: {fileID: 1839148938}
-  pawnFactory: {fileID: 11400000, guid: 238ac37a55e7faf47b514bc96b04b66d, type: 2}
-  mapWidth: 42
-  mapHeight: 20
+  spawnKey: 99
+  mapKey: 109
 --- !u!4 &1768340208
 Transform:
   m_ObjectHideFlags: 0
