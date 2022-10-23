@@ -18,6 +18,9 @@ public partial class Game : IGameClient {
             case GameEventType.EntityKilled:
                 HandleEntityKilled((EntityKilledEvent)ev);
                 return;
+            case GameEventType.EntityVisibilityChanged:
+                HandleEntityVisibilityChanged((EntityVisibilityChangedEvent)ev);
+                return;
             case GameEventType.GameError:
                 HandleGameErrorEvent((GameErrorEvent)ev);
                 return;
@@ -59,6 +62,14 @@ public partial class Game : IGameClient {
         pawns.RemoveAt(lastIndex);
         pawns_by_id.Remove(id);
         pawn.Recycle(pawnFactory);
+    }
+
+    private void HandleEntityVisibilityChanged(
+        EntityVisibilityChangedEvent ev
+    ) {
+        int id = ev.EntityID;
+        bool newVis = ev.NewVisibility;
+        pawns_by_id[id].gameObject.SetActive(newVis);
     }
     
     private void HandleGameErrorEvent(GameErrorEvent ev) {

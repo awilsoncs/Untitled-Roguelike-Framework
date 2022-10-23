@@ -37,6 +37,7 @@ public partial class GameState : IGameState {
             return;
         }
         DungeonBuilder.Build(this, RNG);
+        RecalculateFOVImmediately();
         gameClient.PostEvent(new GameStartedEvent());
     }
 

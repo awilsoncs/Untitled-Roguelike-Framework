@@ -59,6 +59,9 @@ public partial class GameState : IGameState {
     }
 
     private void GameUpdate() {
+        if (isFieldOfViewDirty) {
+            RecalculateFOV();
+        }
         inGameUpdateLoop = true;
         for (int i = 0; i < entities.Count; i++) {
             entities[i].GameUpdate(this);
@@ -209,8 +212,12 @@ public partial class GameState : IGameState {
         isFieldOfViewDirty = false;
     }
 
+    private void PostEvent(IGameEvent ev) {
+        gameClient.PostEvent(ev);
+    }
+
     private void PostError(string message) {
-        gameClient.PostEvent(new GameErrorEvent(message));
+        PostEvent(new GameErrorEvent(message));
     }
 
     public void Save (GameDataWriter writer) {
