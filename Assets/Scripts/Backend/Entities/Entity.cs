@@ -13,6 +13,20 @@ public class Entity : IPersistableObject, IEntity {
     public bool BlocksSight { get; set; }
     public bool IsVisible { get; set; }
     private List<IEntityPart> parts; 
+    private IGameState _gameState;
+    public IGameState GameState { 
+        get {
+            return _gameState;
+        }
+        set {
+            // if the entity's game state ref changes, we need to update the
+            // parts.
+            _gameState = value;
+            for (int i = 0; i < parts.Count; i++) {
+                parts[i].GameState = _gameState;
+            }
+        }
+    }
 
     public Entity() {
         parts = new List<IEntityPart>();
@@ -27,6 +41,7 @@ public class Entity : IPersistableObject, IEntity {
     public void AddPart(IEntityPart part) {
         parts.Add(part);
         part.Entity = this;
+        part.GameState = this.GameState;
     }
 
     public void RemovePart(IEntityPart part) {
@@ -34,6 +49,7 @@ public class Entity : IPersistableObject, IEntity {
         // todo improve this to be reclaimed by the factory
         parts.Remove(part);
         part.Entity = null;
+        part.GameState = null;
     }
 
     public T GetPart<T>() where T : IEntityPart {
@@ -76,6 +92,7 @@ public class Entity : IPersistableObject, IEntity {
                         ((EntityPartType)reader.ReadInt()).GetInstance();
                 parts.Add(part);
                 part.Entity = this;
+                part.GameState = this.GameState;
                 part.Load(reader);
             }
             //Debug.Log($">> Entity {Name}::{ID} done loading parts...");
@@ -87,6 +104,8 @@ public class Entity : IPersistableObject, IEntity {
     public void Recycle(IEntityFactory entityFactory) {
         for (int i = 0; i < parts.Count; i++) {
             parts[i].Recycle();
+            parts[i].Entity = null;
+            parts[i].GameState = null;
         }
         parts.Clear();
         entityFactory.Reclaim(this);

@@ -19,6 +19,7 @@ public partial class GameState : IGameState {
     public IRandomGenerator RNG {get;}
     IEntityFactory entityFactory;
     IFieldOfView fieldOfView;
+    ILogging logging;
 
 
     /// <summary>
@@ -34,6 +35,7 @@ public partial class GameState : IGameState {
         IRandomGenerator random,
         IEntityFactory entityFactory,
         IFieldOfView fieldOfView,
+        ILogging logging,
         int mapWidth,
         int mapHeight
     ) {
@@ -53,6 +55,7 @@ public partial class GameState : IGameState {
         this.entityFactory = entityFactory;
         gameClient = client;
         this.fieldOfView = fieldOfView;
+        this.logging = logging;
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -239,7 +242,14 @@ public partial class GameState : IGameState {
     }
 
     private void PostError(string message) {
+        logging.Log(message);
         PostEvent(new GameErrorEvent(message));
+    }
+
+    public void Log(string message) {
+        if (logging != null) {
+            logging.Log(message);
+        }
     }
 
     public void Save (GameDataWriter writer) {

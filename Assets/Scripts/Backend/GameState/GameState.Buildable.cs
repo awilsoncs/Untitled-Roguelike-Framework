@@ -17,6 +17,7 @@ public partial class GameState : IGameState {
     public int CreateEntityAtPosition(String blueprintName, int x, int y) {
         // todo abstract entities with no location
         var entity = entityFactory.Get(blueprintName);
+        entity.GameState = this;
         entities.Add(entity);
         entitiesById.Add(entity.ID, entity);
         gameClient.PostEvent(new EntityCreatedEvent(entity));

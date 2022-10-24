@@ -9,5 +9,8 @@ public class BackendPlugins
     public RandomGeneratorPlugin randomPlugin;
     [SerializeField]
     [Tooltip("Field of view calculation")]
-    public FieldOfViewPlugin fieldOfViewPlugin;    
+    public FieldOfViewPlugin fieldOfViewPlugin;
+    [SerializeField]
+    [Tooltip("(Optional) plugin for logging")]
+    public LoggingPlugin loggingPlugin;
 }

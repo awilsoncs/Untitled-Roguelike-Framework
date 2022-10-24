@@ -16,6 +16,7 @@ public class HealthPart : EntityPart {
     }
 
     public void DealDamage(int damage) {
+        GameState.Log($"{Entity} took {damage} damage.");
         currentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
     }
 

@@ -11,6 +11,7 @@ IEntityPart
     public int Id { get; set; }
     public abstract EntityPartType PartType {get;}
     public IEntity Entity {get; set;}
+    public IGameState GameState {get; set;}
     public virtual void GameUpdate(IGameState gs) {}
     public abstract void Recycle();
     public virtual void Load(GameDataReader reader) {

@@ -18,6 +18,12 @@ public interface IEntityPart : IPersistableObject
     IEntity Entity {get; set;}
 
     /// <summary>
+    /// The IGameState in which this lives.
+    /// </summary>
+    IGameState GameState {get; set;}
+
+
+    /// <summary>
     /// Perform game loop updates.
     /// </summary>
     /// <param name="gameState">A reference to the state of the game.</param>

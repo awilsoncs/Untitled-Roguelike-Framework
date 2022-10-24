@@ -54,11 +54,13 @@ public partial class Game : PersistableObject
         pawns = new List<Pawn>();
         pawns_by_id = new Dictionary<int, Pawn>();
         entityFactory = new EntityFactory();
+        // todo could we just pass in the backend plugin collection?
         gameState = new GameState(
             this,
             backendPlugins.randomPlugin.Impl,
             entityFactory,
             backendPlugins.fieldOfViewPlugin.Impl,
+            backendPlugins.loggingPlugin.Impl,
             mapWidth,
             mapHeight
         );
@@ -97,6 +99,7 @@ public partial class Game : PersistableObject
             backendPlugins.randomPlugin.Impl,
             entityFactory,
             backendPlugins.fieldOfViewPlugin.Impl,
+            backendPlugins.loggingPlugin.Impl,
             mapWidth,
             mapHeight
         );
