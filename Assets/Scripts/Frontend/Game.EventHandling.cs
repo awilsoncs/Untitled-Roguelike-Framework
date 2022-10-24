@@ -71,6 +71,7 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityKilled(EntityKilledEvent ev) {
+        Debug.Log($"Entity {ev.EntityId} has been killed.");
         int id = ev.EntityId;
 
         Pawn pawn = pawns_by_id[id];
@@ -83,6 +84,10 @@ public partial class Game : IGameClient {
         pawns.RemoveAt(lastIndex);
         pawns_by_id.Remove(id);
         pawn.Recycle(pawnFactory);
+
+        (int x, int y) = entityPosition[id];
+        entityMap[x][y] = (-1, false);
+        entityPosition.Remove(id); 
     }
 
     private void HandleEntityVisibilityChanged(

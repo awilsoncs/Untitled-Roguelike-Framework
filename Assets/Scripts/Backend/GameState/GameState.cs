@@ -80,7 +80,7 @@ public partial class GameState : IGameState {
         }
     }
 
-    private void Kill (IEntity entity) {
+    public void Kill (IEntity entity) {
         // Eventually, perform actions related to clearing the BoardController
         // of the entity and recycle the entity
         if (inGameUpdateLoop) {
@@ -98,6 +98,8 @@ public partial class GameState : IGameState {
     private void KillImmediately (IEntity entity) {
         // Generally, should only be called from Kill and during Update cleanup.
         // swap and pop the desired entity to avoid rearranging the whole tail
+        PostEvent(new EntityKilledEvent(entity.ID));
+
         // todo can remove this scan by maintaining the index on the entity
         int index = entities.FindIndex(x => x == entity);
         int lastIndex = entities.Count - 1;
@@ -112,8 +114,6 @@ public partial class GameState : IGameState {
         }
         entity.Recycle(entityFactory);
 
-        // todo notify the GameView that this entity has been killed
-        // todo update pawns in GameView
     }
 
     public Cell GetCell(int x, int y) {

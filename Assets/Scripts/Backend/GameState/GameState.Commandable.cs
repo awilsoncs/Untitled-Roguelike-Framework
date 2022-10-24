@@ -3,6 +3,7 @@ using System.Collections.Generic;
 /// <summary>
 /// Define commands available to the client.
 /// </summary>
+// todo need to wait until the player turn to process game commands
 public partial class GameState : IGameState {
     public void PushCommand(IGameCommand cm) {
         switch (cm.CommandType) {
@@ -37,7 +38,21 @@ public partial class GameState : IGameState {
 
     private void HandleAttackCommand(AttackCommand cm) {
         // todo perform the attack calculations
+        if (!entitiesById.ContainsKey(cm.Defender)) {
+            PostError($"Entity {cm.Defender} does not exist.");
+            return;
+        }
+        IEntity defender = entitiesById[cm.Defender];
+        // todo need to push this sort of thing into an internal event system
+        HealthPart hp = defender.GetPart<HealthPart>();
+        if (hp == null) {
+            PostError($"Illegal attack attempted...(defender {defender})");
+            return;
+        }
+
+        hp.DealDamage(1);
         PostEvent(new EntityAttackedEvent(mainCharacter.ID, cm.Defender));
+        GameUpdate();
     }
 
     private void HandleStartGameCommand(StartGameCommand cm) {

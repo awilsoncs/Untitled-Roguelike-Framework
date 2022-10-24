@@ -39,7 +39,7 @@ public class Entity : IPersistableObject, IEntity {
     public T GetPart<T>() where T : IEntityPart {
         // Find a matching part and return it.
         // todo could make this a map to speed up the lookup.
-        return (T) parts.Find((x) => {return x.GetType() is T;});
+        return (T)parts.Find((IEntityPart x) => {return x is T;});
     }
 
     public void Save(GameDataWriter writer) {
@@ -90,6 +90,11 @@ public class Entity : IPersistableObject, IEntity {
         }
         parts.Clear();
         entityFactory.Reclaim(this);
+    }
+
+    public override string ToString()
+    {
+        return $"{Name}::{ID}::({X}, {Y})";
     }
 
 }
