@@ -34,5 +34,7 @@ The framework renders the game state by instantiating a collection of pawns. You
 ### Backend configuration
 The client script also serves as a game setup script. In the game controller inspector, you will find a drawer for Backend plugins. These plugins are defined in `Assets\Scripts\Backend\FrameworkPlugins`. Each functions by referencing a snippet of backend logic that injects into the backend during game state initialization.
 
-### Scripts / Shared (todo)
+### Scripts / Common
+Some plugins can be used by either side. These plugins will be found here.
+
 Currently, the communication interface between the front and back ends lives on the backend side. Eventually, these will be migrated to a third location separate from both.
