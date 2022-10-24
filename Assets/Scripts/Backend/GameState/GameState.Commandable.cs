@@ -5,6 +5,7 @@ using System.Collections.Generic;
 /// </summary>
 // todo need to wait until the player turn to process game commands
 public partial class GameState : IGameState {
+    // todo move these into a pluggable handler system
     public void PushCommand(IGameCommand cm) {
         switch (cm.CommandType) {
             case GameCommandType.Move:
@@ -37,21 +38,25 @@ public partial class GameState : IGameState {
     }
 
     private void HandleAttackCommand(AttackCommand cm) {
-        // todo perform the attack calculations
         if (!entitiesById.ContainsKey(cm.Defender)) {
-            PostError($"Entity {cm.Defender} does not exist.");
+            PostError($"Defender entity {cm.Defender} does not exist.");
+            return;
+        }
+        FighterPart mainFighter = mainCharacter.GetPart<FighterPart>();
+        if (mainFighter == null) {
+            PostError($"Main character does not have a fighter component registered. Check the Entity definition.");
             return;
         }
         IEntity defender = entitiesById[cm.Defender];
         // todo need to push this sort of thing into an internal event system
-        HealthPart hp = defender.GetPart<HealthPart>();
-        if (hp == null) {
+        FighterPart defenderFighter = defender.GetPart<FighterPart>();
+        if (defenderFighter == null) {
             PostError($"Illegal attack attempted...(defender {defender})");
             return;
         }
-
-        hp.DealDamage(1);
-        PostEvent(new EntityAttackedEvent(mainCharacter.ID, cm.Defender));
+        mainFighter.Attack(defenderFighter);
+        // todo move this event emission into the fighter component
+        PostEvent(new EntityAttackedEvent(mainCharacter.ID, cm.Defender, true, 1));
         GameUpdate();
     }
 

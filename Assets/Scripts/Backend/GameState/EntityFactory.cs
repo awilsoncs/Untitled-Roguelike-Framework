@@ -41,7 +41,11 @@ public class EntityFactory : IEntityFactory {
         entity.BlocksSight = false;
         entity.Appearance = "player";
         entity.IsVisible = true;
-        entity.AddPart(EntityPartPool<HealthPart>.Get().SetCurrentHealth(10));
+        entity.AddPart(
+            EntityPartPool<FighterPart>.Get()
+                .SetCurrentHealth(10)
+                .SetDamage(1)
+        );
         return entity;
     }
 
@@ -52,7 +56,7 @@ public class EntityFactory : IEntityFactory {
         entity.BlocksSight = false;
         entity.Appearance = "crab";
         entity.IsVisible = true;
-        entity.AddPart(EntityPartPool<HealthPart>.Get().SetCurrentHealth(2));
+        entity.AddPart(EntityPartPool<FighterPart>.Get().SetCurrentHealth(2));
         return entity;
     }
 

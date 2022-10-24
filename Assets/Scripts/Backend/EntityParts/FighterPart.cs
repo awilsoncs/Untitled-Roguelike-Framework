@@ -1,9 +1,10 @@
 using System;
-public class HealthPart : EntityPart {
-    int maxHealth = 0;
-    int currentHealth = 0;
+public class FighterPart : EntityPart {
+    int maxHealth;
+    int currentHealth;
+    int damage;
 
-    public override EntityPartType PartType => EntityPartType.Health;
+    public override EntityPartType PartType => EntityPartType.Fighter;
     public override void GameUpdate(IGameState gs) {
         if (currentHealth <= 0) {
             gs.Kill(Entity);
@@ -12,7 +13,12 @@ public class HealthPart : EntityPart {
     }
 
     public override void Recycle() {
-        EntityPartPool<HealthPart>.Reclaim(this);
+        EntityPartPool<FighterPart>.Reclaim(this);
+    }
+
+    public void Attack(FighterPart other) {
+        GameState.Log($"{Entity} will deal {damage} damage.");
+        other.DealDamage(damage);
     }
 
     public void DealDamage(int damage) {
@@ -20,7 +26,7 @@ public class HealthPart : EntityPart {
         currentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
     }
 
-    public HealthPart SetMaxHealth(int maxHealth) {
+    public FighterPart SetMaxHealth(int maxHealth) {
         if (maxHealth > currentHealth) {
             this.currentHealth = maxHealth;
         }
@@ -28,11 +34,16 @@ public class HealthPart : EntityPart {
         return this;
     }
 
-    public HealthPart SetCurrentHealth(int currentHealth) {
+    public FighterPart SetCurrentHealth(int currentHealth) {
         if (currentHealth > maxHealth) {
             this.maxHealth = currentHealth;
         }
         this.currentHealth = currentHealth;
+        return this;
+    }
+
+    public FighterPart SetDamage(int damage) {
+        this.damage = Math.Max(damage, 0);
         return this;
     }
 
