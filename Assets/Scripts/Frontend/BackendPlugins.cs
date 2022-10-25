@@ -13,4 +13,7 @@ public class BackendPlugins
     [SerializeField]
     [Tooltip("(Optional) plugin for logging")]
     public LoggingPlugin loggingPlugin;
+    [SerializeField]
+    [Tooltip("Pathfinding system")]
+    public PathfindingPlugin pathfindingPlugin;
 }

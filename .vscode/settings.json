@@ -60,6 +60,7 @@
         "gameobject",
         "gameplay",
         "GameUpdate",
+        "Pathfinding",
         "Persistable",
         "pluggable",
         "Raycasting",
