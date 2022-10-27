@@ -76,5 +76,6 @@
             "language": "markdown",
             "scheme": "file"
         }
-    ]
+    ],
+    "dotnet-test-explorer.testProjectPath": "${workspaceFolder}/Assets/Scripts/Tests"
 }
