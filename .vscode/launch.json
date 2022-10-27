@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Assets/Scripts/Tests/bin/Debug/net6.0/Tests.exe",
+            "program": "${workspaceFolder}/Tests/bin/Debug/net6.0/Tests.exe",
             "args": [],
-            "cwd": "${workspaceFolder}/Assets/Scripts/Tests",
+            "cwd": "${workspaceFolder}/Tests",
             "stopAtEntry": false,
             "console": "internalConsole"
         },
