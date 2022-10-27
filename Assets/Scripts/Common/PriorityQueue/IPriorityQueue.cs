@@ -1,5 +1,5 @@
 public interface IPriorityQueue<T, U> {
     int Count {get;}
-    void Enqueue(T element, U priority);
-    T Dequeue();
+    void Enqueue(T priority, U element);
+    U Dequeue();
 }

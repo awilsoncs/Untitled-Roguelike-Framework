@@ -9,13 +9,15 @@ public class PriorityQueue<T, U> : IPriorityQueue<T, U>
         elements = new SortedList<T, U>();
     }
 
-    public T Dequeue()
+    public U Dequeue()
     {
-        throw new System.NotImplementedException();
+        U result = elements.Values[0];
+        elements.RemoveAt(0);
+        return result;
     }
 
-    public void Enqueue(T element, U priority)
+    public void Enqueue(T priority, U element)
     {
-        throw new System.NotImplementedException();
+        elements.Add(priority, element);
     }
 }
