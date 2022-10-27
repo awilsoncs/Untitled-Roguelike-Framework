@@ -57,6 +57,7 @@
         "Bresenham",
         "Buildable",
         "Commandable",
+        "Djikstra",
         "gameobject",
         "gameplay",
         "GameUpdate",
