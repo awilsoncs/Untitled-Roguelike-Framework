@@ -71,4 +71,24 @@ public class PriorityQueueTests
         queue.Enqueue(2, 3);
         Assert.IsFalse(queue.Contains(5), "Queue should report that it does not contain an item it doesn't contain.");
     }
+
+     [Test]
+    public void TopElementCanBePeeked() {
+        queue.Enqueue(3, 0);
+        Assert.That(queue.Peek(), Is.EqualTo(0), "Queue should be able to be peeked.");
+        queue.Enqueue(4, 1);
+        Assert.That(queue.Peek(), Is.EqualTo(0), "Peek should return the highest value item.");
+        Assert.That(queue.Peek(), Is.EqualTo(0), "Peeking should not alter the queue.");
+
+
+    }
+
+    [Test]
+    public void ElementPriorityCanBeUpdated() {
+        queue.Enqueue(3, 1);
+        queue.Enqueue(4, 2);
+        Assert.That(queue.Peek(), Is.EqualTo(1), "Highest priority item should be peeked.");
+        queue.UpdatePriority(0, 2);
+        Assert.That(queue.Peek(), Is.EqualTo(2), "Updating element priority should change the result of peek.");
+    }
 }
