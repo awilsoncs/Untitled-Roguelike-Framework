@@ -6,5 +6,5 @@ public interface IPathfinding {
     // pathfinding is rarely a simple use case of reaching another entity,
     // and often different systems want to leverage pathfinding for different
     // reasons.
-    List<(int, int)> GetPath(IGameState gameState, int x0, int y0, int x1, int y1);
+    List<(int, int)> GetPath(in float[][] costs, (int, int) start, (int, int) end);
 }
