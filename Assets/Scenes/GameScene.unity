@@ -244,6 +244,7 @@ MonoBehaviour:
     randomPlugin: {fileID: 11400000, guid: 0f0b756e275d0a44a9cd519a88ae3e35, type: 2}
     fieldOfViewPlugin: {fileID: 11400000, guid: 061b63f164c24fa4f8bb8c859b8fa251, type: 2}
     loggingPlugin: {fileID: 11400000, guid: 89b2dcb2ef426204d85a6c5905f7fbf3, type: 2}
+    pathfindingPlugin: {fileID: 11400000, guid: fbe201bc907b0a842a399c34bafeafda, type: 2}
   pawnFactory: {fileID: 11400000, guid: 238ac37a55e7faf47b514bc96b04b66d, type: 2}
   newGameKey: 110
   saveKey: 115
