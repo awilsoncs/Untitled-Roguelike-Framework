@@ -20,6 +20,7 @@ public partial class GameState : IGameState {
     IEntityFactory entityFactory;
     IFieldOfView fieldOfView;
     ILogging logging;
+    public IPathfinding Pathfinding {get;}
 
 
     /// <summary>
@@ -35,6 +36,7 @@ public partial class GameState : IGameState {
         IRandomGenerator random,
         IEntityFactory entityFactory,
         IFieldOfView fieldOfView,
+        IPathfinding pathfinding,
         ILogging logging,
         int mapWidth,
         int mapHeight
@@ -56,6 +58,7 @@ public partial class GameState : IGameState {
         gameClient = client;
         this.fieldOfView = fieldOfView;
         this.logging = logging;
+        this.Pathfinding = pathfinding;
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -176,7 +179,7 @@ public partial class GameState : IGameState {
         // todo would be nice if Entities didn't even need to know where they were
         if (!IsLegalMove(x, y)) {
             // This move isn't legal.
-            PostError("Attempted illegal move...");
+            PostError($"{entitiesById[id]} attempted illegal move...");
             return;
         }
 
@@ -201,6 +204,10 @@ public partial class GameState : IGameState {
         isFieldOfViewDirty = true;
         origin.ClearContents();
         PlaceEntity(id, x, y);
+    }
+
+    public IEntity GetMainCharacter() {
+        return mainCharacter;
     }
 
     /// <summary>
@@ -286,5 +293,13 @@ public partial class GameState : IGameState {
             PlaceEntity(entity.ID, entity.X, entity.Y);
         }
         mainCharacter = entitiesById[reader.ReadInt()];
+    }
+
+    public (int, int) GetMapSize() {
+        return (MapWidth, MapHeight);
+    }
+
+    public bool IsTraversable(int x, int y) {
+        return GetCell(x, y).IsPassable();
     }
 }

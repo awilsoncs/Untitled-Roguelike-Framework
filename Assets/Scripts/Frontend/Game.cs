@@ -60,6 +60,7 @@ public partial class Game : PersistableObject
             backendPlugins.randomPlugin.Impl,
             entityFactory,
             backendPlugins.fieldOfViewPlugin.Impl,
+            backendPlugins.pathfindingPlugin.Impl,
             backendPlugins.loggingPlugin.Impl,
             mapWidth,
             mapHeight
@@ -99,6 +100,7 @@ public partial class Game : PersistableObject
             backendPlugins.randomPlugin.Impl,
             entityFactory,
             backendPlugins.fieldOfViewPlugin.Impl,
+            backendPlugins.pathfindingPlugin.Impl,
             backendPlugins.loggingPlugin.Impl,
             mapWidth,
             mapHeight

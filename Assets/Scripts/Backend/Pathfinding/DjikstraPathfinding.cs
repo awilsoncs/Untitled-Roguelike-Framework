@@ -112,6 +112,8 @@ public class DjikstraPathfinding : IPathfinding
     private List<(int, int)> GetSuccessors((int, int) node) {
         var x = node.Item1;
         var y = node.Item2;
+
+        // todo this produces detectable artifacts in movement
         return new List<(int, int)> {
             (x+1, y), (x-1, y), (x, y+1), (x, y-1) 
         };
