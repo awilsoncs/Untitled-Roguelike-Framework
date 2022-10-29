@@ -1,4 +1,4 @@
-public class DebugCommand : IGameCommand {
+public struct DebugCommand : IGameCommand {
     public enum DebugMethod {
         SpawnCrab
     }
