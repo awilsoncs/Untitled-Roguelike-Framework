@@ -6,10 +6,15 @@ public class MonsterActor : EntityPart {
     public override void GameUpdate()
     {
         // todo make this only happen if the entity can see the player
-        var costs = GetMovementCosts(GameState);
-        // find the player
         var mainCharacter = GameState.GetMainCharacter();
         var mainCharacterPosition = (mainCharacter.X, mainCharacter.Y);
+        var position = (Entity.X, Entity.Y);
+        if (!GameState.FieldOfView.IsVisible(GameState, position, mainCharacterPosition)) {
+            // entity can't see the player, just dawdle.
+            return;
+        }
+
+        var costs = GetMovementCosts(GameState);
         // take a step along the path
         var path = GameState.Pathfinding.GetPath(costs, (Entity.X, Entity.Y), mainCharacterPosition);
         // todo if we're close just attack

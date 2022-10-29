@@ -74,7 +74,7 @@ public partial class GameState : IGameState {
             PostError("Cannot begin game without RNG.");
             return;
         }
-        if (fieldOfView == null) {
+        if (FieldOfView == null) {
             PostError("Cannot begin game without FOV plugin.");
             return;
         }

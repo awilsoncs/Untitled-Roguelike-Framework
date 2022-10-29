@@ -27,6 +27,16 @@ public class RaycastingFOV : IFieldOfView {
         return new FieldOfViewQueryResult(results);
     }
 
+    public bool IsVisible(IGameState gameState, (int, int) start, (int, int) end)
+    {
+        var results = new Dictionary<(int, int), bool>();
+        Algorithms.PlotFunction pf = (int x, int y) => {
+            results[(x, y)] = true;
+            return gameState.GetCell(x, y).IsTransparent;
+        };
+        Algorithms.Line(start.Item1, start.Item2, end.Item1, end.Item2, pf);
+        return results.GetValueOrDefault(end);
+    }
+
     // todo calculate line of sight
-    // todo calculate boolean InLineOfSight
 }

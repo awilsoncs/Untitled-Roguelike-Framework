@@ -18,8 +18,9 @@ public partial class GameState : IGameState {
     IGameClient gameClient;
     public IRandomGenerator RNG {get;}
     IEntityFactory entityFactory;
-    IFieldOfView fieldOfView;
     ILogging logging;
+    public IFieldOfView FieldOfView {get;}
+
     public IPathfinding Pathfinding {get;}
 
 
@@ -56,7 +57,7 @@ public partial class GameState : IGameState {
         RNG = random;
         this.entityFactory = entityFactory;
         gameClient = client;
-        this.fieldOfView = fieldOfView;
+        this.FieldOfView = fieldOfView;
         this.logging = logging;
         this.Pathfinding = pathfinding;
 
@@ -229,7 +230,7 @@ public partial class GameState : IGameState {
 
     private void RecalculateFOVImmediately() {
         isFieldOfViewDirty = false;
-        IFieldOfViewQueryResult result = fieldOfView.CalculateFOV(
+        IFieldOfViewQueryResult result = FieldOfView.CalculateFOV(
             this, mainCharacter.X, mainCharacter.Y);
         for(int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
