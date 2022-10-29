@@ -1,5 +1,5 @@
 using System;
-public partial class GameState : IGameState {
+public partial class GameState : IBuildable {
     
     public void SetMainCharacter(int id) {
         IEntity entity = entitiesById[id];
