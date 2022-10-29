@@ -34,7 +34,7 @@ public class Entity : IPersistableObject, IEntity {
 
     public virtual void GameUpdate(IGameState gameState) {
         for (int i = 0; i < parts.Count; i++) {
-            parts[i].GameUpdate(gameState);
+            parts[i].GameUpdate();
         }
     }
 

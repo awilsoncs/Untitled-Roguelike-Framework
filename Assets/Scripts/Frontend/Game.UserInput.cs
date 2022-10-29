@@ -43,7 +43,7 @@ public partial class Game : IGameClient {
             // there's something here...
             Debug.Log("Bonk!");
         } else {
-            gameState.PushCommand(new MoveCommand(mx, my));
+            gameState.PushCommand(new MoveCommand(mainCharacterId, mx, my));
         }
     }
 

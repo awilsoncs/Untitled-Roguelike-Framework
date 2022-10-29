@@ -12,7 +12,7 @@ IEntityPart
     public abstract EntityPartType PartType {get;}
     public IEntity Entity {get; set;}
     public IGameState GameState {get; set;}
-    public virtual void GameUpdate(IGameState gs) {}
+    public virtual void GameUpdate() {}
     public abstract void Recycle();
     public virtual void Load(GameDataReader reader) {
         Id = reader.ReadInt();

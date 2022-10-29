@@ -5,9 +5,9 @@ public class FighterPart : EntityPart {
     int damage;
 
     public override EntityPartType PartType => EntityPartType.Fighter;
-    public override void GameUpdate(IGameState gs) {
+    public override void GameUpdate() {
         if (currentHealth <= 0) {
-            gs.Kill(Entity);
+            GameState.Kill(Entity);
             // todo allow parts to send events somehow
         }
     }
@@ -51,11 +51,13 @@ public class FighterPart : EntityPart {
         base.Load(reader);
         maxHealth = reader.ReadInt();
         currentHealth = reader.ReadInt();
+        damage = reader.ReadInt();
     }
 
     public override void Save(GameDataWriter writer) {
         base.Save(writer);
         writer.Write(maxHealth);
         writer.Write(currentHealth);
+        writer.Write(damage);
     }
 }

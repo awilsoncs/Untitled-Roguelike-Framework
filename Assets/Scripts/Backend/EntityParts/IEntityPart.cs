@@ -26,8 +26,7 @@ public interface IEntityPart : IPersistableObject
     /// <summary>
     /// Perform game loop updates.
     /// </summary>
-    /// <param name="gameState">A reference to the state of the game.</param>
-    void GameUpdate(IGameState gameState) {}
+    void GameUpdate() {}
 
     /// <summary>
     /// Reclaim this IEntityPart

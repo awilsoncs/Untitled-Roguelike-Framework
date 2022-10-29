@@ -57,6 +57,7 @@ public class EntityFactory : IEntityFactory {
         entity.Appearance = "crab";
         entity.IsVisible = true;
         entity.AddPart(EntityPartPool<FighterPart>.Get().SetCurrentHealth(2));
+        entity.AddPart(EntityPartPool<MonsterActor>.Get());
         return entity;
     }
 

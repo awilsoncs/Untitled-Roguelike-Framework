@@ -27,13 +27,22 @@ public partial class GameState : IGameState {
     }
 
     private void HandleMoveCommand(MoveCommand cm) {
+        int entityId = cm.EntityId;
         int mx = cm.Direction.Item1;
         int my = cm.Direction.Item2;
+
         if (mainCharacter == null) {
             PostError("mainCharacter has not been set!");
             return;
         }
-        MoveEntity(mainCharacter.ID, mainCharacter.X+mx, mainCharacter.Y+my);
+
+        var entity = entitiesById[entityId];
+        var x = entity.X + mx;
+        var y = entity.Y + my;
+        MoveEntity(entityId, x, y);
+        if (entityId == mainCharacter.ID) {
+            GameUpdate();
+        }
         RecalculateFOV();
     }
 

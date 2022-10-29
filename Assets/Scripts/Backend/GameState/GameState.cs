@@ -285,6 +285,7 @@ public partial class GameState : IGameState {
             var entityID = reader.ReadInt();
             var entity = entityFactory.Get();
             entity.ID = entityID;
+            entity.GameState = this;
             entity.Load(reader);
 
             entities.Add(entity);

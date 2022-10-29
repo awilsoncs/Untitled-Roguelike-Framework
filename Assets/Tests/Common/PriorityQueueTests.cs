@@ -79,8 +79,6 @@ public class PriorityQueueTests
         queue.Enqueue(4, 1);
         Assert.That(queue.Peek(), Is.EqualTo(0), "Peek should return the highest value item.");
         Assert.That(queue.Peek(), Is.EqualTo(0), "Peeking should not alter the queue.");
-
-
     }
 
     [Test]
