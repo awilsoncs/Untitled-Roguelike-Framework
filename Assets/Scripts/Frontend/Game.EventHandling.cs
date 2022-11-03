@@ -30,6 +30,9 @@ public partial class Game : IGameClient {
             case GameEventType.MainCharacterChanged:
                 HandleMainCharacterChangedEvent((MainCharacterChangedEvent)ev);
                 return;
+            case GameEventType.EntityAttacked:
+                HandleEntityAttacked((EntityAttackedEvent) ev);
+                return;
             default:
                 Debug.Log($"Unhandled GameEventType {ev.EventType}");
                 return; 
@@ -73,6 +76,11 @@ public partial class Game : IGameClient {
     private void HandleEntityKilled(EntityKilledEvent ev) {
         Debug.Log($"Entity {ev.EntityId} has been killed.");
         int id = ev.EntityId;
+        if (id == mainCharacterId) {
+            Debug.Log("Player died, reloading...");
+            ClearGame();
+            BeginNewGame();
+        }
 
         Pawn pawn = pawns_by_id[id];
         // todo consider tracking save index
@@ -111,7 +119,19 @@ public partial class Game : IGameClient {
     }
 
     private void HandleMainCharacterChangedEvent(MainCharacterChangedEvent ev) {
-        mainCharacterId = ev.Id;
+        IEntity mainCharacter = ev.Entity;
+        mainCharacterId = ev.Entity.ID;
         mainCharacterPosition = entityPosition[mainCharacterId];
+        healthBar.CurrentHealth =  mainCharacter.GetPart<FighterPart>().CurrentHealth;
+        healthBar.MaximumHealth = mainCharacter.GetPart<FighterPart>().MaxHealth;
+        // todo should link updates to properties
+        healthBar.UpdateHealthBar();
+    }
+
+    private void HandleEntityAttacked(EntityAttackedEvent ev) {
+        if (ev.Defender == mainCharacterId && ev.Success) {
+            healthBar.CurrentHealth -= ev.Damage;
+            healthBar.UpdateHealthBar();
+        }
     }
 }

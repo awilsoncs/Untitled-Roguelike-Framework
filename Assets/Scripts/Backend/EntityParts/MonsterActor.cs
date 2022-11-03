@@ -18,6 +18,11 @@ public class MonsterActor : EntityPart {
         // take a step along the path
         var path = GameState.Pathfinding.GetPath(costs, (Entity.X, Entity.Y), mainCharacterPosition);
         // todo if we're close just attack
+        if (path.Count == 2) {
+            // just the start and end means adjacent
+            GameState.PushCommand(new AttackCommand(Entity.ID, GameState.GetMainCharacter().ID));
+            return;
+        }
         var nextStep = path[1];
         var mx = nextStep.Item1 - Entity.X;
         var my = nextStep.Item2 - Entity.Y;

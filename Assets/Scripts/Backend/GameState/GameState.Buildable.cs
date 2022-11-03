@@ -3,7 +3,7 @@ public partial class GameState : IBuildable {
     
     public void SetMainCharacter(int id) {
         IEntity entity = entitiesById[id];
-        gameClient.PostEvent(new MainCharacterChangedEvent(id));
+        gameClient.PostEvent(new MainCharacterChangedEvent(entity));
         mainCharacter = entity;
     }
 

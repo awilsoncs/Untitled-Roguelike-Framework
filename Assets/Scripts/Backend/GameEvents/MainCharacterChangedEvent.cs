@@ -1,8 +1,8 @@
 public class MainCharacterChangedEvent : IGameEvent {
-    public int Id { get; set; }
+    public IEntity Entity {get;}
     public GameEventType EventType => GameEventType.MainCharacterChanged;
 
-    public MainCharacterChangedEvent (int id) {
-        Id = id;
+    public MainCharacterChangedEvent (IEntity entity) {
+        Entity = entity;
     }
 }

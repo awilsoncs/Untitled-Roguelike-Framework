@@ -38,7 +38,9 @@ public partial class Game : IGameClient {
         int y = mainCharacterPosition.Item2 + my;
         if (entityMap[x][y].Item1 >= 0 && entityMap[x][y].Item2) {
             // this is an enemy, bump attack instead
-            gameState.PushCommand(new AttackCommand(entityMap[x][y].Item1));
+            gameState.PushCommand(
+                new AttackCommand(mainCharacterId, entityMap[x][y].Item1)
+            );
         } else if (entityMap[x][y].Item1 >= 0) {
             // there's something here...
             Debug.Log("Bonk!");

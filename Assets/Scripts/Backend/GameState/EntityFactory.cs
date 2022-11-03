@@ -6,13 +6,15 @@ public class EntityFactory : IEntityFactory {
     private int idCounter = 0;
     private delegate Entity EntityBuilder();
     
-    Dictionary<String, EntityBuilder> constructors;
+    readonly Dictionary<String, EntityBuilder> constructors;
 
     public EntityFactory() {
-        constructors = new Dictionary<string, EntityBuilder>();
-        constructors.Add("player", this.GetPlayer);
-        constructors.Add("crab", this.GetCrab);
-        constructors.Add("wall", this.GetWall);
+        constructors = new Dictionary<string, EntityBuilder>
+        {
+            { "player", this.GetPlayer },
+            { "crab", this.GetCrab },
+            { "wall", this.GetWall }
+        };
     }    
 
     /*
@@ -43,8 +45,8 @@ public class EntityFactory : IEntityFactory {
         entity.IsVisible = true;
         entity.AddPart(
             EntityPartPool<FighterPart>.Get()
-                .SetCurrentHealth(10)
-                .SetDamage(1)
+            .SetCurrentHealth(10)
+            .SetDamage(2)
         );
         return entity;
     }
@@ -56,7 +58,11 @@ public class EntityFactory : IEntityFactory {
         entity.BlocksSight = false;
         entity.Appearance = "crab";
         entity.IsVisible = true;
-        entity.AddPart(EntityPartPool<FighterPart>.Get().SetCurrentHealth(2));
+        entity.AddPart(
+            EntityPartPool<FighterPart>.Get()
+            .SetCurrentHealth(2)
+            .SetDamage(1)
+        );
         entity.AddPart(EntityPartPool<MonsterActor>.Get());
         return entity;
     }

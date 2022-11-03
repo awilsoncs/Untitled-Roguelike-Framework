@@ -51,8 +51,10 @@ public class DjikstraPathfinding : IPathfinding
     private static List<(int, int)> UnwindBestPath(Dictionary<(int, int), (int, int)> nodesByBestPredecessor, (int, int) node)
     {
         var backTrack = node;
-        var path = new List<(int, int)>();
-        path.Add(node);
+        var path = new List<(int, int)>
+        {
+            node
+        };
         while (nodesByBestPredecessor.ContainsKey(backTrack)) {
             // set the backtrack cursor to the best predecessor
             backTrack = nodesByBestPredecessor[backTrack];

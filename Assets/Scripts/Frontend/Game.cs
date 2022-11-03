@@ -44,6 +44,9 @@ public partial class Game : PersistableObject
     [SerializeField]
     [Tooltip("Custom behavior to inject into the game controller.")]
     BackendPlugins backendPlugins;
+
+    [SerializeField]
+    HealthBar healthBar;
     
     private void Start() {
         // todo figure out how to get randomness to the server

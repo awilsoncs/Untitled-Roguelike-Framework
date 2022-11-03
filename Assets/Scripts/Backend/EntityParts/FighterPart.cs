@@ -1,14 +1,16 @@
 using System;
 public class FighterPart : EntityPart {
     int maxHealth;
+
+    public int MaxHealth => maxHealth;
     int currentHealth;
+    public int CurrentHealth => currentHealth;
     int damage;
 
     public override EntityPartType PartType => EntityPartType.Fighter;
     public override void GameUpdate() {
         if (currentHealth <= 0) {
             GameState.Kill(Entity);
-            // todo allow parts to send events somehow
         }
     }
 

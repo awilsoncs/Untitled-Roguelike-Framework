@@ -47,15 +47,23 @@ public partial class GameState : IGameState {
     }
 
     private void HandleAttackCommand(AttackCommand cm) {
+        if (!entitiesById.ContainsKey(cm.Attacker)) {
+            PostError($"Attacking entity {cm.Attacker} does not exist.");
+            return;
+        }
+
         if (!entitiesById.ContainsKey(cm.Defender)) {
             PostError($"Defender entity {cm.Defender} does not exist.");
             return;
         }
-        FighterPart mainFighter = mainCharacter.GetPart<FighterPart>();
-        if (mainFighter == null) {
-            PostError($"Main character does not have a fighter component registered. Check the Entity definition.");
+
+        IEntity attacker = entitiesById[cm.Attacker];
+        FighterPart fighter = attacker.GetPart<FighterPart>();
+        if (fighter == null) {
+            PostError($"{attacker} does not have a fighter component registered. Check the Entity definition.");
             return;
         }
+
         IEntity defender = entitiesById[cm.Defender];
         // todo need to push this sort of thing into an internal event system
         FighterPart defenderFighter = defender.GetPart<FighterPart>();
@@ -63,10 +71,13 @@ public partial class GameState : IGameState {
             PostError($"Illegal attack attempted...(defender {defender})");
             return;
         }
-        mainFighter.Attack(defenderFighter);
+
+        fighter.Attack(defenderFighter);
         // todo move this event emission into the fighter component
-        PostEvent(new EntityAttackedEvent(mainCharacter.ID, cm.Defender, true, 1));
-        GameUpdate();
+        PostEvent(new EntityAttackedEvent(cm.Attacker, cm.Defender, true, 1));
+        if (cm.Attacker == mainCharacter.ID) {
+            GameUpdate();
+        }
     }
 
     private void HandleStartGameCommand(StartGameCommand cm) {
