@@ -129,6 +129,7 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityAttacked(EntityAttackedEvent ev) {
+        gui.messageBox.AddMessage($"{ev.Attacker} attacked {ev.Defender} for {ev.Damage} damage!");
         if (ev.Defender == mainCharacterId && ev.Success) {
             gui.healthBar.CurrentHealth -= ev.Damage;
             gui.healthBar.UpdateHealthBar();

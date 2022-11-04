@@ -6,4 +6,5 @@ public interface IGameState : IPersistableObject, ICommandable, IBuildable {
     (int, int) GetMapSize();
     bool IsTraversable(int i, int j);
     IEntity GetMainCharacter();
+    void PostEvent(IGameEvent ev);
 }

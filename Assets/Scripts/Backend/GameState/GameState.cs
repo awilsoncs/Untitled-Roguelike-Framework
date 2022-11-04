@@ -249,7 +249,7 @@ public partial class GameState : IGameState {
         PostEvent(new FieldOfViewUpdatedEvent());
     }
 
-    private void PostEvent(IGameEvent ev) {
+    public void PostEvent(IGameEvent ev) {
         gameClient.PostEvent(ev);
     }
 

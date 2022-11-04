@@ -6,4 +6,7 @@ public class GUIComponents
 {
     [SerializeField]
     public HealthBar healthBar;
+
+    [SerializeField]
+    public MessageBox messageBox;
 }

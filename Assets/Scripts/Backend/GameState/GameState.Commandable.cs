@@ -74,7 +74,6 @@ public partial class GameState : IGameState {
 
         fighter.Attack(defenderFighter);
         // todo move this event emission into the fighter component
-        PostEvent(new EntityAttackedEvent(cm.Attacker, cm.Defender, true, 1));
         if (cm.Attacker == mainCharacter.ID) {
             GameUpdate();
         }

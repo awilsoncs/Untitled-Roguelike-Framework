@@ -19,6 +19,7 @@ public class FighterPart : EntityPart {
     }
 
     public void Attack(FighterPart other) {
+        GameState.PostEvent(new EntityAttackedEvent(Entity.ID, other.Entity.ID, true, damage));
         GameState.Log($"{Entity} will deal {damage} damage.");
         other.DealDamage(damage);
     }
