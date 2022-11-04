@@ -74,6 +74,10 @@ public partial class GameState : IGameState {
         if (isFieldOfViewDirty) {
             RecalculateFOV();
         }
+
+        // todo refactor this to read from two queues:
+            // 1st, the backend command queue
+            // 2nd, when the 1st is empty, read from the receiving command queue
         inGameUpdateLoop = true;
         for (int i = 0; i < entities.Count; i++) {
             entities[i].GameUpdate(this);

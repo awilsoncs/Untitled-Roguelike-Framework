@@ -122,16 +122,16 @@ public partial class Game : IGameClient {
         IEntity mainCharacter = ev.Entity;
         mainCharacterId = ev.Entity.ID;
         mainCharacterPosition = entityPosition[mainCharacterId];
-        healthBar.CurrentHealth =  mainCharacter.GetPart<FighterPart>().CurrentHealth;
-        healthBar.MaximumHealth = mainCharacter.GetPart<FighterPart>().MaxHealth;
+        gui.healthBar.CurrentHealth =  mainCharacter.GetPart<FighterPart>().CurrentHealth;
+        gui.healthBar.MaximumHealth = mainCharacter.GetPart<FighterPart>().MaxHealth;
         // todo should link updates to properties
-        healthBar.UpdateHealthBar();
+        gui.healthBar.UpdateHealthBar();
     }
 
     private void HandleEntityAttacked(EntityAttackedEvent ev) {
         if (ev.Defender == mainCharacterId && ev.Success) {
-            healthBar.CurrentHealth -= ev.Damage;
-            healthBar.UpdateHealthBar();
+            gui.healthBar.CurrentHealth -= ev.Damage;
+            gui.healthBar.UpdateHealthBar();
         }
     }
 }

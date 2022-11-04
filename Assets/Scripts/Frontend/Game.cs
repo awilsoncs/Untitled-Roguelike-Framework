@@ -46,7 +46,7 @@ public partial class Game : PersistableObject
     BackendPlugins backendPlugins;
 
     [SerializeField]
-    HealthBar healthBar;
+    GUIComponents gui;
     
     private void Start() {
         // todo figure out how to get randomness to the server
