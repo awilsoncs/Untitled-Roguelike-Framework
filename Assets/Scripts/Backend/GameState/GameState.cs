@@ -109,7 +109,7 @@ public partial class GameState : IGameState {
     private void KillImmediately (IEntity entity) {
         // Generally, should only be called from Kill and during Update cleanup.
         // swap and pop the desired entity to avoid rearranging the whole tail
-        PostEvent(new EntityKilledEvent(entity.ID));
+        PostEvent(new EntityKilledEvent(entity));
 
         // todo can remove this scan by maintaining the index on the entity
         int index = entities.FindIndex(x => x == entity);

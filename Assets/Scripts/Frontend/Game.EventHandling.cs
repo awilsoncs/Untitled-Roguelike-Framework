@@ -75,8 +75,8 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityKilled(EntityKilledEvent ev) {
-        Debug.Log($"Entity {ev.EntityId} has been killed.");
-        int id = ev.EntityId;
+        Debug.Log($"Entity {ev.Entity.Name} has been killed.");
+        int id = ev.Entity.ID;
         if (id == mainCharacterId) {
             Debug.Log("Player died, reloading...");
             ClearGame();
