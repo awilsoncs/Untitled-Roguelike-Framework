@@ -165,7 +165,6 @@ public partial class GameState : IGameState {
         Cell destination = GetCell(x, y);
         IEntity contentsToKill = destination.ClearContents();
         if (contentsToKill != null) {
-            gameClient.PostEvent(new EntityKilledEvent(contentsToKill.ID));
             Kill(contentsToKill);
         }
         entity.X = x;
