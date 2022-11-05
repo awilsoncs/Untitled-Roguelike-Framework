@@ -102,7 +102,7 @@ public partial class Game : IGameClient {
     private void HandleEntityVisibilityChanged(
         EntityVisibilityChangedEvent ev
     ) {
-        int id = ev.EntityID;
+        int id = ev.Entity.ID;
         bool newVis = ev.NewVisibility;
         pawns_by_id[id].IsVisible = newVis;
         if (usingFOV || newVis) {

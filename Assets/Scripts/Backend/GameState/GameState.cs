@@ -241,7 +241,7 @@ public partial class GameState : IGameState {
                 IEntity entity = GetCell(x, y).GetContents();
                 if (entity != null && entity.IsVisible != isVisible) {
                     entity.IsVisible = isVisible;
-                    PostEvent(new EntityVisibilityChangedEvent(entity.ID, entity.IsVisible));
+                    PostEvent(new EntityVisibilityChangedEvent(entity, entity.IsVisible));
                 }
             }
         }
