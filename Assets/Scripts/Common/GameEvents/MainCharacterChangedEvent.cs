@@ -5,7 +5,7 @@ public struct MainCharacterChangedEvent : IGameEvent {
     /// <summary>
     /// The new main character
     /// </summary>
-    public IEntity Entity {get;}
+    public IEntity Entity { get; }
     // todo add a reference to the old main character here
     public GameEventType EventType => GameEventType.MainCharacterChanged;
 

@@ -9,7 +9,7 @@ public struct EntityMovedEvent : IGameEvent {
     /// <summary>
     /// The entity's new position.
     /// </summary>
-    public (int, int) Position { get; set; }
+    public (int, int) Position { get; }
     // todo add an old position
     public GameEventType EventType => GameEventType.EntityMoved;
 
