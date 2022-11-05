@@ -9,4 +9,8 @@ public interface IGameState : IPersistableObject, ICommandable, IBuildable {
     bool IsTraversable(int i, int j);
     IEntity GetMainCharacter();
     void PostEvent(IGameEvent ev);
+    IEntity GetEntityById(int id);
+    void GameUpdate();
+    void MoveEntity(int id, int x, int y);
+    void RecalculateFOV();
 }

@@ -4,16 +4,18 @@ using System.Collections.Generic;
 public class EntityFactory : IEntityFactory {
 // todo implement pooling behavior
     private int idCounter = 0;
-    private delegate Entity EntityBuilder();
+    private delegate void EntityBuilder(Entity entity);
     
-    readonly Dictionary<String, EntityBuilder> constructors;
+    readonly Dictionary<String, EntityBuilder> builders;
+    readonly HashSet<(string, SlotType)> entitySpec;
 
     public EntityFactory() {
-        constructors = new Dictionary<string, EntityBuilder>
+        entitySpec = new();
+        builders = new()
         {
-            { "player", this.GetPlayer },
-            { "crab", this.GetCrab },
-            { "wall", this.GetWall }
+            { "player", BuildPlayer },
+            { "crab", BuildCrab },
+            { "wall", BuildWall }
         };
     }    
 
@@ -21,59 +23,64 @@ public class EntityFactory : IEntityFactory {
     * Get a bare entity.
     */
     public Entity Get() {
-        return new Entity();
+        Entity entity = new();
+        foreach (var slot in entitySpec) {
+            switch (slot.Item2) {
+                case SlotType.String:
+                    entity.SetSlot(slot.Item1, "");
+                    continue;
+                case SlotType.Integer:
+                    entity.SetSlot(slot.Item1, 0);
+                    continue;
+                case SlotType.Boolean:
+                    entity.SetSlot(slot.Item1, false);
+                    continue;
+            }
+        }
+        return entity;
     }
 
     /*
     * Get an entity specified by a blueprint name.
     */
     public Entity Get(String s) {
-        Entity entity = constructors[s]();
+        Entity entity = Get();
+        builders[s](entity);
         entity.ID = idCounter++;
         return entity;
+    }
+
+    public void UpdateEntitySpec(List<(string, SlotType)> newSlots) {
+        foreach (var slot in newSlots) {
+            entitySpec.Add(slot);
+        }
     }
 
     public void Reclaim (Entity entity) {}
 
     // short term hardcoded delegates
-    Entity GetPlayer() {
-        var entity = Get();
-        entity.Name = "Player";
+    void BuildPlayer(Entity entity) {
+        entity.SetSlot("name", "Player");
         entity.BlocksMove = true;
         entity.BlocksSight = false;
         entity.Appearance = "player";
         entity.IsVisible = true;
-        entity.AddPart(
-            EntityPartPool<FighterPart>.Get()
-            .SetCurrentHealth(10)
-            .SetDamage(2)
-        );
-        return entity;
     }
 
-    Entity GetCrab() {
-        var entity = Get();
-        entity.Name = "Crab";
+    void BuildCrab(Entity entity) {
+        entity.SetSlot("name", "Crab");
         entity.BlocksMove = true;
         entity.BlocksSight = false;
         entity.Appearance = "crab";
         entity.IsVisible = true;
-        entity.AddPart(
-            EntityPartPool<FighterPart>.Get()
-            .SetCurrentHealth(2)
-            .SetDamage(1)
-        );
         entity.AddPart(EntityPartPool<MonsterActor>.Get());
-        return entity;
     }
 
-    Entity GetWall() {
-        var entity = Get();
-        entity.Name = "Wall";
+    void BuildWall(Entity entity) {
+        entity.SetSlot("name", "Wall");
         entity.BlocksMove = true;
         entity.BlocksSight = true;
         entity.Appearance = "wall";
         entity.IsVisible = true;
-        return entity;
     }
 }

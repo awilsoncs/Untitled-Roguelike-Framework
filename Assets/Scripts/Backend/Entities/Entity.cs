@@ -5,9 +5,6 @@ using System.Collections.Generic;
 /// </summary>
 public class Entity : IPersistableObject, IEntity {
     public int ID { get; set; }
-    public string Name { get; set; }
-    public int X { get; set; }
-    public int Y { get; set; }
     public string Appearance {get; set;}
     public bool BlocksMove { get; set; }
     public bool BlocksSight { get; set; }
@@ -28,8 +25,15 @@ public class Entity : IPersistableObject, IEntity {
         }
     }
 
+    private readonly Dictionary<string, int> intSlots;
+    private readonly Dictionary<string, string> stringSlots;
+    private readonly Dictionary<string, bool> boolSlots;
+
     public Entity() {
-        parts = new List<IEntityPart>();
+        parts = new();
+        intSlots = new();
+        stringSlots = new();
+        boolSlots = new();
     }
 
     public virtual void GameUpdate(IGameState gameState) {
@@ -58,47 +62,83 @@ public class Entity : IPersistableObject, IEntity {
         return (T)parts.Find((IEntityPart x) => {return x is T;});
     }
 
+    public void SetSlot(string slotName, int value) {
+        intSlots[slotName] = value;
+    }
+
+    public void SetSlot(string slotName, string value) {
+        stringSlots[slotName] = value;
+    }
+
+    public void SetSlot(string slotName, bool value) {
+        boolSlots[slotName] = value;
+    }
+
+    public int GetIntSlot(string slotName) {
+        return intSlots[slotName];
+    }
+
+    public string GetStringSlot(string slotName) {
+        return stringSlots[slotName];
+    }
+
+    public bool GetBoolSlot(string slotName) {
+        return boolSlots[slotName];
+    }
+
     public void Save(GameDataWriter writer) {
-        writer.Write(Name);
         writer.Write(Appearance);
-        writer.Write(X);
-        writer.Write(Y);
-        writer.Write(BlocksMove);
         writer.Write(BlocksSight);
         writer.Write(IsVisible);
         writer.Write(parts.Count);
         for (int i = 0; i < parts.Count; i++) {
-            writer.Write(parts[i].Id);
             writer.Write((int)parts[i].PartType);
             parts[i].Save(writer);
+        }
+        // general slot writing
+        writer.Write(intSlots.Count);
+        foreach (var key in intSlots.Keys) {
+            writer.Write(key);
+            writer.Write(GetIntSlot(key));
+        }
+        writer.Write(stringSlots.Count);
+        foreach (var key in stringSlots.Keys) {
+            writer.Write(key);
+            writer.Write(GetStringSlot(key));
+        }
+        writer.Write(boolSlots.Count);
+        foreach (var key in boolSlots.Keys) {
+            writer.Write(key);
+            writer.Write(GetBoolSlot(key));
         }
     }
 
     public void Load(GameDataReader reader) {
-        Name = reader.ReadString();
         Appearance = reader.ReadString();
-        X = reader.ReadInt();
-        Y = reader.ReadInt();
-        BlocksMove = reader.ReadBool();
         BlocksSight = reader.ReadBool();
         IsVisible = reader.ReadBool();
         var partCount = reader.ReadInt();
-        if (partCount > 0) {
-            // todo abstract out these debug calls
-            //gameClient.LogMessage($">> Entity {Name}::{ID} loading {partCount} parts...");
-            for (int i = 0; i < partCount; i++) {
-                var partId = reader.ReadInt();
-                IEntityPart part = 
-                        ((EntityPartType)reader.ReadInt()).GetInstance();
-                parts.Add(part);
-                part.Entity = this;
-                part.GameState = this.GameState;
-                part.Load(reader);
-            }
-            //Debug.Log($">> Entity {Name}::{ID} done loading parts...");
-        } else {
-            //Debug.Log($">> Entity {Name}::{ID}  has no parts to load...");
-        }        
+        for (int i = 0; i < partCount; i++) {
+            IEntityPart part = 
+                    ((EntityPartType)reader.ReadInt()).GetInstance();
+            parts.Add(part);
+            part.Entity = this;
+            part.GameState = this.GameState;
+            part.Load(reader);
+        }
+        // general slot reading
+        var intSlotCount = reader.ReadInt();
+        for (int i = 0; i < intSlotCount; i++) {
+            SetSlot(reader.ReadString(), reader.ReadInt());
+        }
+        var stringSlotCount = reader.ReadInt();
+        for (int i = 0; i < stringSlotCount; i++) {
+            SetSlot(reader.ReadString(), reader.ReadString());
+        }
+        var boolSlotCount = reader.ReadInt();
+        for (int i = 0; i < boolSlotCount; i++) {
+            SetSlot(reader.ReadString(), reader.ReadBool());
+        }
     }
 
     public void Recycle(IEntityFactory entityFactory) {
@@ -113,7 +153,10 @@ public class Entity : IPersistableObject, IEntity {
 
     public override string ToString()
     {
-        return $"{Name}::{ID}::({X}, {Y})";
+        var name = GetStringSlot("name");
+        var X = GetIntSlot("X");
+        var Y = GetIntSlot("Y");
+        return $"{name}::{ID}::({X}, {Y})";
     }
 
 }

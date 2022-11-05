@@ -8,32 +8,12 @@ public interface IEntity : IPersistableObject {
     /// The entity's unique identifier in the game world.
     /// </summary>
     int ID { get; set; }
-    
-    /// <summary>
-    /// The entity's (non-unique) name in the game world.
-    /// </summary>
-    string Name { get; set; }
-    
-    /// <summary>
-    /// The entity's horizontal coordinate in game space.
-    /// </summary>
-    int X { get; set; }
-
-    /// <summary>
-    /// The entity's vertical coordinate in game space.
-    /// </summary>
-    int Y { get; set; }
 
     /// <summary>
     /// The entity's appearance descriptor.
     /// </summary>
     /// <value>A string representing the entity's appearance.</value>
     String Appearance {get; set;}
-
-    /// <summary>
-    /// Whether the entity should block movement.
-    /// </summary>
-    bool BlocksMove { get; set; }
 
     /// <summary>
     /// Whether the entity should block field of view.
@@ -77,5 +57,10 @@ public interface IEntity : IPersistableObject {
     /// of this entity properly.</param>
     void Recycle(IEntityFactory entityFactory);
 
-    
+    void SetSlot(string slotName, int value);
+    void SetSlot(string slotName, string value);
+    void SetSlot(string slotName, bool value);
+    int GetIntSlot(string slotName);
+    string GetStringSlot(string slotName);
+    bool GetBoolSlot(string slotName);
 }

@@ -8,9 +8,6 @@ public partial class GameState : IGameState {
     // todo move these into a pluggable handler system
     public void PushCommand(IGameCommand cm) {
         switch (cm.CommandType) {
-            case GameCommandType.Move:
-                HandleMoveCommand((MoveCommand)cm);
-                return;
             case GameCommandType.Attack:
                 HandleAttackCommand((AttackCommand)cm);
                 return;
@@ -21,29 +18,11 @@ public partial class GameState : IGameState {
                 HandleDebugCommand((DebugCommand)cm);
                 return;
             default:
-                PostError($"Unrecognized command {cm.CommandType}");
-                return;
+                foreach(var handler in commandHandlers[cm.CommandType]) {
+                    handler(this, cm);
+                }
+                break;
         }
-    }
-
-    private void HandleMoveCommand(MoveCommand cm) {
-        int entityId = cm.EntityId;
-        int mx = cm.Direction.Item1;
-        int my = cm.Direction.Item2;
-
-        if (mainCharacter == null) {
-            PostError("mainCharacter has not been set!");
-            return;
-        }
-
-        var entity = entitiesById[entityId];
-        var x = entity.X + mx;
-        var y = entity.Y + my;
-        MoveEntity(entityId, x, y);
-        if (entityId == mainCharacter.ID) {
-            GameUpdate();
-        }
-        RecalculateFOV();
     }
 
     private void HandleAttackCommand(AttackCommand cm) {

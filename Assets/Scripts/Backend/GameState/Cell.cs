@@ -24,7 +24,7 @@ public class Cell {
     }
 
     public bool IsPassable() {
-        return (contents == null || !contents.BlocksMove);
+        return (contents == null || !contents.GetBoolSlot("blocksMove"));
     }
 
     public bool IsTransparent

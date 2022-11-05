@@ -7,8 +7,9 @@ public class MonsterActor : EntityPart {
     {
         // todo make this only happen if the entity can see the player
         var mainCharacter = GameState.GetMainCharacter();
-        var mainCharacterPosition = (mainCharacter.X, mainCharacter.Y);
-        var position = (Entity.X, Entity.Y);
+        var mainCharacterPosition = (
+            mainCharacter.GetIntSlot("X"), mainCharacter.GetIntSlot("Y"));
+        var position = (Entity.GetIntSlot("X"), Entity.GetIntSlot("Y"));
         if (!GameState.FieldOfView.IsVisible(GameState, position, mainCharacterPosition)) {
             // entity can't see the player, just dawdle.
             return;
@@ -16,7 +17,7 @@ public class MonsterActor : EntityPart {
 
         var costs = GetMovementCosts(GameState);
         // take a step along the path
-        var path = GameState.Pathfinding.GetPath(costs, (Entity.X, Entity.Y), mainCharacterPosition);
+        var path = GameState.Pathfinding.GetPath(costs, position, mainCharacterPosition);
         // todo if we're close just attack
         if (path.Count == 2) {
             // just the start and end means adjacent
@@ -24,8 +25,8 @@ public class MonsterActor : EntityPart {
             return;
         }
         var nextStep = path[1];
-        var mx = nextStep.Item1 - Entity.X;
-        var my = nextStep.Item2 - Entity.Y;
+        var mx = nextStep.Item1 - position.Item1;
+        var my = nextStep.Item2 - position.Item2;
         GameState.PushCommand(new MoveCommand(Entity.ID, mx, my));
     }
 

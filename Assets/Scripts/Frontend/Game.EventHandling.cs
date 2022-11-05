@@ -73,7 +73,7 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityKilled(EntityKilledEvent ev) {
-        Debug.Log($"Entity {ev.Entity.Name} has been killed.");
+        Debug.Log($"Entity {ev.Entity.GetStringSlot("name")} has been killed.");
         int id = ev.Entity.ID;
         if (id == mainCharacterId) {
             Debug.Log("Player died, reloading...");
@@ -117,14 +117,17 @@ public partial class Game : IGameClient {
         IEntity mainCharacter = ev.Entity;
         mainCharacterId = ev.Entity.ID;
         mainCharacterPosition = entityPosition[mainCharacterId];
-        gui.healthBar.CurrentHealth =  mainCharacter.GetPart<FighterPart>().CurrentHealth;
-        gui.healthBar.MaximumHealth = mainCharacter.GetPart<FighterPart>().MaxHealth;
+        gui.healthBar.CurrentHealth =  100;
+        gui.healthBar.MaximumHealth = 100;
         // todo should link updates to properties
         gui.healthBar.UpdateHealthBar();
     }
 
     private void HandleEntityAttacked(EntityAttackedEvent ev) {
-        gui.messageBox.AddMessage($"{ev.Attacker.Name} attacked {ev.Defender.Name} for {ev.Damage} damage!");
+        var attackerName = ev.Attacker.GetStringSlot("name");
+        var defenderName = ev.Defender.GetStringSlot("name");
+        gui.messageBox.AddMessage(
+            $"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
         if (ev.Defender.ID == mainCharacterId && ev.Success) {
             gui.healthBar.CurrentHealth -= ev.Damage;
             gui.healthBar.UpdateHealthBar();

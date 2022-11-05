@@ -21,7 +21,6 @@ public partial class GameState : IGameState {
     IEntityFactory entityFactory;
     ILogging logging;
     public IFieldOfView FieldOfView {get;}
-
     public IPathfinding Pathfinding {get;}
 
 
@@ -50,9 +49,21 @@ public partial class GameState : IGameState {
         }
         MapWidth = mapWidth;
         MapHeight = mapHeight;
-        entities = new List<IEntity>();
-        killList = new List<IEntity>();
-        entitiesById = new Dictionary<int, IEntity>();
+        entities = new();
+        killList = new();
+        entitiesById = new();
+
+        // Set up the rules systems
+        RulesSystems = new();
+        commandHandlers = new();
+        foreach (GameCommandType t in Enum.GetValues(typeof(GameCommandType))) {
+            commandHandlers[t] = new();
+        }
+
+        eventHandlers = new();
+        foreach (GameEventType t in Enum.GetValues(typeof(GameEventType))) {
+            eventHandlers[t] = new();
+        }
 
         // perform injections
         RNG = random;
@@ -61,6 +72,10 @@ public partial class GameState : IGameState {
         this.FieldOfView = fieldOfView;
         this.logging = logging;
         this.Pathfinding = pathfinding;
+
+        // register systems
+        RegisterSystem(new EntityInfoSystem());
+        RegisterSystem(new MovementSystem());
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -71,7 +86,7 @@ public partial class GameState : IGameState {
         }
     }
 
-    private void GameUpdate() {
+    public void GameUpdate() {
         if (isFieldOfViewDirty) {
             RecalculateFOV();
         }
@@ -120,9 +135,13 @@ public partial class GameState : IGameState {
         }
         entities.RemoveAt(lastIndex);
         entitiesById.Remove(entity.ID);
-        Cell possibleLocation = GetCell(entity.X, entity.Y);
+        var x = entity.GetIntSlot("X");
+        var y = entity.GetIntSlot("Y");
+        Cell possibleLocation = GetCell(x, y);
         if (possibleLocation.GetContents() == entity) {
             possibleLocation.ClearContents();
+        } else {
+            PostError("Incorrect entity at expected kill location.");
         }
         entity.Recycle(entityFactory);
 
@@ -168,8 +187,8 @@ public partial class GameState : IGameState {
         if (contentsToKill != null) {
             Kill(contentsToKill);
         }
-        entity.X = x;
-        entity.Y = y;
+        entity.SetSlot("X", x);
+        entity.SetSlot("Y", y);
         destination.PutContents(entity);
         gameClient.PostEvent(new EntityMovedEvent(entity, x, y));
     }
@@ -180,7 +199,7 @@ public partial class GameState : IGameState {
     /// <param name="id">ID of the entity to move</param>
     /// <param name="x1">New horizontal destination coordinate of the Entity</param>
     /// <param name="y1">New vertical destination coordinate of the Entity</param>
-    private void MoveEntity(int id, int x, int y) {
+    public void MoveEntity(int id, int x, int y) {
         // todo would be nice if Entities didn't even need to know where they were
         if (!IsLegalMove(x, y)) {
             // This move isn't legal.
@@ -189,7 +208,9 @@ public partial class GameState : IGameState {
         }
 
         IEntity entity = entitiesById[id];
-        Cell origin = GetCell(entity.X, entity.Y);
+        int X = entity.GetIntSlot("X");
+        int Y = entity.GetIntSlot("Y");
+        Cell origin = GetCell(X, Y);
         Cell destination = GetCell(x, y);
 
         if (origin.GetContents() != entitiesById[id]) {
@@ -234,8 +255,12 @@ public partial class GameState : IGameState {
 
     private void RecalculateFOVImmediately() {
         isFieldOfViewDirty = false;
+
+        int x0 = mainCharacter.GetIntSlot("X");
+        int y0 = mainCharacter.GetIntSlot("Y");
+
         IFieldOfViewQueryResult result = FieldOfView.CalculateFOV(
-            this, mainCharacter.X, mainCharacter.Y);
+            this, x0, y0);
         for(int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
                 bool isVisible = result.IsVisible(x, y);
@@ -246,6 +271,10 @@ public partial class GameState : IGameState {
                 }
             }
         }
+    }
+
+    public IEntity GetEntityById(int id) {
+        return entitiesById[id];
     }
 
     public void PostEvent(IGameEvent ev) {
@@ -295,7 +324,9 @@ public partial class GameState : IGameState {
             entities.Add(entity);
             entitiesById.Add(entity.ID, entity);
             gameClient.PostEvent(new EntityCreatedEvent(entity));
-            PlaceEntity(entity.ID, entity.X, entity.Y);
+            var x = entity.GetIntSlot("X");
+            var y = entity.GetIntSlot("Y");
+            PlaceEntity(entity.ID, x, y);
         }
         mainCharacter = entitiesById[reader.ReadInt()];
     }
