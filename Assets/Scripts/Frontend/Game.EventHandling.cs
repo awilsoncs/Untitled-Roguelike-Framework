@@ -25,9 +25,6 @@ public partial class Game : IGameClient {
             case GameEventType.GameError:
                 HandleGameErrorEvent((GameErrorEvent)ev);
                 return;
-            case GameEventType.FieldOfViewUpdated:
-                HandleFieldOfViewUpdatedEvent((FieldOfViewUpdatedEvent)ev);
-                return;
             case GameEventType.MainCharacterChanged:
                 HandleMainCharacterChangedEvent((MainCharacterChangedEvent)ev);
                 return;
@@ -113,10 +110,6 @@ public partial class Game : IGameClient {
     private void HandleGameErrorEvent(GameErrorEvent ev) {
         string message = ev.Message;
         Debug.LogError(message);
-    }
-
-    private void HandleFieldOfViewUpdatedEvent(FieldOfViewUpdatedEvent ev) {
-        Debug.Log("Field of view was updated.");
     }
 
     private void HandleMainCharacterChangedEvent(MainCharacterChangedEvent ev) {

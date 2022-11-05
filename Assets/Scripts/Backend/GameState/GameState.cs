@@ -245,7 +245,6 @@ public partial class GameState : IGameState {
                 }
             }
         }
-        PostEvent(new FieldOfViewUpdatedEvent());
     }
 
     public void PostEvent(IGameEvent ev) {
