@@ -7,7 +7,7 @@ public struct GameErrorEvent : IGameEvent {
     /// <summary>
     /// The error message
     /// </summary>
-    public string Message { get; set; }
+    public string Message { get; }
 
     public GameEventType EventType => GameEventType.GameError;
 
