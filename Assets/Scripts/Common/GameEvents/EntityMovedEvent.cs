@@ -1,10 +1,20 @@
+/// <summary>
+/// Notify listeners that an entity has moved.
+/// </summary>
 public struct EntityMovedEvent : IGameEvent {
-    public int EntityID { get; set; }
+    /// <summary>
+    /// The entity that moved.
+    /// </summary>
+    public IEntity Entity { get; }
+    /// <summary>
+    /// The entity's new position.
+    /// </summary>
     public (int, int) Position { get; set; }
+    // todo add an old position
     public GameEventType EventType => GameEventType.EntityMoved;
 
-    public EntityMovedEvent (int id, int x, int y) {
-        EntityID = id;
+    public EntityMovedEvent (IEntity entity, int x, int y) {
+        Entity = entity;
         Position = (x, y);
     }
 }

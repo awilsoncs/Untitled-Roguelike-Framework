@@ -170,7 +170,7 @@ public partial class GameState : IGameState {
         entity.X = x;
         entity.Y = y;
         destination.PutContents(entity);
-        gameClient.PostEvent(new EntityMovedEvent(id, x, y));
+        gameClient.PostEvent(new EntityMovedEvent(entity, x, y));
     }
 
     /// <summary>

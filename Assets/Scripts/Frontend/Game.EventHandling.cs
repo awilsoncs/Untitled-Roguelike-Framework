@@ -41,20 +41,20 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityMoved(EntityMovedEvent ev) {
-        Pawn pawn = pawns_by_id[ev.EntityID];
+        Pawn pawn = pawns_by_id[ev.Entity.ID];
         int x = ev.Position.Item1;
         int y = ev.Position.Item2;
         pawn.transform.position = new Vector3(x*GRID_MULTIPLE, y*GRID_MULTIPLE, 0f);
 
         // Below code is for smart client actions (bump attack instead of attempt move)
-        if (entityPosition.ContainsKey(ev.EntityID)) {
-            (int x0, int y0) = entityPosition[ev.EntityID];
+        if (entityPosition.ContainsKey(ev.Entity.ID)) {
+            (int x0, int y0) = entityPosition[ev.Entity.ID];
             entityMap[x0][y0] = (-1, false);
         }
-        entityPosition[ev.EntityID] = (x, y);
-        entityMap[x][y] = (ev.EntityID, true);
+        entityPosition[ev.Entity.ID] = (x, y);
+        entityMap[x][y] = (ev.Entity.ID, true);
 
-        if (ev.EntityID == mainCharacterId) {
+        if (ev.Entity.ID == mainCharacterId) {
             mainCharacterPosition = (x, y);
         }
     }
