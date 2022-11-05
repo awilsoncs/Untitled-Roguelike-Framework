@@ -1,4 +1,4 @@
-public class EntityMovedEvent : IGameEvent {
+public struct EntityMovedEvent : IGameEvent {
     public int EntityID { get; set; }
     public (int, int) Position { get; set; }
     public GameEventType EventType => GameEventType.EntityMoved;

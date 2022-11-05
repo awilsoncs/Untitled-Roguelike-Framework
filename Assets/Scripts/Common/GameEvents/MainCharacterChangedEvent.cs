@@ -1,4 +1,4 @@
-public class MainCharacterChangedEvent : IGameEvent {
+public struct MainCharacterChangedEvent : IGameEvent {
     public IEntity Entity {get;}
     public GameEventType EventType => GameEventType.MainCharacterChanged;
 

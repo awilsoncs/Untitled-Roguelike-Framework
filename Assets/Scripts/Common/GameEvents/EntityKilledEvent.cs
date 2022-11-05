@@ -1,6 +1,6 @@
 using System;
 
-public class EntityKilledEvent : IGameEvent {
+public struct EntityKilledEvent : IGameEvent {
     public int EntityId { get; set; }
 
     public GameEventType EventType => GameEventType.EntityKilled;

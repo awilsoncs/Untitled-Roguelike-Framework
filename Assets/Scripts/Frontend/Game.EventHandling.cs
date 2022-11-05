@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// todo refactor this to a client plugin with unit tests
 public partial class Game : IGameClient {
     private List<Pawn> pawns;
     private Dictionary<int, Pawn> pawns_by_id;
@@ -129,8 +130,8 @@ public partial class Game : IGameClient {
     }
 
     private void HandleEntityAttacked(EntityAttackedEvent ev) {
-        gui.messageBox.AddMessage($"{ev.Attacker} attacked {ev.Defender} for {ev.Damage} damage!");
-        if (ev.Defender == mainCharacterId && ev.Success) {
+        gui.messageBox.AddMessage($"{ev.Attacker.Name} attacked {ev.Defender.Name} for {ev.Damage} damage!");
+        if (ev.Defender.ID == mainCharacterId && ev.Success) {
             gui.healthBar.CurrentHealth -= ev.Damage;
             gui.healthBar.UpdateHealthBar();
         }
