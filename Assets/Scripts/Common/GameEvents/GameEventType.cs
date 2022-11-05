@@ -1,10 +1,12 @@
-public enum GameEventType {
-    EntityAttacked,
-    EntityMoved,
-    EntityCreated,
-    EntityKilled,
-    EntityVisibilityChanged,
-    MainCharacterChanged,
-    GameError,
-    GameStarted
+namespace URFCommon {
+    public enum GameEventType {
+        EntityAttacked,
+        EntityMoved,
+        EntityCreated,
+        EntityKilled,
+        EntityVisibilityChanged,
+        MainCharacterChanged,
+        GameError,
+        GameStarted
+    }
 }

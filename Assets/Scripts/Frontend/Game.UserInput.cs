@@ -1,4 +1,5 @@
 using UnityEngine;
+using URFCommon;
 
 public partial class Game : IGameClient {
     [SerializeField] KeyCode newGameKey = KeyCode.N;

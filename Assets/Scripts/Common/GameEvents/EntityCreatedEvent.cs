@@ -1,10 +1,12 @@
 using System;
 
-public struct EntityCreatedEvent : IGameEvent {
-    public IEntity Entity { get; }
-    public GameEventType EventType => GameEventType.EntityCreated;
+namespace URFCommon {
+    public struct EntityCreatedEvent : IGameEvent {
+        public IEntity Entity { get; }
+        public GameEventType EventType => GameEventType.EntityCreated;
 
-    public EntityCreatedEvent (IEntity entity) {
-        Entity = entity;
+        public EntityCreatedEvent (IEntity entity) {
+            Entity = entity;
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using URFCommon;
 
 // todo refactor this to a client plugin with unit tests
 public partial class Game : IGameClient {

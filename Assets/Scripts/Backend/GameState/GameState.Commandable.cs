@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using URFCommon;
 
 /// <summary>
 /// Define commands available to the client.

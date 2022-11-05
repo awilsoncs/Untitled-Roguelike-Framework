@@ -1,18 +1,20 @@
 using System;
 
-// todo do we need to separate this from entity death?
-/// <summary>
-/// Notify listeners that an entity has been removed from the game.
-/// </summary>
-public struct EntityKilledEvent : IGameEvent {
+namespace URFCommon {
+    // todo do we need to separate this from entity death?
     /// <summary>
-    /// The entity that was removed.
+    /// Notify listeners that an entity has been removed from the game.
     /// </summary>
-    public IEntity Entity { get; }
+    public struct EntityKilledEvent : IGameEvent {
+        /// <summary>
+        /// The entity that was removed.
+        /// </summary>
+        public IEntity Entity { get; }
 
-    public GameEventType EventType => GameEventType.EntityKilled;
+        public GameEventType EventType => GameEventType.EntityKilled;
 
-    public EntityKilledEvent (IEntity entity) {
-        Entity = entity;
+        public EntityKilledEvent (IEntity entity) {
+            Entity = entity;
+        }
     }
 }

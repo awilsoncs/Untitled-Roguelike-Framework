@@ -1,3 +1,5 @@
+using URFCommon;
+
 public interface IGameState : IPersistableObject, ICommandable, IBuildable {
     IFieldOfView FieldOfView {get;}
     IPathfinding Pathfinding {get;}

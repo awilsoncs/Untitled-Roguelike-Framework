@@ -1,4 +1,6 @@
 using System;
+using URFCommon;
+
 public class FighterPart : EntityPart {
     int maxHealth;
 

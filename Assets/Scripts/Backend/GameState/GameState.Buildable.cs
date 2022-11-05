@@ -1,4 +1,6 @@
 using System;
+using URFCommon;
+
 public partial class GameState : IBuildable {
     
     public void SetMainCharacter(int id) {
