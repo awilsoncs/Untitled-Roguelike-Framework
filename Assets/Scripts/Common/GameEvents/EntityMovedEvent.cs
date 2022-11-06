@@ -10,13 +10,13 @@ namespace URFCommon {
         /// <summary>
         /// The entity's new position.
         /// </summary>
-        public (int, int) Position { get; }
+        public Position Position { get; }
         // todo add an old position
         public override GameEventType EventType => GameEventType.EntityMoved;
 
-        public EntityMovedEvent (IEntity entity, int x, int y) {
+        public EntityMovedEvent (IEntity entity, Position position) {
             Entity = entity;
-            Position = (x, y);
+            Position = position;
         }
     }
 }

@@ -1,3 +1,5 @@
+using URFCommon;
+
 public interface IFieldOfViewQueryResult {
-    bool IsVisible(int x, int y);
+    bool IsVisible(Position p);
 }

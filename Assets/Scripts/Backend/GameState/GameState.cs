@@ -3,24 +3,27 @@ using System.Collections.Generic;
 using URFCommon;
 
 public partial class GameState : IGameState {
-    List<IEntity> entities;
-    Dictionary<int, IEntity> entitiesById;
-    // Contains references to entities that need to be cleaned up after the game loop.
-    List<IEntity> killList;
     public int MapWidth {get; set;}
     public int MapHeight {get; set;}
-    Cell[][] map;
-    bool inGameUpdateLoop;
-    bool isFieldOfViewDirty;
+    private bool inGameUpdateLoop;
+    private bool isFieldOfViewDirty;
     IEntity mainCharacter;
-    // Interface through which client updates are posted.
-    IGameClient gameClient;
+
+    // todo decide on a pattern here
+    // ^ a) objects can access the game state's plugins directly
+    // or b) only through game state method calls
     public IRandomGenerator RNG {get;}
-    IEntityFactory entityFactory;
-    ILogging logging;
     public IFieldOfView FieldOfView {get;}
     public IPathfinding Pathfinding {get;}
+    private readonly IGameClient gameClient;
+    private readonly IEntityFactory entityFactory;
+    private readonly ILogging logging;
 
+    private readonly Cell[][] map;
+    private readonly List<IEntity> entities;
+    private readonly Dictionary<int, IEntity> entitiesById;
+    // Contains references to entities that need to be cleaned up after the game loop.
+    private readonly List<IEntity> killList;
 
     /// <summary>
     /// Create a new GameState.
@@ -131,9 +134,8 @@ public partial class GameState : IGameState {
         }
         entities.RemoveAt(lastIndex);
         entitiesById.Remove(entity.ID);
-        var x = entity.GetIntSlot("X");
-        var y = entity.GetIntSlot("Y");
-        Cell possibleLocation = GetCell(x, y);
+        var pos = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
+        Cell possibleLocation = GetCell(pos);
         if (possibleLocation.GetContents() == entity) {
             possibleLocation.ClearContents();
         } else {
@@ -143,8 +145,8 @@ public partial class GameState : IGameState {
 
     }
 
-    public Cell GetCell(int x, int y) {
-        return map[x][y];
+    public Cell GetCell(Position p) {
+        return map[p.X][p.Y];
     }
 
     /// <summary>
@@ -153,8 +155,8 @@ public partial class GameState : IGameState {
     /// <param name="x">The horizontal coordinate to check</param>
     /// <param name="y">The vertical position to check</param>
     /// <returns>True if the position is legal to step to, False otherwise</returns>
-    private bool IsLegalMove(int x, int y) {
-        return IsInBounds(x, y) && GetCell(x, y).IsPassable();
+    private bool IsLegalMove(Position p) {
+        return IsInBounds(p) && GetCell(p).IsPassable();
     }
 
     /// <summary>
@@ -163,10 +165,10 @@ public partial class GameState : IGameState {
     /// <param name="x">The horizontal coordinate to check</param>
     /// <param name="y">The vertical position to check</param>
     /// <returns>True if the position is in bounds, False otherwise</returns>
-    private bool IsInBounds(int x, int y) {
+    private bool IsInBounds(Position p) {
         return (
-            0 <= x && x < MapWidth
-            && 0 <= y && y < MapHeight
+            0 <= p.X && p.X < MapWidth
+            && 0 <= p.Y && p.Y < MapHeight
         );
     }
 
@@ -176,17 +178,17 @@ public partial class GameState : IGameState {
     /// <param name="id">ID of the entity to move</param>
     /// <param name="x">Horizontal destination coordinate of the Entity</param>
     /// <param name="y">Vertical destination coordinate of the Entity</param>
-    private void PlaceEntity(int id, int x, int y) {
+    private void PlaceEntity(int id, Position p) {
         IEntity entity = entitiesById[id];
-        Cell destination = GetCell(x, y);
+        Cell destination = GetCell(p);
         IEntity contentsToKill = destination.ClearContents();
         if (contentsToKill != null) {
             Kill(contentsToKill);
         }
-        entity.SetSlot("X", x);
-        entity.SetSlot("Y", y);
+        entity.SetSlot("X", p.X);
+        entity.SetSlot("Y", p.Y);
         destination.PutContents(entity);
-        gameClient.PostEvent(new EntityMovedEvent(entity, x, y));
+        gameClient.PostEvent(new EntityMovedEvent(entity, p));
     }
 
     /// <summary>
@@ -195,19 +197,18 @@ public partial class GameState : IGameState {
     /// <param name="id">ID of the entity to move</param>
     /// <param name="x1">New horizontal destination coordinate of the Entity</param>
     /// <param name="y1">New vertical destination coordinate of the Entity</param>
-    public void MoveEntity(int id, int x, int y) {
+    public void MoveEntity(int id, Position newPos) {
         // todo would be nice if Entities didn't even need to know where they were
-        if (!IsLegalMove(x, y)) {
+        if (!IsLegalMove(newPos)) {
             // This move isn't legal.
             PostError($"{entitiesById[id]} attempted illegal move...");
             return;
         }
 
         IEntity entity = entitiesById[id];
-        int X = entity.GetIntSlot("X");
-        int Y = entity.GetIntSlot("Y");
-        Cell origin = GetCell(X, Y);
-        Cell destination = GetCell(x, y);
+        var oldPos = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
+        Cell origin = GetCell(oldPos);
+        Cell destination = GetCell(newPos);
 
         if (origin.GetContents() != entitiesById[id]) {
             // Defensive coding, we shouldn't do anything if the IDs don't match.
@@ -225,7 +226,7 @@ public partial class GameState : IGameState {
         // FOV should only CHANGE when the player moves.
         isFieldOfViewDirty = true;
         origin.ClearContents();
-        PlaceEntity(id, x, y);
+        PlaceEntity(id, newPos);
     }
 
     public IEntity GetMainCharacter() {
@@ -252,15 +253,13 @@ public partial class GameState : IGameState {
     public void RecalculateFOVImmediately() {
         isFieldOfViewDirty = false;
 
-        int x0 = mainCharacter.GetIntSlot("X");
-        int y0 = mainCharacter.GetIntSlot("Y");
+        var pos = (mainCharacter.GetIntSlot("X"), mainCharacter.GetIntSlot("Y"));
 
-        IFieldOfViewQueryResult result = FieldOfView.CalculateFOV(
-            this, x0, y0);
+        IFieldOfViewQueryResult result = FieldOfView.CalculateFOV(this, pos);
         for(int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
-                bool isVisible = result.IsVisible(x, y);
-                IEntity entity = GetCell(x, y).GetContents();
+                bool isVisible = result.IsVisible((x, y));
+                IEntity entity = GetCell((x, y)).GetContents();
                 if (entity != null && entity.IsVisible != isVisible) {
                     entity.IsVisible = isVisible;
                     PostEvent(new EntityVisibilityChangedEvent(entity, entity.IsVisible));
@@ -322,7 +321,6 @@ public partial class GameState : IGameState {
 
     void LoadGame (GameDataReader reader) {
         // Perform all logic related to loading the game into the BoardController.
-        int version = reader.Version;
         int count = reader.ReadInt();
         for (int i = 0; i < count; i++) {
             var entityID = reader.ReadInt();
@@ -334,9 +332,8 @@ public partial class GameState : IGameState {
             entities.Add(entity);
             entitiesById.Add(entity.ID, entity);
             gameClient.PostEvent(new EntityCreatedEvent(entity));
-            var x = entity.GetIntSlot("X");
-            var y = entity.GetIntSlot("Y");
-            PlaceEntity(entity.ID, x, y);
+            var pos = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
+            PlaceEntity(entity.ID, pos);
         }
         mainCharacter = entitiesById[reader.ReadInt()];
     }
@@ -345,7 +342,7 @@ public partial class GameState : IGameState {
         return (MapWidth, MapHeight);
     }
 
-    public bool IsTraversable(int x, int y) {
-        return GetCell(x, y).IsPassable();
+    public bool IsTraversable(Position p) {
+        return GetCell(p).IsPassable();
     }
 }

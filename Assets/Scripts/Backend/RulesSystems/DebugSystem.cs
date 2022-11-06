@@ -9,8 +9,7 @@ public class DebugSystem : BaseRulesSystem
             case DebugCommand.DebugMethod.SpawnCrab:
                 gs.CreateEntityAtPosition(
                     "crab",
-                    gs.RNG.GetInt(1, gs.MapWidth-2),
-                    gs.RNG.GetInt(1, gs.MapHeight-2)
+                    (gs.RNG.GetInt(1, gs.MapWidth-2), gs.RNG.GetInt(1, gs.MapHeight-2))
                 );
                 return;
             default:

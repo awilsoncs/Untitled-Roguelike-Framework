@@ -16,14 +16,16 @@ public class MovementSystem : IRulesSystem
     public void HandleMoveCommand(IGameState gs, IGameEvent cm) {
         MoveCommand mcm = (MoveCommand)cm;
         int entityId = mcm.EntityId;
-        int mx = mcm.Direction.Item1;
-        int my = mcm.Direction.Item2;
+        int mx = mcm.Direction.X;
+        int my = mcm.Direction.Y;
 
         var entity = gs.GetEntityById(entityId);
-        var x = entity.GetIntSlot("X") + mx;
-        var y = entity.GetIntSlot("Y") + my;
+        var newPos = (
+            entity.GetIntSlot("X") + mx,
+            entity.GetIntSlot("Y") + my
+        );
 
-        gs.MoveEntity(entityId, x, y);
+        gs.MoveEntity(entityId, newPos);
         if (entityId == gs.GetMainCharacter().ID) {
             // todo eventually move this to a turn control system
             gs.GameUpdate();
@@ -32,3 +34,5 @@ public class MovementSystem : IRulesSystem
         gs.RecalculateFOV();
     }
 }
+
+// todo movement related entity extension methods

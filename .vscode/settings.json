@@ -57,6 +57,7 @@
         "Bresenham",
         "Buildable",
         "Commandable",
+        "Deconstructor",
         "Djikstra",
         "gameobject",
         "gameplay",

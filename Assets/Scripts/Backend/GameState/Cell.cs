@@ -14,12 +14,12 @@ public class Cell {
         if (contents != null) {
             return;
         }
-        this.contents = entity;
+        contents = entity;
     }
 
     public IEntity ClearContents() {
-        IEntity entity = this.contents;
-        this.contents = null;
+        IEntity entity = contents;
+        contents = null;
         return entity;
     }
 

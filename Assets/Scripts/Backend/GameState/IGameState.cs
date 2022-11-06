@@ -8,14 +8,14 @@ public interface IGameState : IPersistableObject, IBuildable {
     void Kill(IEntity entity);
     void Log(string message);
     (int, int) GetMapSize();
-    bool IsTraversable(int i, int j);
     IEntity GetMainCharacter();
     void PostEvent(IGameEvent ev);
     void PostError(string message);
     bool EntityExists(int id);
     IEntity GetEntityById(int id);
     void GameUpdate();
-    void MoveEntity(int id, int x, int y);
+    bool IsTraversable(Position p);
+    void MoveEntity(int id, Position p);
     void RecalculateFOV();
     void RecalculateFOVImmediately();
     List<IEntity> GetEntities();

@@ -1,11 +1,10 @@
-/// <summary>
-/// Provide an interface for dungeon and/or worldbuilding systems to access the
-/// GameState with more granularity than the GameClient.
-/// </summary>
+using System;
+using URFCommon;
+
 public interface IBuildable {
     void SetMainCharacter(int id);
-    int CreateEntityAtPosition(string appearance, int x, int y);
-    Cell GetCell(int x, int y);
+    int CreateEntityAtPosition(string appearance, Position position);
+    Cell GetCell(Position position);
     int MapWidth {get;}
     int MapHeight {get;}
 }

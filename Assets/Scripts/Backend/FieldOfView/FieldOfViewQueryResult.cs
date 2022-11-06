@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using URFCommon;
+
 public class FieldOfViewQueryResult : IFieldOfViewQueryResult {
-    private Dictionary<(int, int), bool> results;
-    public FieldOfViewQueryResult(in Dictionary<(int, int), bool> results) {
+    private readonly Dictionary<Position, bool> results;
+    public FieldOfViewQueryResult(in Dictionary<Position, bool> results) {
         this.results = results;
     }
-    public bool IsVisible(int x, int y) {
-        return results.GetValueOrDefault<(int, int), bool>((x, y));
+    public bool IsVisible(Position p) {
+        return results.GetValueOrDefault<Position, bool>(p);
     }
 }

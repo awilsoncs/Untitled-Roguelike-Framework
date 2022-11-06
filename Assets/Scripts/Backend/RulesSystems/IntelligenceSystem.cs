@@ -28,7 +28,7 @@ public class IntelligenceSystem : BaseRulesSystem {
         var mainCharacter = gameState.GetMainCharacter();
         var mainCharacterPosition = (
             mainCharacter.GetIntSlot("X"), mainCharacter.GetIntSlot("Y"));
-        var position = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
+        Position position = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
         if (!gameState.FieldOfView.IsVisible(gameState, position, mainCharacterPosition)) {
             // entity can't see the player, just dawdle.
             return;
@@ -44,9 +44,8 @@ public class IntelligenceSystem : BaseRulesSystem {
             return;
         }
         var nextStep = path[1];
-        var mx = nextStep.Item1 - position.Item1;
-        var my = nextStep.Item2 - position.Item2;
-        gameState.PostEvent(new MoveCommand(entity.ID, mx, my));
+        var mp = (nextStep.X - position.X, nextStep.Y - position.Y);
+        gameState.PostEvent(new MoveCommand(entity.ID, mp));
     }
 
     private float[][] GetMovementCosts(IGameState gs)
@@ -58,7 +57,7 @@ public class IntelligenceSystem : BaseRulesSystem {
             costs[x] = new float[height];
             for (int y = 0; y < height; y++)
             {
-                costs[x][y] = gs.IsTraversable(x, y) ? 0.1f : 10000f;
+                costs[x][y] = gs.IsTraversable((x, y)) ? 0.1f : 10000f;
             }
         }
         return costs;

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using URFCommon;
 
 public class DjikstraPathfindingTests
 {
@@ -30,8 +31,8 @@ public class DjikstraPathfindingTests
         var path = pf.GetPath(costs, (0, 0), (1, 1));
 
         Assert.That(path.Count, Is.EqualTo(3), "Path should be three steps.");
-        Assert.That(path[0], Is.EqualTo((0, 0)), "Path should include the start.");
-        Assert.That(path[2], Is.EqualTo((1, 1)), "Path should end at the end.");
+        Assert.That(path[0], Is.EqualTo(new Position(0, 0)), "Path should include the start.");
+        Assert.That(path[2], Is.EqualTo(new Position(1, 1)), "Path should end at the end.");
     }
 
     [Test]
@@ -55,7 +56,7 @@ public class DjikstraPathfindingTests
         var actualPath = pf.GetPath(costs, (4, 0), (0, 4));
         for (int i = 0; i < expectedPath.Count; i++) {
             Assert.That(
-                expectedPath[i],
+                (Position)expectedPath[i],
                 Is.EqualTo(actualPath[i]),
                 "Pathfinder should stay on the expected path."
             );
