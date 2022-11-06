@@ -12,8 +12,8 @@ public class MovementSystem : IRulesSystem
         ("Y", SlotType.Integer)
     };
 
-    [CommandHandler(GameCommandType.Move)]
-    public void HandleMoveCommand(IGameState gs, IGameCommand cm) {
+    [EventHandler(GameEventType.MoveCommand)]
+    public void HandleMoveCommand(IGameState gs, IGameEvent cm) {
         MoveCommand mcm = (MoveCommand)cm;
         int entityId = mcm.EntityId;
         int mx = mcm.Direction.Item1;

@@ -12,8 +12,6 @@ public partial class GameState : IGameState {
     Cell[][] map;
     bool inGameUpdateLoop;
     bool isFieldOfViewDirty;
-    // The character controlled by player input.
-    Entity playerAgent;
     IEntity mainCharacter;
     // Interface through which client updates are posted.
     IGameClient gameClient;
@@ -53,18 +51,6 @@ public partial class GameState : IGameState {
         killList = new();
         entitiesById = new();
 
-        // Set up the rules systems
-        RulesSystems = new();
-        commandHandlers = new();
-        foreach (GameCommandType t in Enum.GetValues(typeof(GameCommandType))) {
-            commandHandlers[t] = new();
-        }
-
-        eventHandlers = new();
-        foreach (GameEventType t in Enum.GetValues(typeof(GameEventType))) {
-            eventHandlers[t] = new();
-        }
-
         // perform injections
         RNG = random;
         this.entityFactory = entityFactory;
@@ -73,9 +59,19 @@ public partial class GameState : IGameState {
         this.logging = logging;
         this.Pathfinding = pathfinding;
 
-        // register systems
+        // Set up the rules systems
+        RulesSystems = new();
+        eventHandlers = new();
+        foreach (GameEventType t in Enum.GetValues(typeof(GameEventType))) {
+            eventHandlers[t] = new();
+        }
+
+        RegisterSystem(new DebugSystem());
         RegisterSystem(new EntityInfoSystem());
         RegisterSystem(new MovementSystem());
+        RegisterSystem(new GameStartSystem());
+        RegisterSystem(new CombatSystem());
+        RegisterSystem(new IntelligenceSystem());
 
         map = new Cell[MapWidth][];
         for (int i = 0; i < MapWidth; i++) {
@@ -95,8 +91,8 @@ public partial class GameState : IGameState {
             // 1st, the backend command queue
             // 2nd, when the 1st is empty, read from the receiving command queue
         inGameUpdateLoop = true;
-        for (int i = 0; i < entities.Count; i++) {
-            entities[i].GameUpdate(this);
+        for (int i = 0; i < RulesSystems.Count; i++) {
+            RulesSystems[i].GameUpdate(this);
         }
         inGameUpdateLoop = false;
         if (killList.Count > 0) {
@@ -253,7 +249,7 @@ public partial class GameState : IGameState {
         RecalculateFOVImmediately();
     }
 
-    private void RecalculateFOVImmediately() {
+    public void RecalculateFOVImmediately() {
         isFieldOfViewDirty = false;
 
         int x0 = mainCharacter.GetIntSlot("X");
@@ -277,11 +273,25 @@ public partial class GameState : IGameState {
         return entitiesById[id];
     }
 
-    public void PostEvent(IGameEvent ev) {
-        gameClient.PostEvent(ev);
+    public List<IEntity> GetEntities() {
+        return entities;
     }
 
-    private void PostError(string message) {
+    public bool EntityExists(int id) {
+        return entitiesById.ContainsKey(id);
+    }
+
+    public void PostEvent(IGameEvent ev) {
+        if (!ev.IsCommand) {
+            // commands are kept internal
+            gameClient.PostEvent(ev);
+        }
+        foreach(var handler in eventHandlers[ev.EventType]) {
+            handler(this, ev);
+        }
+    }
+
+    public void PostError(string message) {
         logging.Log(message);
         PostEvent(new GameErrorEvent(message));
     }

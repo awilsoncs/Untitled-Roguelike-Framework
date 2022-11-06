@@ -117,8 +117,8 @@ public partial class Game : IGameClient {
         IEntity mainCharacter = ev.Entity;
         mainCharacterId = ev.Entity.ID;
         mainCharacterPosition = entityPosition[mainCharacterId];
-        gui.healthBar.CurrentHealth =  100;
-        gui.healthBar.MaximumHealth = 100;
+        gui.healthBar.CurrentHealth =  ev.Entity.GetIntSlot("currentHealth");
+        gui.healthBar.MaximumHealth = ev.Entity.GetIntSlot("maxHealth");
         // todo should link updates to properties
         gui.healthBar.UpdateHealthBar();
     }

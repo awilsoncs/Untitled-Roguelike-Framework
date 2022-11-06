@@ -2,7 +2,7 @@ namespace URFCommon {
     /// <summary>
     /// Notify listeners that a new game has begun.
     /// </summary>
-    public struct GameStartedEvent : IGameEvent {
-        public GameEventType EventType => GameEventType.GameStarted;
+    public class GameStartedEvent : GameEvent {
+        public override GameEventType EventType => GameEventType.GameStarted;
     }
 }

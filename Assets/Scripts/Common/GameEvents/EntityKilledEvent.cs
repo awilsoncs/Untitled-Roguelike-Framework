@@ -5,13 +5,13 @@ namespace URFCommon {
     /// <summary>
     /// Notify listeners that an entity has been removed from the game.
     /// </summary>
-    public struct EntityKilledEvent : IGameEvent {
+    public class EntityKilledEvent : GameEvent {
         /// <summary>
         /// The entity that was removed.
         /// </summary>
         public IEntity Entity { get; }
 
-        public GameEventType EventType => GameEventType.EntityKilled;
+        public override GameEventType EventType => GameEventType.EntityKilled;
 
         public EntityKilledEvent (IEntity entity) {
             Entity = entity;

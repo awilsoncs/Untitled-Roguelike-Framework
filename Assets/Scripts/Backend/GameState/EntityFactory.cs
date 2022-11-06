@@ -61,7 +61,12 @@ public class EntityFactory : IEntityFactory {
     // short term hardcoded delegates
     void BuildPlayer(Entity entity) {
         entity.SetSlot("name", "Player");
-        entity.BlocksMove = true;
+        entity.SetSlot("canFight", true);
+        entity.SetSlot("currentHealth", 10);
+        entity.SetSlot("maxHealth", 10);
+        entity.SetSlot("damage", 2);
+        entity.SetSlot("blocksMove", true);
+        entity.SetSlot("controlMethod", "player");
         entity.BlocksSight = false;
         entity.Appearance = "player";
         entity.IsVisible = true;
@@ -69,16 +74,20 @@ public class EntityFactory : IEntityFactory {
 
     void BuildCrab(Entity entity) {
         entity.SetSlot("name", "Crab");
-        entity.BlocksMove = true;
+        entity.SetSlot("canFight", true);
+        entity.SetSlot("currentHealth", 2);
+        entity.SetSlot("maxHealth", 2);
+        entity.SetSlot("damage", 1);
+        entity.SetSlot("controlMethod", "monster");
+        entity.SetSlot("blocksMove", true);
         entity.BlocksSight = false;
         entity.Appearance = "crab";
         entity.IsVisible = true;
-        entity.AddPart(EntityPartPool<MonsterActor>.Get());
     }
 
     void BuildWall(Entity entity) {
         entity.SetSlot("name", "Wall");
-        entity.BlocksMove = true;
+        entity.SetSlot("blocksMove", true);
         entity.BlocksSight = true;
         entity.Appearance = "wall";
         entity.IsVisible = true;

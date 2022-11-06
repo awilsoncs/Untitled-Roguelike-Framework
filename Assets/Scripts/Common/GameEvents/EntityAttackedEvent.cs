@@ -1,5 +1,5 @@
 namespace URFCommon {
-    public struct EntityAttackedEvent : IGameEvent {
+    public class EntityAttackedEvent : GameEvent {
         /// <summary>The attacking entity's entity ID</summary>
         public IEntity Attacker {get;}
         /// <summary>The defending entity's entity ID</summary>
@@ -8,7 +8,7 @@ namespace URFCommon {
         public bool Success {get;}
         public int Damage {get;}
 
-        public GameEventType EventType => GameEventType.EntityAttacked;
+        public override GameEventType EventType => GameEventType.EntityAttacked;
         public EntityAttackedEvent (IEntity attacker, IEntity defender, bool success, int damage) {
             Attacker = attacker;
             Defender = defender;

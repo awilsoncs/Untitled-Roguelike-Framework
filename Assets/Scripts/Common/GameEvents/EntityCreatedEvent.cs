@@ -1,10 +1,10 @@
 using System;
 
 namespace URFCommon {
-    public struct EntityCreatedEvent : IGameEvent {
+    public class EntityCreatedEvent : GameEvent {
         public IEntity Entity { get; }
-        public GameEventType EventType => GameEventType.EntityCreated;
-
+        public override GameEventType EventType => GameEventType.EntityCreated;
+        
         public EntityCreatedEvent (IEntity entity) {
             Entity = entity;
         }

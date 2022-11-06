@@ -8,5 +8,11 @@ namespace URFCommon {
         /// </summary>
         /// <value>The corresponding event type for this event.</value>
         GameEventType EventType {get;}
+
+        /// <summary>
+        /// Designate whether this event is an imperative command. Commands are
+        /// not sent from the game state to the client.
+        /// </summary>
+        bool IsCommand {get;}
     }
 }

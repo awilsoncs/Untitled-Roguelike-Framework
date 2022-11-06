@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 /// <summary>
 /// High level container for logical game objects.
@@ -24,31 +25,6 @@ public interface IEntity : IPersistableObject {
     /// Whether the entity is currently visible to the player.
     /// </summary>
     bool IsVisible { get; set; }
-
-    /// <summary>
-    /// Perform game loop updates.
-    /// </summary>
-    /// <param name="gameState">A reference to the game state.</param>
-    void GameUpdate(IGameState gameState);
-
-    /// <summary>
-    /// Add an IEntityPart to the Entity.
-    /// </summary>
-    /// <param name="part">The IEntityPart to add.</param>
-    void AddPart(IEntityPart part);
-
-    /// <summary>
-    /// Remove an IEntityPart from the Entity.
-    /// </summary>
-    /// <param name="part">The IEntityPart to remove.</param>
-    void RemovePart(IEntityPart part);
-
-    /// <summary>
-    /// Return a part of the given type.
-    /// </summary>
-    /// <typeparam name="T">An IEntityPArt.</typeparam>
-    /// <returns></returns>
-    T GetPart<T>() where T : IEntityPart;
 
     /// <summary>
     /// Recycle this entity at the given factory.

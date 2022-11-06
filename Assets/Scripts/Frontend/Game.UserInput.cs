@@ -39,19 +39,19 @@ public partial class Game : IGameClient {
         int y = mainCharacterPosition.Item2 + my;
         if (entityMap[x][y].Item1 >= 0 && entityMap[x][y].Item2) {
             // this is an enemy, bump attack instead
-            gameState.PushCommand(
+            gameState.PostEvent(
                 new AttackCommand(mainCharacterId, entityMap[x][y].Item1)
             );
         } else if (entityMap[x][y].Item1 >= 0) {
             // there's something here...
             Debug.Log("Bonk!");
         } else {
-            gameState.PushCommand(new MoveCommand(mainCharacterId, mx, my));
+            gameState.PostEvent(new MoveCommand(mainCharacterId, mx, my));
         }
     }
 
     private void SpawnCrab() {
-        gameState.PushCommand(DebugCommand.SpawnCrab());
+        gameState.PostEvent(DebugCommand.SpawnCrab());
     }
 
     private void ToggleFieldOfView() {

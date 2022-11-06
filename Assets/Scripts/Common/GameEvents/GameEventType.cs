@@ -7,6 +7,11 @@ namespace URFCommon {
         EntityVisibilityChanged,
         MainCharacterChanged,
         GameError,
-        GameStarted
+        GameStarted,
+        // Commands below this line
+        StartGameCommand,
+        AttackCommand,
+        MoveCommand,
+        DebugCommand
     }
 }

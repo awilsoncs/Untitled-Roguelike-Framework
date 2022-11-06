@@ -4,13 +4,13 @@ namespace URFCommon {
     /// <summary>
     /// Notify listeners that the game has experienced an error.
     /// </summary>
-    public struct GameErrorEvent : IGameEvent {
+    public class GameErrorEvent : GameEvent {
         /// <summary>
         /// The error message
         /// </summary>
         public string Message { get; }
 
-        public GameEventType EventType => GameEventType.GameError;
+        public override GameEventType EventType => GameEventType.GameError;
 
         public GameErrorEvent (string message) {
             Message = message;

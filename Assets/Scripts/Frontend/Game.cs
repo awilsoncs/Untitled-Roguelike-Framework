@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+using URFCommon;
+
 /// <summary>
 /// Represent the logical space of the game.
 /// </summary>
@@ -83,7 +85,7 @@ public partial class Game : PersistableObject
         mainRandomState = Random.state;
         Random.InitState(seed);
         ClearEnemyPositions();
-        gameState.PushCommand(new StartGameCommand());
+        gameState.PostEvent(new StartGameCommand());
     }
 
     private void ClearEnemyPositions() {
