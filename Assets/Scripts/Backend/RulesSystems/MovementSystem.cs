@@ -4,9 +4,6 @@ using URFCommon;
 public class MovementSystem : IRulesSystem
 {
     public void GameUpdate(IGameState gameState) {}
-    public List<(GameCommandType, CommandHandler)> CommandHandlers => new() {
-        (GameCommandType.Move, HandleMoveCommand)
-    };
     public List<(GameEventType, EventHandler)> EventHandlers => new();
     public List<(string, SlotType)> Slots => new () {
         ("canMove", SlotType.Boolean),
@@ -15,7 +12,8 @@ public class MovementSystem : IRulesSystem
         ("Y", SlotType.Integer)
     };
 
-    void HandleMoveCommand(IGameState gs, IGameCommand cm) {
+    [CommandHandler(GameCommandType.Move)]
+    public void HandleMoveCommand(IGameState gs, IGameCommand cm) {
         MoveCommand mcm = (MoveCommand)cm;
         int entityId = mcm.EntityId;
         int mx = mcm.Direction.Item1;

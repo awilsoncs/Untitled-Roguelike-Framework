@@ -13,6 +13,5 @@ public delegate void EventHandler(IGameState gs, IGameEvent ev);
 public interface IRulesSystem {
     void GameUpdate(IGameState gameState);
     List<(string, SlotType)> Slots {get;}
-    List<(GameCommandType, CommandHandler)> CommandHandlers {get;}
     List<(GameEventType, EventHandler)> EventHandlers {get;}
 }
