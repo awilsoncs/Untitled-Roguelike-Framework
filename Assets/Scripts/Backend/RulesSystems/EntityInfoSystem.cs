@@ -9,5 +9,6 @@ public class EntityInfoSystem : BaseRulesSystem
 {
     public override List<(string, SlotType)> Slots => new() {
         ("name", SlotType.String),
+        ("appearance", SlotType.String)
     };
 }

@@ -67,8 +67,8 @@ public class EntityFactory : IEntityFactory {
         entity.SetSlot("damage", 2);
         entity.SetSlot("blocksMove", true);
         entity.SetSlot("controlMethod", "player");
+        entity.SetSlot("appearance", "player");
         entity.BlocksSight = false;
-        entity.Appearance = "player";
         entity.IsVisible = true;
     }
 
@@ -80,16 +80,16 @@ public class EntityFactory : IEntityFactory {
         entity.SetSlot("damage", 1);
         entity.SetSlot("controlMethod", "monster");
         entity.SetSlot("blocksMove", true);
+        entity.SetSlot("appearance", "crab");
         entity.BlocksSight = false;
-        entity.Appearance = "crab";
         entity.IsVisible = true;
     }
 
     void BuildWall(Entity entity) {
         entity.SetSlot("name", "Wall");
         entity.SetSlot("blocksMove", true);
+        entity.SetSlot("appearance", "wall");
         entity.BlocksSight = true;
-        entity.Appearance = "wall";
         entity.IsVisible = true;
     }
 }

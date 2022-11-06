@@ -11,12 +11,6 @@ public interface IEntity : IPersistableObject {
     int ID { get; set; }
 
     /// <summary>
-    /// The entity's appearance descriptor.
-    /// </summary>
-    /// <value>A string representing the entity's appearance.</value>
-    String Appearance {get; set;}
-
-    /// <summary>
     /// Whether the entity should block field of view.
     /// </summary>
     bool BlocksSight { get; set; }
