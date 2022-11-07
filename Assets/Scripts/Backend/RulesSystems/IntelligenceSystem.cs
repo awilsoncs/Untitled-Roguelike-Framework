@@ -24,7 +24,6 @@ public class IntelligenceSystem : BaseRulesSystem {
     }
 
     private void UpdateEntity(IGameState gameState, IEntity entity) {
-        // todo make this only happen if the entity can see the player
         var mainCharacter = gameState.GetMainCharacter();
         var mainCharacterPosition = (
             mainCharacter.GetIntSlot("X"), mainCharacter.GetIntSlot("Y"));
