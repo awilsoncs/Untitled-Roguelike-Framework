@@ -62,7 +62,8 @@ namespace URFFrontend {
         private void HandleEntityCreated(EntityCreatedEvent ev) {
             IEntity entity = ev.Entity;
             int id = entity.ID;
-            string appearance = entity.GetStringSlot("appearance");
+            var info = entity.GetComponent<EntityInfo>();
+            string appearance = info.Appearance;
             Pawn pawn = pawnFactory.Get(appearance);
             pawn.EntityId = id;
             pawns.Add(pawn);
@@ -75,7 +76,8 @@ namespace URFFrontend {
         }
 
         private void HandleEntityKilled(EntityKilledEvent ev) {
-            Debug.Log($"Entity {ev.Entity.GetStringSlot("name")} has been killed.");
+            var info = ev.Entity.GetComponent<EntityInfo>();
+            Debug.Log($"Entity {info.Name} has been killed.");
             int id = ev.Entity.ID;
             if (id == mainCharacterId) {
                 Debug.Log("Player died, reloading...");
@@ -119,15 +121,20 @@ namespace URFFrontend {
             IEntity mainCharacter = ev.Entity;
             mainCharacterId = ev.Entity.ID;
             mainCharacterPosition = entityPosition[mainCharacterId];
-            gui.healthBar.CurrentHealth =  ev.Entity.GetIntSlot("currentHealth");
-            gui.healthBar.MaximumHealth = ev.Entity.GetIntSlot("maxHealth");
+            var stats = mainCharacter.GetComponent<CombatComponent>();
+            gui.healthBar.CurrentHealth = stats.CurrentHealth;
+            gui.healthBar.MaximumHealth = stats.MaxHealth;
             // todo should link updates to properties
             gui.healthBar.UpdateHealthBar();
         }
 
         private void HandleEntityAttacked(EntityAttackedEvent ev) {
-            var attackerName = ev.Attacker.GetStringSlot("name");
-            var defenderName = ev.Defender.GetStringSlot("name");
+            var attackerInfo = ev.Attacker.GetComponent<EntityInfo>();
+            var defenderInfo = ev.Defender.GetComponent<EntityInfo>();
+
+            var attackerName = attackerInfo.Name;
+            var defenderName = defenderInfo.Name;
+            
             gui.messageBox.AddMessage(
                 $"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
             if (ev.Defender.ID == mainCharacterId && ev.Success) {

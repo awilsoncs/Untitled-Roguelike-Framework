@@ -26,11 +26,6 @@ public interface IEntity : IPersistableObject {
     /// <param name="entityFactory">A reference to a factory that can dispose 
     /// of this entity properly.</param>
     void Recycle(IEntityFactory entityFactory);
-
-    void SetSlot(string slotName, int value);
-    void SetSlot(string slotName, string value);
-    void SetSlot(string slotName, bool value);
-    int GetIntSlot(string slotName);
-    string GetStringSlot(string slotName);
-    bool GetBoolSlot(string slotName);
+    T GetComponent<T>() where T : BaseComponent;
+    void AddComponent(BaseComponent component);
 }

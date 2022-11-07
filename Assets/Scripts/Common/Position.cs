@@ -13,5 +13,12 @@ namespace URFCommon {
             x = X;
             y = Y; 
         }
+
+        public override string ToString() {
+            return $"({X},{Y})";
+        }
+
+        public static Position operator +(Position first, Position second) => 
+            (first.X + second.X, first.Y + second.Y);
     }
 }

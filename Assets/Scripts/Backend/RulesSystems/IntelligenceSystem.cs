@@ -1,22 +1,28 @@
+using System;
 using System.Collections.Generic;
 using URFCommon;
 
+public enum IntelligenceControlMode {
+    // NOTE: player is controlled externally, use control mode None.
+    None,
+    Monster
+}
+
+// todo need to make this require movement and combat systems
 public class IntelligenceSystem : BaseRulesSystem {
 
     // todo see notes below
     // After implementing the turn controller, convert this system
     // to handle a command emitted by the turn controller.
-    public override List<(string, SlotType)> Slots => new () {
-        // valid values are "player", "monster"
-        ("controlMethod", SlotType.String),
-        ("X", SlotType.Integer),
-        ("Y", SlotType.Integer)
+    public override List<Type> Components => new () {
+        typeof(Brain)
     };
 
-    public override void GameUpdate(IGameState gameState)
-    {
+    public override void GameUpdate(IGameState gameState) {
         foreach (var entity in gameState.GetEntities()) {
-            if (entity.GetStringSlot("controlMethod") == "monster") {
+
+            if (entity.GetComponent<Brain>()
+                .ControlMode == IntelligenceControlMode.Monster) {
                 UpdateEntity(gameState, entity);
             }
         }
@@ -24,26 +30,32 @@ public class IntelligenceSystem : BaseRulesSystem {
     }
 
     private void UpdateEntity(IGameState gameState, IEntity entity) {
+        // todo handle can't move
+        // todo handle can't reach target
         var mainCharacter = gameState.GetMainCharacter();
-        var mainCharacterPosition = (
-            mainCharacter.GetIntSlot("X"), mainCharacter.GetIntSlot("Y"));
-        Position position = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
-        if (!gameState.FieldOfView.IsVisible(gameState, position, mainCharacterPosition)) {
+        var mainMovement = mainCharacter.GetComponent<Movement>();
+        var mainPosition = mainMovement.Position;
+
+        var entityMovement = entity.GetComponent<Movement>();
+        var entityPosition = entityMovement.Position;
+        if (!gameState.FieldOfView.IsVisible(gameState, entityPosition, mainPosition)) {
             // entity can't see the player, just dawdle.
             return;
         }
 
         var costs = GetMovementCosts(gameState);
         // take a step along the path
-        var path = gameState.Pathfinding.GetPath(costs, position, mainCharacterPosition);
-        // todo if we're close just attack
+        var path = gameState.Pathfinding.GetPath(costs, entityPosition, mainPosition);
         if (path.Count == 2) {
             // just the start and end means adjacent
-            gameState.PostEvent(new AttackCommand(entity.ID, gameState.GetMainCharacter().ID));
+            gameState.PostEvent(
+                new AttackCommand(entity.ID, gameState.GetMainCharacter().ID));
             return;
         }
+
+        // calculate the direction to step
         var nextStep = path[1];
-        var mp = (nextStep.X - position.X, nextStep.Y - position.Y);
+        var mp = (nextStep.X - entityPosition.X, nextStep.Y - entityPosition.Y);
         gameState.PostEvent(new MoveCommand(entity.ID, mp));
     }
 
@@ -60,5 +72,20 @@ public class IntelligenceSystem : BaseRulesSystem {
             }
         }
         return costs;
+    }
+}
+
+[Component("312dc848-5f31-42b8-900c-a73289cd40d2")]
+public class Brain : BaseComponent
+{
+    public IntelligenceControlMode ControlMode;
+    public override void Load(GameDataReader reader)
+    {
+        ControlMode = (IntelligenceControlMode)reader.ReadInt();
+    }
+
+    public override void Save(GameDataWriter writer)
+    {
+        writer.Write((int)ControlMode);
     }
 }

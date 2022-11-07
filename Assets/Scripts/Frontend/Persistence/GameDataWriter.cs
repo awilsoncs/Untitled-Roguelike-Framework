@@ -20,6 +20,9 @@ public class GameDataWriter {
     }
 
     public void Write (System.String value) {
+        if (value == null) {
+            value = "";
+        }
         writer.Write(value);
     }
 
@@ -39,8 +42,4 @@ public class GameDataWriter {
     public void Write (Random.State value) {
         writer.Write(JsonUtility.ToJson(value));
     }
-
-    // public void Write (ShapeInstance value) {
-    //     writer.Write(value.IsValid ? value.Shape.SaveIndex : -1);
-    // }
 }

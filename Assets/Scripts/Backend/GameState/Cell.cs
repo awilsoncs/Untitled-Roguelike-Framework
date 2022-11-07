@@ -24,11 +24,13 @@ public class Cell {
     }
 
     public bool IsPassable() {
-        return (contents == null || !contents.GetBoolSlot("blocksMove"));
+        return (
+            contents == null 
+            || !contents.GetComponent<Movement>().BlocksMove
+        );
     }
 
-    public bool IsTransparent
-    { 
+    public bool IsTransparent { 
         get {return (contents == null || !contents.BlocksSight);}
     }
 }

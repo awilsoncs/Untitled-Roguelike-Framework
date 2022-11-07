@@ -134,7 +134,7 @@ public partial class GameState : IGameState {
         }
         entities.RemoveAt(lastIndex);
         entitiesById.Remove(entity.ID);
-        var pos = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
+        var pos = entity.GetComponent<Movement>().Position;
         Cell possibleLocation = GetCell(pos);
         if (possibleLocation.GetContents() == entity) {
             possibleLocation.ClearContents();
@@ -185,8 +185,7 @@ public partial class GameState : IGameState {
         if (contentsToKill != null) {
             Kill(contentsToKill);
         }
-        entity.SetSlot("X", p.X);
-        entity.SetSlot("Y", p.Y);
+        entity.GetComponent<Movement>().Position = p;
         destination.PutContents(entity);
         gameClient.PostEvent(new EntityMovedEvent(entity, p));
     }
@@ -206,7 +205,8 @@ public partial class GameState : IGameState {
         }
 
         IEntity entity = entitiesById[id];
-        var oldPos = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
+        var movement = entity.GetComponent<Movement>();
+        var oldPos = movement.Position;
         Cell origin = GetCell(oldPos);
         Cell destination = GetCell(newPos);
 
@@ -252,8 +252,8 @@ public partial class GameState : IGameState {
 
     public void RecalculateFOVImmediately() {
         isFieldOfViewDirty = false;
-
-        var pos = (mainCharacter.GetIntSlot("X"), mainCharacter.GetIntSlot("Y"));
+        var movement = mainCharacter.GetComponent<Movement>();
+        var pos = movement.Position;
 
         IFieldOfViewQueryResult result = FieldOfView.CalculateFOV(this, pos);
         for(int x = 0; x < MapWidth; x++) {
@@ -332,7 +332,7 @@ public partial class GameState : IGameState {
             entities.Add(entity);
             entitiesById.Add(entity.ID, entity);
             gameClient.PostEvent(new EntityCreatedEvent(entity));
-            var pos = (entity.GetIntSlot("X"), entity.GetIntSlot("Y"));
+            var pos = entity.GetComponent<Movement>().Position;
             PlaceEntity(entity.ID, pos);
         }
         mainCharacter = entitiesById[reader.ReadInt()];

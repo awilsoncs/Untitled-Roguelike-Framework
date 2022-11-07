@@ -7,10 +7,15 @@ public class EntityFactory : IEntityFactory {
     private delegate void EntityBuilder(Entity entity);
     
     readonly Dictionary<String, EntityBuilder> builders;
-    readonly HashSet<(string, SlotType)> entitySpec;
+
+    // TODO slot cruft
+    readonly List<(string, SlotType)> entitySpec;
+    readonly List<Type> entitySpecComponents;
+
 
     public EntityFactory() {
         entitySpec = new();
+        entitySpecComponents = new();
         builders = new()
         {
             { "player", BuildPlayer },
@@ -24,18 +29,8 @@ public class EntityFactory : IEntityFactory {
     */
     public Entity Get() {
         Entity entity = new();
-        foreach (var slot in entitySpec) {
-            switch (slot.Item2) {
-                case SlotType.String:
-                    entity.SetSlot(slot.Item1, "");
-                    continue;
-                case SlotType.Integer:
-                    entity.SetSlot(slot.Item1, 0);
-                    continue;
-                case SlotType.Boolean:
-                    entity.SetSlot(slot.Item1, false);
-                    continue;
-            }
+        foreach (var t in entitySpecComponents) {
+            entity.AddComponent((BaseComponent) Activator.CreateInstance(t));
         }
         return entity;
     }
@@ -56,39 +51,59 @@ public class EntityFactory : IEntityFactory {
         }
     }
 
+    public void UpdateEntitySpec(List<Type> newComponents) {
+        foreach (var slot in newComponents) {
+            entitySpecComponents.Add(slot);
+        }
+    }
+
     public void Reclaim (Entity entity) {}
 
     // short term hardcoded delegates
     void BuildPlayer(Entity entity) {
-        entity.SetSlot("name", "Player");
-        entity.SetSlot("canFight", true);
-        entity.SetSlot("currentHealth", 10);
-        entity.SetSlot("maxHealth", 10);
-        entity.SetSlot("damage", 2);
-        entity.SetSlot("blocksMove", true);
-        entity.SetSlot("controlMethod", "player");
-        entity.SetSlot("appearance", "player");
+        var info = entity.GetComponent<EntityInfo>();
+        info.Name = "Player";
+        info.Appearance = "player";
+        var combat = entity.GetComponent<CombatComponent>();
+        combat.CanFight = true;
+        combat.CurrentHealth = 10;
+        combat.MaxHealth = 10;
+        combat.Damage = 2;
+        var movement = entity.GetComponent<Movement>();
+        movement.BlocksMove = true;
+        var brain = entity.GetComponent<Brain>();
+        brain.ControlMode = IntelligenceControlMode.None;
         entity.BlocksSight = false;
         entity.IsVisible = true;
     }
 
     void BuildCrab(Entity entity) {
-        entity.SetSlot("name", "Crab");
-        entity.SetSlot("canFight", true);
-        entity.SetSlot("currentHealth", 2);
-        entity.SetSlot("maxHealth", 2);
-        entity.SetSlot("damage", 1);
-        entity.SetSlot("controlMethod", "monster");
-        entity.SetSlot("blocksMove", true);
-        entity.SetSlot("appearance", "crab");
+        var info = entity.GetComponent<EntityInfo>();
+        info.Name = "Crab";
+        info.Appearance = "crab";
+        var combat = entity.GetComponent<CombatComponent>();
+        combat.CanFight = true;
+        combat.CurrentHealth = 2;
+        combat.MaxHealth = 2;
+        combat.Damage = 1;
+        var movement = entity.GetComponent<Movement>();
+        movement.BlocksMove = true;
+        var brain = entity.GetComponent<Brain>();
+        brain.ControlMode = IntelligenceControlMode.Monster;
         entity.BlocksSight = false;
         entity.IsVisible = true;
     }
 
     void BuildWall(Entity entity) {
-        entity.SetSlot("name", "Wall");
-        entity.SetSlot("blocksMove", true);
-        entity.SetSlot("appearance", "wall");
+        var info = entity.GetComponent<EntityInfo>();
+        info.Name = "Wall";
+        info.Appearance = "wall";
+        var combat = entity.GetComponent<CombatComponent>();
+        combat.CanFight = false;
+        var movement = entity.GetComponent<Movement>();
+        movement.BlocksMove = true;
+        var brain = entity.GetComponent<Brain>();
+        brain.ControlMode = IntelligenceControlMode.None;
         entity.BlocksSight = true;
         entity.IsVisible = true;
     }

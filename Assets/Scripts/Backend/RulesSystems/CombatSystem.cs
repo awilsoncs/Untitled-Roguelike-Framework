@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using URFCommon;
 
 public class CombatSystem : BaseRulesSystem
 {
-    public override List<(string, SlotType)> Slots => new () {
-        ("canFight", SlotType.Boolean),
-        ("maxHealth", SlotType.Integer),
-        ("currentHealth", SlotType.Integer),
-        ( "damage", SlotType.Integer)
+    public override List<Type> Components => new () {
+        // todo could create an annotation to register these
+        typeof(CombatComponent)
     };
 
     [EventHandler(GameEventType.AttackCommand)]
@@ -25,14 +24,16 @@ public class CombatSystem : BaseRulesSystem
         }
 
         IEntity attacker = gs.GetEntityById(ev.Attacker);
+        CombatComponent attackerCombat = attacker.GetComponent<CombatComponent>();
         IEntity defender = gs.GetEntityById(ev.Defender);
+        CombatComponent defenderCombat = defender.GetComponent<CombatComponent>();
 
-        if (!attacker.GetBoolSlot("canFight")) {
+        if (!attackerCombat.CanFight) {
             gs.PostError($"{attacker} cannot fight. Check the Entity definition.");
             return;
         }
 
-        if (!defender.GetBoolSlot("canFight")) {
+        if (!defenderCombat.CanFight) {
             gs.PostError($"Illegal attack attempted...(defender {defender})");
             return;
         }
@@ -44,21 +45,45 @@ public class CombatSystem : BaseRulesSystem
     }
 
     private void HandleAttack(IGameState gs, IEntity attacker, IEntity defender) {
-        var damage = attacker.GetIntSlot("damage");
+        var attackerCombat = attacker.GetComponent<CombatComponent>();
+        var defenderCombat = defender.GetComponent<CombatComponent>();
+
+        var damage = attackerCombat.Damage;
         gs.PostEvent(new EntityAttackedEvent(attacker, defender, true, damage));
         gs.Log($"{attacker} will deal {damage} damage.");
         gs.Log($"{defender} took {damage} damage.");
 
-        var maxHealth = defender.GetIntSlot("maxHealth");
-        var currentHealth = defender.GetIntSlot("currentHealth");
+        var maxHealth = defenderCombat.MaxHealth;
+        var currentHealth = defenderCombat.CurrentHealth;
 
-        defender.SetSlot(
-            "currentHealth",
-            Math.Min(maxHealth, Math.Max(currentHealth - damage, 0))
-        );
+        defenderCombat.CurrentHealth = Math.Min(
+            maxHealth, Math.Max(currentHealth - damage, 0));
 
-        if (defender.GetIntSlot("currentHealth") <= 0) {
+        if (defenderCombat.CurrentHealth <= 0) {
             gs.Kill(defender);
         }
+    }
+}
+
+[Component("e89f0e6d-253d-4581-bd2e-bbff9d755f72")]
+public class CombatComponent : BaseComponent
+{
+    public bool CanFight {get;set;}
+    public int MaxHealth {get;set;}
+    public int CurrentHealth {get;set;}
+    public int Damage {get;set;}
+
+    public override void Load(GameDataReader reader) {
+        CanFight = reader.ReadBool();
+        MaxHealth = reader.ReadInt();
+        CurrentHealth = reader.ReadInt();
+        Damage = reader.ReadInt();
+    }
+
+    public override void Save(GameDataWriter writer) {
+        writer.Write(CanFight);
+        writer.Write(MaxHealth);
+        writer.Write(CurrentHealth);
+        writer.Write(Damage);
     }
 }

@@ -30,6 +30,7 @@ public partial class GameState {
                 );
             }
         } 
-        entityFactory.UpdateEntitySpec(system.Slots);
+        // TODO slot cruft, remove soon
+        entityFactory.UpdateEntitySpec(system.Components);
     }
 }

@@ -8,7 +8,7 @@ namespace URFFrontend {
     /// Game client view
     /// </summary>
     [DisallowMultipleComponent]
-    public partial class Game : PersistableObject
+    public partial class Game : IPersistableObject
     {
         const int saveVersion = 1;
         [SerializeField] Camera mainCamera;

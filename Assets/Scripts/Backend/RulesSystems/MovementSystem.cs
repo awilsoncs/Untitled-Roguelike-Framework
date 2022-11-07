@@ -1,29 +1,21 @@
+using System;
 using System.Collections.Generic;
 using URFCommon;
 
-public class MovementSystem : IRulesSystem
+public class MovementSystem : BaseRulesSystem
 {
-    public void GameUpdate(IGameState gameState) {}
-    public List<(GameEventType, EventHandler)> EventHandlers => new();
-    public List<(string, SlotType)> Slots => new () {
-        ("canMove", SlotType.Boolean),
-        ("blocksMove", SlotType.Boolean),
-        ("X", SlotType.Integer),
-        ("Y", SlotType.Integer)
+    public override List<Type> Components => new () {
+        // todo could create an annotation to register these
+        typeof(Movement)
     };
 
     [EventHandler(GameEventType.MoveCommand)]
     public void HandleMoveCommand(IGameState gs, IGameEvent cm) {
         MoveCommand mcm = (MoveCommand)cm;
         int entityId = mcm.EntityId;
-        int mx = mcm.Direction.X;
-        int my = mcm.Direction.Y;
 
         var entity = gs.GetEntityById(entityId);
-        var newPos = (
-            entity.GetIntSlot("X") + mx,
-            entity.GetIntSlot("Y") + my
-        );
+        var newPos = entity.GetComponent<Movement>().Position + mcm.Direction;
 
         gs.MoveEntity(entityId, newPos);
         if (entityId == gs.GetMainCharacter().ID) {
@@ -35,4 +27,24 @@ public class MovementSystem : IRulesSystem
     }
 }
 
-// todo movement related entity extension methods
+[Component("a12a3625-cd38-4d6f-9ac3-f4362afa04d6")]
+public class Movement : BaseComponent
+{
+    public bool CanMove;
+    public bool BlocksMove;
+    public Position Position;
+    public override void Load(GameDataReader reader)
+    {
+        CanMove = reader.ReadBool();
+        BlocksMove = reader.ReadBool();
+        Position = (reader.ReadInt(), reader.ReadInt());
+    }
+
+    public override void Save(GameDataWriter writer)
+    {
+        writer.Write(CanMove);
+        writer.Write(BlocksMove);
+        writer.Write(Position.X);
+        writer.Write(Position.Y);
+    }
+}
