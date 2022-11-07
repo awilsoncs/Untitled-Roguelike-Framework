@@ -62,7 +62,7 @@ namespace URFFrontend {
         private void HandleEntityCreated(EntityCreatedEvent ev) {
             IEntity entity = ev.Entity;
             int id = entity.ID;
-            string appearance = entity.Appearance;
+            string appearance = entity.GetStringSlot("appearance");
             Pawn pawn = pawnFactory.Get(appearance);
             pawn.EntityId = id;
             pawns.Add(pawn);

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 /// </summary>
 public class Entity : IPersistableObject, IEntity {
     public int ID { get; set; }
-    public string Appearance {get; set;}
     public bool BlocksSight { get; set; }
     public bool IsVisible { get; set; }
     public IGameState GameState {get; set;}
@@ -45,7 +44,6 @@ public class Entity : IPersistableObject, IEntity {
     }
 
     public void Save(GameDataWriter writer) {
-        writer.Write(Appearance);
         writer.Write(BlocksSight);
         writer.Write(IsVisible);
         // general slot writing
@@ -67,7 +65,6 @@ public class Entity : IPersistableObject, IEntity {
     }
 
     public void Load(GameDataReader reader) {
-        Appearance = reader.ReadString();
         BlocksSight = reader.ReadBool();
         IsVisible = reader.ReadBool();
         // general slot reading
