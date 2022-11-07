@@ -27,7 +27,6 @@ public class MovementSystem : BaseRulesSystem
     }
 }
 
-[Component("a12a3625-cd38-4d6f-9ac3-f4362afa04d6")]
 public class Movement : BaseComponent
 {
     public bool CanMove;

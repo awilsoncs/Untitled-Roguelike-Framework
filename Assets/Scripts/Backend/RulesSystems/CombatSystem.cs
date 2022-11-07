@@ -65,7 +65,6 @@ public class CombatSystem : BaseRulesSystem
     }
 }
 
-[Component("e89f0e6d-253d-4581-bd2e-bbff9d755f72")]
 public class CombatComponent : BaseComponent
 {
     public bool CanFight {get;set;}

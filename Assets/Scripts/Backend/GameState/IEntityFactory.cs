@@ -6,6 +6,5 @@ public interface IEntityFactory {
     Entity Get();
     Entity Get(String s);
     void Reclaim (Entity entity);
-    void UpdateEntitySpec(List<(string, SlotType)> newSlots);
     void UpdateEntitySpec(List<Type> componentTypes);
 }

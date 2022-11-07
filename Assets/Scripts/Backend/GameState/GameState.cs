@@ -336,6 +336,7 @@ public partial class GameState : IGameState {
             PlaceEntity(entity.ID, pos);
         }
         mainCharacter = entitiesById[reader.ReadInt()];
+        PostEvent(new MainCharacterChangedEvent(mainCharacter));
     }
 
     public (int, int) GetMapSize() {

@@ -75,7 +75,6 @@ public class IntelligenceSystem : BaseRulesSystem {
     }
 }
 
-[Component("312dc848-5f31-42b8-900c-a73289cd40d2")]
 public class Brain : BaseComponent
 {
     public IntelligenceControlMode ControlMode;

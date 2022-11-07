@@ -8,13 +8,10 @@ public class EntityFactory : IEntityFactory {
     
     readonly Dictionary<String, EntityBuilder> builders;
 
-    // TODO slot cruft
-    readonly List<(string, SlotType)> entitySpec;
     readonly List<Type> entitySpecComponents;
 
 
     public EntityFactory() {
-        entitySpec = new();
         entitySpecComponents = new();
         builders = new()
         {
@@ -43,12 +40,6 @@ public class EntityFactory : IEntityFactory {
         builders[s](entity);
         entity.ID = idCounter++;
         return entity;
-    }
-
-    public void UpdateEntitySpec(List<(string, SlotType)> newSlots) {
-        foreach (var slot in newSlots) {
-            entitySpec.Add(slot);
-        }
     }
 
     public void UpdateEntitySpec(List<Type> newComponents) {

@@ -14,7 +14,6 @@ public class EntityInfoSystem : BaseRulesSystem
     };
 }
 
-[Component("aa058eef-1ca6-401f-b16c-81811e93a40a")]
 public class EntityInfo : BaseComponent
 {
     public string Name {get;set;}
