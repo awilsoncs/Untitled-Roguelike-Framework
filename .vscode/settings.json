@@ -66,8 +66,10 @@
         "Persistable",
         "pluggable",
         "Raycasting",
+        "Roguelike",
         "Scriptable",
         "supercede",
+        "triaging",
         "typeparam",
         "updateable",
         "updateables"
