@@ -18,16 +18,19 @@ public class EntityInfo : BaseComponent
 {
     public string Name {get;set;}
     public string Appearance {get;set;}
+    public string Description {get;set;}
     public override void Load(GameDataReader reader)
     {
         Name = reader.ReadString();
         Appearance = reader.ReadString();
+        Description = reader.ReadString();
     }
 
     public override void Save(GameDataWriter writer)
     {
         writer.Write(Name);
         writer.Write(Appearance);
+        writer.Write(Description);
     }
 }
 

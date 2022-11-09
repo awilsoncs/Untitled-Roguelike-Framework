@@ -43,7 +43,8 @@ namespace URFFrontend {
         // track attackable enemies so that we can attack instead of attempt to move
         (int, bool)[][] entityMap;
         Dictionary<int, (int, int)> entityPosition;
-
+        Dictionary<int, IEntity> entitiesById;
+        Dictionary<Position, IEntity> entitiesByPosition;
         [SerializeField]
         [Tooltip("Custom behavior to inject into the game controller.")]
         BackendPlugins backendPlugins;
@@ -97,7 +98,8 @@ namespace URFFrontend {
                     entityMap[i][j] = (-1, false);
                 }
             }
-            entityPosition = new Dictionary<int, (int, int)>();
+            entityPosition = new();
+            entitiesByPosition = new();
         }
 
         private void ClearGame() {

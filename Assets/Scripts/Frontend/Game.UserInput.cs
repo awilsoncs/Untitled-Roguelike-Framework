@@ -14,7 +14,10 @@ namespace URFFrontend {
         [SerializeField] KeyCode mapKey = KeyCode.M;
         private bool usingFOV = true;
         private void HandleUserInput() {
-            if (Input.GetKeyDown(leftKey)) Move(-1, 0);
+            if (Input.GetMouseButtonDown(0)) {
+                MouseClicked(Input.mousePosition);
+            }
+            else if (Input.GetKeyDown(leftKey)) Move(-1, 0);
             else if (Input.GetKeyDown(rightKey)) Move(1, 0);
             else if (Input.GetKeyDown(upKey)) Move(0, 1);
             else if (Input.GetKeyDown(downKey)) Move(0, -1);
@@ -32,6 +35,23 @@ namespace URFFrontend {
                 Debug.Log("Player asked for a reload...");
                 ClearGame();
                 BeginNewGame();
+            }
+        }
+
+        private void MouseClicked(Vector3 position) {
+            var worldPos = Camera.main.ScreenToWorldPoint(position);
+            var gamePos = new Position(
+                (int)((worldPos.x / GRID_MULTIPLE)+0.5f),
+                (int)((worldPos.y / GRID_MULTIPLE)+0.5f)
+            );
+            Debug.Log($"Mouse clicked at {gamePos}!");
+            if (entitiesByPosition.ContainsKey(gamePos)) {
+                var entity = entitiesByPosition[gamePos];
+                var entityInfo = entity.GetComponent<EntityInfo>();
+                var description = entityInfo.Description;
+                gui.messageBox.AddMessage(description);
+            } else {
+                gui.messageBox.AddMessage("There's nothing there.");
             }
         }
 
