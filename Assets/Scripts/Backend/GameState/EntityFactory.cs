@@ -55,6 +55,7 @@ public class EntityFactory : IEntityFactory {
         var info = entity.GetComponent<EntityInfo>();
         info.Name = "Player";
         info.Appearance = "player";
+        info.Description = "A daring adventurer.";
         var combat = entity.GetComponent<CombatComponent>();
         combat.CanFight = true;
         combat.CurrentHealth = 10;
@@ -72,6 +73,7 @@ public class EntityFactory : IEntityFactory {
         var info = entity.GetComponent<EntityInfo>();
         info.Name = "Crab";
         info.Appearance = "crab";
+        info.Description = "A deadly crab.";
         var combat = entity.GetComponent<CombatComponent>();
         combat.CanFight = true;
         combat.CurrentHealth = 2;
@@ -89,6 +91,7 @@ public class EntityFactory : IEntityFactory {
         var info = entity.GetComponent<EntityInfo>();
         info.Name = "Wall";
         info.Appearance = "wall";
+        info.Description = "Nothing but solid stone.";
         var combat = entity.GetComponent<CombatComponent>();
         combat.CanFight = false;
         var movement = entity.GetComponent<Movement>();
