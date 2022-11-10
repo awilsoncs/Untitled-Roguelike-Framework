@@ -58,13 +58,25 @@ namespace URFFrontend {
         private void Move(int mx, int my) {
             int x = mainCharacterPosition.Item1 + mx;
             int y = mainCharacterPosition.Item2 + my;
-            if (entityMap[x][y].Item1 >= 0 && entityMap[x][y].Item2) {
-                // this is an enemy, bump attack instead
+            Position pos = (x, y);
+            if (!entitiesByPosition.ContainsKey(pos)) {
+                // nothing there!
+                gameState.PostEvent(new MoveCommand(mainCharacterId, (mx, my)));
+                return;
+            } 
+
+            var entity = entitiesByPosition[pos];
+            var combat = entity.GetComponent<CombatComponent>();
+            if (combat.CanFight) {
+                // this is an attackable entity, so attack
                 gameState.PostEvent(
-                    new AttackCommand(mainCharacterId, entityMap[x][y].Item1)
+                    new AttackCommand(mainCharacterId, entity.ID)
                 );
-            } else if (entityMap[x][y].Item1 >= 0) {
-                // there's something here...
+                return;
+            }
+
+            var movement = entity.GetComponent<Movement>();
+            if (movement.BlocksMove) {
                 Debug.Log("Bonk!");
             } else {
                 gameState.PostEvent(new MoveCommand(mainCharacterId, (mx, my)));
