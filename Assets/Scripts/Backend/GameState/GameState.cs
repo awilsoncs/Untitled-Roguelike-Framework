@@ -139,7 +139,13 @@ public partial class GameState : IGameState {
         if (possibleLocation.GetContents() == entity) {
             possibleLocation.ClearContents();
         } else {
-            PostError("Incorrect entity at expected kill location.");
+            // todo fix this flow?
+            // this branch can be hit when killing an entity by stepping on it:
+            // The entity will be removed by the cell update, but won't be
+            // killed until the end of the game loop. While this isn't a 
+            // problem in this case, it does reveal a flaw in the kill cycle.
+            // Some entity information is removed early, which could lead
+            // to problems.
         }
         entity.Recycle(entityFactory);
 
