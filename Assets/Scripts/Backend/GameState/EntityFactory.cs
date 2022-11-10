@@ -17,7 +17,8 @@ public class EntityFactory : IEntityFactory {
         {
             { "player", BuildPlayer },
             { "crab", BuildCrab },
-            { "wall", BuildWall }
+            { "wall", BuildWall },
+            { "healthPotion", BuildHealthPotion}
         };
     }    
 
@@ -99,6 +100,21 @@ public class EntityFactory : IEntityFactory {
         var brain = entity.GetComponent<Brain>();
         brain.ControlMode = IntelligenceControlMode.None;
         entity.BlocksSight = true;
+        entity.IsVisible = true;
+    }
+
+    void BuildHealthPotion(Entity entity) {
+        var info = entity.GetComponent<EntityInfo>();
+        info.Name = "Health Potion";
+        info.Appearance = "healthPotion";
+        info.Description = "It looks like Diet Soda.";
+        var combat = entity.GetComponent<CombatComponent>();
+        combat.CanFight = false;
+        var movement = entity.GetComponent<Movement>();
+        movement.BlocksMove = false;
+        var brain = entity.GetComponent<Brain>();
+        brain.ControlMode = IntelligenceControlMode.None;
+        entity.BlocksSight = false;
         entity.IsVisible = true;
     }
 }
