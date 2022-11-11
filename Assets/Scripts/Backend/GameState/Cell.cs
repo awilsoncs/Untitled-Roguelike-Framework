@@ -6,25 +6,14 @@ using System.Collections.Generic;
 /// any object management functionality.
 /// </summary>
 public class Cell {
-    public List<IEntity> Contents {get;} 
+    public HashSet<IEntity> Contents {get;} 
 
     public Cell() {
-        Contents = new List<IEntity>();
+        Contents = new HashSet<IEntity>();
     }
 
     public void PutContents(IEntity entity) {
         Contents.Add(entity);
-    }
-
-    public IEntity ClearContents() {
-        if (Contents.Count == 0) {
-            return null;
-        }
-
-        IEntity entity = Contents[0];
-        Contents.Clear();
-
-        return entity;
     }
 
     public void RemoveEntity(IEntity entity) {

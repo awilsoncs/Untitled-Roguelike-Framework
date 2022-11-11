@@ -138,7 +138,7 @@ public partial class GameState : IGameState {
         var pos = entity.GetComponent<Movement>().Position;
         Cell possibleLocation = GetCell(pos);
         if (possibleLocation.Contents.Contains(entity)) {
-            possibleLocation.ClearContents();
+            possibleLocation.RemoveEntity(entity);
         } else {
             // todo fix this flow?
             // this branch can be hit when killing an entity by stepping on it:
@@ -264,8 +264,7 @@ public partial class GameState : IGameState {
             for (int y = 0; y < MapHeight; y++) {
                 bool isVisible = result.IsVisible((x, y));
                 var cell = map[x][y];
-                for (int c = 0; c < cell.Contents.Count; c++) {
-                    var entity = cell.Contents[c];
+                foreach (var entity in cell.Contents) {
                     if (entity.IsVisible != isVisible) {
                         entity.IsVisible = isVisible;
                         PostEvent(new EntityVisibilityChangedEvent(entity, entity.IsVisible));
