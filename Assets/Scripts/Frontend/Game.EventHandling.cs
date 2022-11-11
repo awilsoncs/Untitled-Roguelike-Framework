@@ -49,10 +49,10 @@ namespace URFFrontend {
             if (entityPosition.ContainsKey(ev.Entity.ID)) {
 
                 (int x0, int y0) = entityPosition[ev.Entity.ID];
-                entitiesByPosition.Remove((x0, y0));
+                entitiesByPosition[x0][y0].Remove(ev.Entity);
             }
             entityPosition[ev.Entity.ID] = (x, y);
-            entitiesByPosition[(x, y)] = ev.Entity;
+            entitiesByPosition[x][y].Add(ev.Entity);
 
             if (ev.Entity.ID == mainCharacterId) {
                 mainCharacterPosition = (x, y);
@@ -98,7 +98,7 @@ namespace URFFrontend {
 
             (int x, int y) = entityPosition[id];
             entityPosition.Remove(id); 
-            entitiesByPosition.Remove((x, y));
+            entitiesByPosition[x][y].Remove(ev.Entity);
         }
 
         private void HandleEntityVisibilityChanged(

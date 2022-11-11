@@ -14,6 +14,7 @@ namespace URFFrontend {
                 return;
             }
             Random.state = reader.ReadRandomState();
+            ClearEnemyPositions();
             ClearGame();
             gameState.Load(reader);
         }

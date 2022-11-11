@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using URFCommon;
+using System.Linq;
 
 public partial class GameState : IGameState {
     public int MapWidth {get; set;}
@@ -136,7 +137,7 @@ public partial class GameState : IGameState {
         entitiesById.Remove(entity.ID);
         var pos = entity.GetComponent<Movement>().Position;
         Cell possibleLocation = GetCell(pos);
-        if (possibleLocation.GetContents() == entity) {
+        if (possibleLocation.Contents.Contains(entity)) {
             possibleLocation.ClearContents();
         } else {
             // todo fix this flow?
@@ -162,7 +163,7 @@ public partial class GameState : IGameState {
     /// <param name="y">The vertical position to check</param>
     /// <returns>True if the position is legal to step to, False otherwise</returns>
     private bool IsLegalMove(Position p) {
-        return IsInBounds(p) && GetCell(p).IsPassable();
+        return IsInBounds(p) && GetCell(p).IsPassable;
     }
 
     /// <summary>
@@ -187,10 +188,6 @@ public partial class GameState : IGameState {
     private void PlaceEntity(int id, Position p) {
         IEntity entity = entitiesById[id];
         Cell destination = GetCell(p);
-        IEntity contentsToKill = destination.ClearContents();
-        if (contentsToKill != null) {
-            Kill(contentsToKill);
-        }
         entity.GetComponent<Movement>().Position = p;
         destination.PutContents(entity);
         gameClient.PostEvent(new EntityMovedEvent(entity, p));
@@ -216,13 +213,13 @@ public partial class GameState : IGameState {
         Cell origin = GetCell(oldPos);
         Cell destination = GetCell(newPos);
 
-        if (origin.GetContents() != entitiesById[id]) {
+        if (!origin.Contents.Contains(entitiesById[id])) {
             // Defensive coding, we shouldn't do anything if the IDs don't match.
-            PostError($"Attempted to move wrong entity {id} vs {origin.GetContents()}");
+            PostError($"Attempted to move wrong entity {id} vs {origin.Contents}");
             return;
         }
 
-        if (origin.GetContents() == destination.GetContents()) {
+        if (origin == destination) {
             PostError("Attempted no-op move...");
             return;
         }
@@ -231,7 +228,7 @@ public partial class GameState : IGameState {
         // the info in cells and update the entity that moves into the cell
         // FOV should only CHANGE when the player moves.
         isFieldOfViewDirty = true;
-        origin.ClearContents();
+        origin.RemoveEntity(entity);
         PlaceEntity(id, newPos);
     }
 
@@ -261,14 +258,18 @@ public partial class GameState : IGameState {
         var movement = mainCharacter.GetComponent<Movement>();
         var pos = movement.Position;
 
-        IFieldOfViewQueryResult result = FieldOfView.CalculateFOV(this, pos);
+        var result = FieldOfView.CalculateFOV(this, pos);
+        // todo would be nice to have a map iterator
         for(int x = 0; x < MapWidth; x++) {
             for (int y = 0; y < MapHeight; y++) {
                 bool isVisible = result.IsVisible((x, y));
-                IEntity entity = GetCell((x, y)).GetContents();
-                if (entity != null && entity.IsVisible != isVisible) {
-                    entity.IsVisible = isVisible;
-                    PostEvent(new EntityVisibilityChangedEvent(entity, entity.IsVisible));
+                var cell = map[x][y];
+                for (int c = 0; c < cell.Contents.Count; c++) {
+                    var entity = cell.Contents[c];
+                    if (entity.IsVisible != isVisible) {
+                        entity.IsVisible = isVisible;
+                        PostEvent(new EntityVisibilityChangedEvent(entity, entity.IsVisible));
+                    }
                 }
             }
         }
@@ -350,6 +351,6 @@ public partial class GameState : IGameState {
     }
 
     public bool IsTraversable(Position p) {
-        return GetCell(p).IsPassable();
+        return GetCell(p).IsPassable;
     }
 }
