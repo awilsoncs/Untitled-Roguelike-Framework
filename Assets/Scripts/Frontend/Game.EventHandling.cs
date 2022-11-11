@@ -49,11 +49,9 @@ namespace URFFrontend {
             if (entityPosition.ContainsKey(ev.Entity.ID)) {
 
                 (int x0, int y0) = entityPosition[ev.Entity.ID];
-                entityMap[x0][y0] = (-1, false);
                 entitiesByPosition.Remove((x0, y0));
             }
             entityPosition[ev.Entity.ID] = (x, y);
-            entityMap[x][y] = (ev.Entity.ID, true);
             entitiesByPosition[(x, y)] = ev.Entity;
 
             if (ev.Entity.ID == mainCharacterId) {
@@ -99,7 +97,6 @@ namespace URFFrontend {
             pawn.Recycle(pawnFactory);
 
             (int x, int y) = entityPosition[id];
-            entityMap[x][y] = (-1, false);
             entityPosition.Remove(id); 
             entitiesByPosition.Remove((x, y));
         }

@@ -41,7 +41,6 @@ namespace URFFrontend {
         int mainCharacterId;
         (int, int) mainCharacterPosition;
         // track attackable enemies so that we can attack instead of attempt to move
-        (int, bool)[][] entityMap;
         Dictionary<int, (int, int)> entityPosition;
         Dictionary<int, IEntity> entitiesById;
         Dictionary<Position, IEntity> entitiesByPosition;
@@ -91,13 +90,6 @@ namespace URFFrontend {
         }
 
         private void ClearEnemyPositions() {
-            entityMap = new (int, bool)[mapWidth][]; 
-            for (int i = 0; i < mapWidth; i++) {
-                entityMap[i] = new (int, bool)[mapHeight];
-                for (int j = 0; j < mapHeight; j++) {
-                    entityMap[i][j] = (-1, false);
-                }
-            }
             entityPosition = new();
             entitiesByPosition = new();
         }
