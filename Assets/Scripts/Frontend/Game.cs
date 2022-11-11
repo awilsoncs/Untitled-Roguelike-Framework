@@ -43,7 +43,7 @@ namespace URFFrontend {
         // track attackable enemies so that we can attack instead of attempt to move
         Dictionary<int, (int, int)> entityPosition;
         Dictionary<int, IEntity> entitiesById;
-        Dictionary<Position, IEntity> entitiesByPosition;
+        List<IEntity>[][] entitiesByPosition;
         [SerializeField]
         [Tooltip("Custom behavior to inject into the game controller.")]
         BackendPlugins backendPlugins;
@@ -91,7 +91,13 @@ namespace URFFrontend {
 
         private void ClearEnemyPositions() {
             entityPosition = new();
-            entitiesByPosition = new();
+            entitiesByPosition = new List<IEntity>[MapWidth][];
+            for (int x = 0; x < MapWidth; x++) {
+                entitiesByPosition[x] = new List<IEntity>[MapHeight];
+                for (int y = 0; y < MapHeight; y++) {
+                    entitiesByPosition[x][y] = new List<IEntity>();
+                }
+            }
         }
 
         private void ClearGame() {

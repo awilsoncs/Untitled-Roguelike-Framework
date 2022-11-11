@@ -11,6 +11,7 @@ public static class DungeonBuilder {
         int mainCharId = gs.CreateEntityAtPosition("player", (gs.MapWidth / 2, gs.MapHeight / 2));
         gs.SetMainCharacter(mainCharId);
 
+        // todo add a RNG.GetPosition function?
         for (int i = 0; i < 4; i++) {
             int x = rng.GetInt(1, gs.MapWidth-2);
             int y = rng.GetInt(1, gs.MapHeight-2);
@@ -21,6 +22,12 @@ public static class DungeonBuilder {
             int x = rng.GetInt(1, gs.MapWidth-2);
             int y = rng.GetInt(1, gs.MapHeight-2);
             gs.CreateEntityAtPosition("wall", (x, y));
+        }
+
+        for (int i = 0; i < 2; i++) {
+            int x = rng.GetInt(1, gs.MapWidth-2);
+            int y = rng.GetInt(1, gs.MapHeight-2);
+            gs.CreateEntityAtPosition("healthPotion", (x, y));
         }
     }
 }

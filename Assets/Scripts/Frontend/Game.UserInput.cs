@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using URFCommon;
 
@@ -38,18 +39,20 @@ namespace URFFrontend {
             }
         }
 
-        private void MouseClicked(Vector3 position) {
-            var worldPos = Camera.main.ScreenToWorldPoint(position);
-            var gamePos = new Position(
+        private void MouseClicked(Vector3 clickPos) {
+            var worldPos = Camera.main.ScreenToWorldPoint(clickPos);
+            var pos = new Position(
                 (int)((worldPos.x / GRID_MULTIPLE)+0.5f),
                 (int)((worldPos.y / GRID_MULTIPLE)+0.5f)
             );
-            Debug.Log($"Mouse clicked at {gamePos}!");
-            if (entitiesByPosition.ContainsKey(gamePos)) {
-                var entity = entitiesByPosition[gamePos];
-                var entityInfo = entity.GetComponent<EntityInfo>();
-                var description = entityInfo.Description;
-                gui.messageBox.AddMessage(description);
+            Debug.Log($"Mouse clicked at {pos}!");
+            if (entitiesByPosition[pos.X][pos.Y].Count > 0) {
+                var entities = entitiesByPosition[pos.X][pos.Y];
+                foreach (var entity in entities) {
+                    var entityInfo = entity.GetComponent<EntityInfo>();
+                    var description = entityInfo.Description;
+                    gui.messageBox.AddMessage(description);
+                }
             } else {
                 gui.messageBox.AddMessage("There's nothing there.");
             }
@@ -58,18 +61,18 @@ namespace URFFrontend {
         private void Move(int mx, int my) {
             int x = mainCharacterPosition.Item1 + mx;
             int y = mainCharacterPosition.Item2 + my;
-            var existingEntity = entitiesByPosition
-                .GetValueOrDefault((x, y), null);
-            if (
-                existingEntity != null
-                && existingEntity.GetComponent<CombatComponent>().CanFight
-            ) {
-                // this is an enemy, bump attack instead
+            var existingEntities = entitiesByPosition[x][y]
+                .Select(x => (
+                    x.ID,
+                    x.GetComponent<CombatComponent>(),
+                    x.GetComponent<Movement>()));
+            var fightingEntities = existingEntities.Where(x => x.Item2.CanFight);
+            var blockingEntities = existingEntities.Where(x => x.Item3.BlocksMove);
+            if (fightingEntities.Count() > 0) {
                 gameState.PostEvent(
-                    new AttackCommand(mainCharacterId, existingEntity.ID)
+                    new AttackCommand(mainCharacterId, fightingEntities.First().ID)
                 );
-            } else if (existingEntity != null) {
-                // there's something here...
+            } else if (blockingEntities.Count() > 0) {
                 Debug.Log("Bonk!");
             } else {
                 gameState.PostEvent(new MoveCommand(mainCharacterId, (mx, my)));

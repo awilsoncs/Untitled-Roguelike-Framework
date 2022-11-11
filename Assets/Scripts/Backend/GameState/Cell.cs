@@ -1,36 +1,40 @@
+using System.Linq;
+using System.Collections.Generic;
+
 /// <summary>
 /// Cells provide a geometric container for game objects. Cells do NOT provide
 /// any object management functionality.
 /// </summary>
 public class Cell {
-    // this item takes up the majority of the space here.
-    IEntity contents;
+    public HashSet<IEntity> Contents {get;} 
 
-    public IEntity GetContents() {
-        return contents;
+    public Cell() {
+        Contents = new HashSet<IEntity>();
     }
 
     public void PutContents(IEntity entity) {
-        if (contents != null) {
-            return;
+        Contents.Add(entity);
+    }
+
+    public void RemoveEntity(IEntity entity) {
+        if (Contents.Contains(entity)) {
+            Contents.Remove(entity);
         }
-        contents = entity;
     }
 
-    public IEntity ClearContents() {
-        IEntity entity = contents;
-        contents = null;
-        return entity;
-    }
-
-    public bool IsPassable() {
-        return (
-            contents == null 
-            || !contents.GetComponent<Movement>().BlocksMove
-        );
+    public bool IsPassable {
+        get {
+            return Contents.Count == 0 ||
+            Contents
+            .Select(x => x.GetComponent<Movement>())
+            .All(x => !x.BlocksMove);
+        }
     }
 
     public bool IsTransparent { 
-        get {return (contents == null || !contents.BlocksSight);}
+        get {
+            return Contents.Count == 0 ||
+            !Contents.Any(x => x.BlocksSight);
+        }
     }
 }
