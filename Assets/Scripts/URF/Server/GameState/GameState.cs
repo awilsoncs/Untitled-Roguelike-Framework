@@ -316,7 +316,6 @@ namespace URF.Server.GameState {
         var entityID = reader.ReadInt();
         var entity = _entityFactory.Get();
         entity.ID = entityID;
-        entity.GameState = this;
         entity.Load(reader);
 
         _entities.Add(entity);

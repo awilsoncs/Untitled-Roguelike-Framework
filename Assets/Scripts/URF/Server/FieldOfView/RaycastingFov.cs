@@ -41,7 +41,7 @@ namespace URF.Server.FieldOfView {
       var results = new Dictionary<Position, bool>();
       Algorithms.PlotFunction pf = GetPlotter(gameState, results);
       Algorithms.Line(start, end, pf);
-      return results.GetValueOrDefault(end, false);
+      return ExtensionMethods.GetValueOrDefault(results, end, false);
     }
 
     // todo calculate line of sight

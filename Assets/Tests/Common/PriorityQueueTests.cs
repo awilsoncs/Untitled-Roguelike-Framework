@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using URF.Common.PriorityQueue;
 
 namespace Tests.Common {
   public class PriorityQueueTests {

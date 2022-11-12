@@ -1,65 +1,58 @@
 using System.Collections.Generic;
 using System.Linq;
+using URF.Common.Entities;
 using URF.Server.GameState;
 using URF.Server.RulesSystems;
 
-namespace URF.Common.Entities
-{
-    /// <summary>
-    /// Represent the logical component of a game piece. Should remain agnostic to the game engine.
-    /// </summary>
-    public class Entity : IPersistableObject, IEntity {
-        public int ID { get; set; }
-        public bool BlocksSight { get; set; }
-        public bool IsVisible { get; set; }
-        public IGameState GameState {get; set;}
-        private readonly List<BaseComponent> components;
+namespace URF.Server {
+  /// <summary>
+  /// Backing implementation for the IEntity. Only EntityFactory should have access to this.
+  /// </summary>
+  public class Entity : IEntity {
 
-        public Entity() {
-            components = new();
-        }
+    public int ID { get; set; }
 
-        public T GetComponent<T>() where T : BaseComponent {
-            return (T)components.FirstOrDefault(c => c is T);
-        }
+    public bool BlocksSight { get; set; }
 
-        public void AddComponent(BaseComponent component) {
-            components.Add(component);
-        }
+    public bool IsVisible { get; set; }
 
-        public void Save(GameDataWriter writer) {
-            writer.Write(BlocksSight);
-            writer.Write(IsVisible);
-            writer.Write(components.Count);
-            foreach (var component in components) {
-                component.Save(writer);
-            }
-        }
+    private readonly List<BaseComponent> _components = new();
 
-        public void Load(GameDataReader reader) {
-            BlocksSight = reader.ReadBool();
-            IsVisible = reader.ReadBool();
-            var componentCount = reader.ReadInt();
-            for (int i = 0; i < componentCount; i++) {
-                components[i].Load(reader);
-            }
-        }
-
-        public void Recycle(IEntityFactory entityFactory) {
-            entityFactory.Reclaim(this);
-        }
-
-        public override string ToString()
-        {
-            var movement = GetComponent<Movement>();
-            var entityInfo = GetComponent<EntityInfo>();
-
-            if (movement == null) {
-                return $"{entityInfo.Name}::{ID}";
-            } else {
-                return $"{entityInfo.Name}::{ID}::{movement.EntityPosition})";
-            }
-        }
-
+    public T GetComponent<T>() where T : BaseComponent {
+      return (T)_components.FirstOrDefault(c => c is T);
     }
+
+    public void AddComponent(BaseComponent component) {
+      _components.Add(component);
+    }
+
+    public void Save(GameDataWriter writer) {
+      writer.Write(BlocksSight);
+      writer.Write(IsVisible);
+      writer.Write(_components.Count);
+      foreach(BaseComponent component in _components) { component.Save(writer); }
+    }
+
+    public void Load(GameDataReader reader) {
+      BlocksSight = reader.ReadBool();
+      IsVisible = reader.ReadBool();
+      int componentCount = reader.ReadInt();
+      for(int i = 0; i < componentCount; i++) { _components[i].Load(reader); }
+    }
+
+    public void Recycle(IEntityFactory entityFactory) {
+      _components.Clear();
+      entityFactory.Reclaim(this);
+    }
+
+    public override string ToString() {
+      Movement movement = GetComponent<Movement>();
+      EntityInfo entityInfo = GetComponent<EntityInfo>();
+
+      return movement == null
+        ? $"{entityInfo.Name}::{ID}"
+        : $"{entityInfo.Name}::{ID}::{movement.EntityPosition})";
+    }
+
+  }
 }

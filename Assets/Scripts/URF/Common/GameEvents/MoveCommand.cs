@@ -1,16 +1,20 @@
-
 namespace URF.Common.GameEvents {
-    using PositionDelta = Position;
+  using PositionDelta = Position;
 
-    public class MoveCommand : GameEvent {
-        public int EntityId {get;}
-        public PositionDelta Direction { get; }
-        public override GameEventType EventType => GameEventType.MoveCommand;
-        public override bool IsCommand => true;
+  public class MoveCommand : GameEvent {
 
-        public MoveCommand (int id, PositionDelta delta) {
-            EntityId = id;
-            Direction = delta;
-        }
+    public int EntityId { get; }
+
+    public PositionDelta Direction { get; }
+
+    public override GameEventType EventType => GameEventType.MoveCommand;
+
+    public override bool IsCommand => true;
+
+    public MoveCommand(int id, PositionDelta delta) {
+      EntityId = id;
+      Direction = delta;
     }
+
+  }
 }

@@ -1,12 +1,14 @@
 using System;
 
 namespace URF.Common.GameEvents {
-    [AttributeUsage(AttributeTargets.Method)]
-    public class EventHandlerAttribute : Attribute {
-        public GameEventType eventType;
+  [AttributeUsage(AttributeTargets.Method)]
+  public class EventHandlerAttribute : Attribute {
 
-        public EventHandlerAttribute(GameEventType evt) {
-            eventType = evt;
-        }
+    public readonly GameEventType EventType;
+
+    public EventHandlerAttribute(GameEventType evt) {
+      EventType = evt;
     }
+
+  }
 }

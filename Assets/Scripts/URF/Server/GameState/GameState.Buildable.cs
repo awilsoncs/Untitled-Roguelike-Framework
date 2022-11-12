@@ -1,4 +1,3 @@
-using System;
 using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
@@ -13,8 +12,7 @@ namespace URF.Server.GameState {
     }
 
     public int CreateEntityAtPosition(string blueprintName, Position position) {
-      Entity entity = _entityFactory.Get(blueprintName);
-      entity.GameState = this;
+      IEntity entity = _entityFactory.Get(blueprintName);
       _entities.Add(entity);
       _entitiesById.Add(entity.ID, entity);
       _gameClient.PostEvent(new EntityCreatedEvent(entity));

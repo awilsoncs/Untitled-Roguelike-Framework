@@ -24,7 +24,7 @@ namespace URF.Server.GameState {
         object[] attributes = method.GetCustomAttributes(typeof(EventHandlerAttribute), false);
         foreach(object attribute in attributes) {
           EventHandlerAttribute eha = (EventHandlerAttribute)attribute;
-          _eventHandlers[eha.eventType].Add((gs, ev) => {
+          _eventHandlers[eha.EventType].Add((gs, ev) => {
             method.Invoke(system, new object[] { gs, ev });
           });
         }

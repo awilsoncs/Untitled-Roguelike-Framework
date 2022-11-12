@@ -1,14 +1,14 @@
 using UnityEngine;
 
-namespace URF.Common.Logging
-{
-    [CreateAssetMenu(menuName = "URF Plugins/Logging/UnityDebugLogging")]
-    public class UnityDebugLoggingPlugin : LoggingPlugin {
-        ILogging _impl;
-        public override ILogging Impl => _impl;
+namespace URF.Common.Logging {
+  [CreateAssetMenu(menuName = "URF Plugins/Logging/UnityDebugLogging")]
+  public class UnityDebugLoggingPlugin : LoggingPlugin {
 
-        public UnityDebugLoggingPlugin() {
-            _impl = new UnityDebugLogging();
-        }
+    public override ILogging Impl { get; }
+
+    public UnityDebugLoggingPlugin() {
+      Impl = new UnityDebugLogging();
     }
+
+  }
 }

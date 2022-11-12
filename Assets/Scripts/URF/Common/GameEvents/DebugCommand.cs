@@ -1,22 +1,25 @@
-
 namespace URF.Common.GameEvents {
-    public struct DebugCommand : IGameEvent {
-        public enum DebugMethod {
-            SpawnCrab
-        }
+  public struct DebugCommand : IGameEvent {
 
-        public bool IsCommand => true;
+    public enum DebugMethod {
 
-        public GameEventType EventType => GameEventType.DebugCommand;
+      SpawnCrab
 
-        public DebugMethod Method {get;}
-
-        public DebugCommand(DebugMethod method) {
-            Method = method;
-        }
-
-        public static DebugCommand SpawnCrab() {
-            return new DebugCommand(DebugMethod.SpawnCrab);
-        }
     }
+
+    public bool IsCommand => true;
+
+    public GameEventType EventType => GameEventType.DebugCommand;
+
+    public DebugMethod Method { get; }
+
+    private DebugCommand(DebugMethod method) {
+      Method = method;
+    }
+
+    public static DebugCommand SpawnCrab() {
+      return new DebugCommand(DebugMethod.SpawnCrab);
+    }
+
+  }
 }

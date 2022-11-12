@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using URF.Common;
+using URF.Common.PriorityQueue;
 
 namespace URF.Server.Pathfinding {
   /// <summary>

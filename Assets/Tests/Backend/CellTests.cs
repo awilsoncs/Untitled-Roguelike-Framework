@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using URF.Common.Entities;
+using URF.Server;
 using URF.Server.GameState;
 using URF.Server.RulesSystems;
 
