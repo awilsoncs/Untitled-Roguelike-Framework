@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
+using URF.Common.Persistence;
 using URF.Server.FieldOfView;
 using URF.Server.Pathfinding;
 using URF.Server.RandomGeneration;

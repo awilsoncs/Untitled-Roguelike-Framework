@@ -1,14 +1,15 @@
 using UnityEngine;
 using URF.Server.RandomGeneration;
 
-namespace URF.Game.Plugins
-{
-    [CreateAssetMenu]
-    public class UnityRandomPlugin : RandomGeneratorPlugin {
-        public override IRandomGenerator Impl {get;}
+namespace URF.Game.Plugins {
+  [CreateAssetMenu]
+  public class UnityRandomPlugin : RandomGeneratorPlugin {
 
-        public UnityRandomPlugin() {
-            Impl = new UnityRandom();
-        }
+    public override IRandomGenerator Impl { get; }
+
+    public UnityRandomPlugin() {
+      Impl = new UnityRandom();
     }
+
+  }
 }

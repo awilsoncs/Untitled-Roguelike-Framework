@@ -1,3 +1,5 @@
+using URF.Common.Persistence;
+
 namespace URF.Common.Entities {
   public abstract class BaseComponent : IPersistableObject {
 

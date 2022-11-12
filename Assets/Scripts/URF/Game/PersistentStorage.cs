@@ -1,29 +1,32 @@
 using System.IO;
 using UnityEngine;
+using URF.Common.Persistence;
 
-/// <summary>
-/// Specify a save path and set up a binary interface to it.
-/// </summary>
-public class PersistentStorage : MonoBehaviour
-{
-    string savePath;
-    void Awake () {
-		savePath = Path.Combine(Application.persistentDataPath, "saveFile");
-	}
+namespace URF.Game {
+  /// <summary>
+  /// Specify a save path and set up a binary interface to it.
+  /// </summary>
+  public class PersistentStorage : MonoBehaviour {
 
-	public void Save (IPersistableObject o, int version) {
-		using (
-			var writer = new BinaryWriter(File.Open(savePath, FileMode.Create))
-		) {
-			writer.Write(version);
-			o.Save(new GameDataWriter(writer));
-		}
-		Debug.Log($"GameClient saved to {savePath}");
-	}
+    private string _savePath;
 
-	public void Load (IPersistableObject o) {
-		byte[] data = File.ReadAllBytes(savePath);
-		var reader = new BinaryReader(new MemoryStream(data));
-		o.Load(new GameDataReader(reader, reader.ReadInt32()));
-	}  
+    private void Awake() {
+      _savePath = Path.Combine(Application.persistentDataPath, "saveFile");
+    }
+
+    public void Save(IPersistableObject o, int version) {
+      using(BinaryWriter writer = new(File.Open(_savePath, FileMode.Create))) {
+        writer.Write(version);
+        o.Save(new GameDataWriter(writer));
+      }
+      Debug.Log($"GameClient saved to {_savePath}");
+    }
+
+    public void Load(IPersistableObject o) {
+      byte[] data = File.ReadAllBytes(_savePath);
+      BinaryReader reader = new(new MemoryStream(data));
+      o.Load(new GameDataReader(reader, reader.ReadInt32()));
+    }
+
+  }
 }

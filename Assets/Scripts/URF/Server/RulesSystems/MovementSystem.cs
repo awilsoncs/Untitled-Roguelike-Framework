@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
+using URF.Common.Persistence;
 using URF.Server.GameState;
 
 namespace URF.Server.RulesSystems {

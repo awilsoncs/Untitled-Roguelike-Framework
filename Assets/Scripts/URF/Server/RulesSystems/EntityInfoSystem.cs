@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using URF.Common.Entities;
+using URF.Common.Persistence;
 
 namespace URF.Server.RulesSystems {
   /// <summary>

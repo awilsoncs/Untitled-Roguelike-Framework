@@ -7,8 +7,8 @@ using URF.Game.Plugins;
 namespace URF.Game {
   [Serializable]
   public class BackendPlugins {
-    [SerializeField]
-    private RandomGeneratorPlugin randomGeneratorPlugin;
+
+    [SerializeField] private RandomGeneratorPlugin randomGeneratorPlugin;
 
     public RandomGeneratorPlugin RandomPlugin => randomGeneratorPlugin;
 
@@ -23,5 +23,6 @@ namespace URF.Game {
     [SerializeField] private PathfindingPlugin pathfindingPlugin;
 
     public PathfindingPlugin PathfindingPlugin => pathfindingPlugin;
+
   }
 }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using URF.Common.Entities;
-using URF.Game.Persistence;
+using URF.Common.Persistence;
 using URF.Server.GameState;
 using URF.Server.RulesSystems;
 

@@ -1,3 +1,4 @@
+using URF.Common.Persistence;
 using URF.Server.GameState;
 
 namespace URF.Common.Entities {
