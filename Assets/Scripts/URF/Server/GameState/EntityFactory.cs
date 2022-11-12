@@ -1,123 +1,128 @@
 using System;
 using System.Collections.Generic;
 using URF.Common.Entities;
-using URF.Server.GameState;
 using URF.Server.RulesSystems;
 
-public class EntityFactory : IEntityFactory {
-// todo implement pooling behavior
-    private int idCounter = 0;
+namespace URF.Server.GameState {
+  public class EntityFactory : IEntityFactory {
+
+    private int _idCounter;
+
     private delegate void EntityBuilder(Entity entity);
-    
-    readonly Dictionary<String, EntityBuilder> builders;
 
-    readonly List<Type> entitySpecComponents;
+    private readonly Dictionary<string, EntityBuilder> _builders;
 
+    private readonly List<Type> _entitySpecComponents;
 
     public EntityFactory() {
-        entitySpecComponents = new();
-        builders = new()
-        {
-            { "player", BuildPlayer },
-            { "crab", BuildCrab },
-            { "wall", BuildWall },
-            { "healthPotion", BuildHealthPotion}
-        };
-    }    
+      _entitySpecComponents = new List<Type>();
+      _builders = new Dictionary<string, EntityBuilder> {
+        { "player", BuildPlayer },
+        { "crab", BuildCrab },
+        { "wall", BuildWall },
+        { "healthPotion", BuildHealthPotion }
+      };
+    }
 
-    /*
-    * Get a bare entity.
-    */
+    /// <summary>
+    /// Get a bare entity.
+    /// </summary>
+    /// <returns></returns>
     public Entity Get() {
-        Entity entity = new();
-        foreach (var t in entitySpecComponents) {
-            entity.AddComponent((BaseComponent) Activator.CreateInstance(t));
-        }
-        return entity;
+      Entity entity = new();
+      foreach(Type t in _entitySpecComponents) {
+        entity.AddComponent((BaseComponent)Activator.CreateInstance(t));
+      }
+
+      return entity;
     }
 
-    /*
-    * Get an entity specified by a blueprint name.
-    */
-    public Entity Get(String s) {
-        Entity entity = Get();
-        builders[s](entity);
-        entity.ID = idCounter++;
-        return entity;
+    /// <summary>
+    /// Get an entity specified by a blueprint name.
+    /// </summary>
+    /// <param name="bluePrint">The string name of the entity's blueprint.</param>
+    /// <returns>An entity conforming to the given blueprint.</returns>
+    public Entity Get(string bluePrint) {
+      Entity entity = Get();
+      _builders[bluePrint](entity);
+      entity.ID = _idCounter++;
+      return entity;
     }
 
-    public void UpdateEntitySpec(List<Type> newComponents) {
-        foreach (var slot in newComponents) {
-            entitySpecComponents.Add(slot);
-        }
+    public void UpdateEntitySpec(List<Type> componentTypes) {
+      foreach(Type slot in componentTypes) { _entitySpecComponents.Add(slot); }
     }
 
-    public void Reclaim (Entity entity) {}
+    public void Reclaim(Entity entity) {
+      // Haven't yet implemented this, but need to know where it should be called, so we leave it.
+    }
 
     // short term hardcoded delegates
-    void BuildPlayer(Entity entity) {
-        var info = entity.GetComponent<EntityInfo>();
-        info.Name = "Player";
-        info.Appearance = "player";
-        info.Description = "A daring adventurer.";
-        var combat = entity.GetComponent<CombatComponent>();
-        combat.CanFight = true;
-        combat.CurrentHealth = 10;
-        combat.MaxHealth = 10;
-        combat.Damage = 2;
-        var movement = entity.GetComponent<Movement>();
-        movement.BlocksMove = true;
-        var brain = entity.GetComponent<Brain>();
-        brain.ControlMode = IntelligenceControlMode.None;
-        entity.BlocksSight = false;
-        entity.IsVisible = true;
+    private static void BuildPlayer(Entity entity) {
+      EntityInfo info = entity.GetComponent<EntityInfo>();
+      info.Name = "Player";
+      info.Appearance = "player";
+      info.Description = "A daring adventurer.";
+      CombatComponent combat = entity.GetComponent<CombatComponent>();
+      combat.CanFight = true;
+      combat.CurrentHealth = 10;
+      combat.MaxHealth = 10;
+      combat.Damage = 2;
+      Movement movement = entity.GetComponent<Movement>();
+      movement.BlocksMove = true;
+      Brain brain = entity.GetComponent<Brain>();
+      brain.ControlMode = IntelligenceControlMode.None;
+      entity.BlocksSight = false;
+      entity.IsVisible = true;
     }
 
-    void BuildCrab(Entity entity) {
-        var info = entity.GetComponent<EntityInfo>();
-        info.Name = "Crab";
-        info.Appearance = "crab";
-        info.Description = "A deadly crab.";
-        var combat = entity.GetComponent<CombatComponent>();
-        combat.CanFight = true;
-        combat.CurrentHealth = 2;
-        combat.MaxHealth = 2;
-        combat.Damage = 1;
-        var movement = entity.GetComponent<Movement>();
-        movement.BlocksMove = true;
-        var brain = entity.GetComponent<Brain>();
-        brain.ControlMode = IntelligenceControlMode.Monster;
-        entity.BlocksSight = false;
-        entity.IsVisible = true;
+    private static void BuildCrab(Entity entity) {
+      EntityInfo info = entity.GetComponent<EntityInfo>();
+      info.Name = "Crab";
+      info.Appearance = "crab";
+      info.Description = "A deadly crab.";
+      CombatComponent combat = entity.GetComponent<CombatComponent>();
+      combat.CanFight = true;
+      combat.CurrentHealth = 2;
+      combat.MaxHealth = 2;
+      combat.Damage = 1;
+      Movement movement = entity.GetComponent<Movement>();
+      movement.BlocksMove = true;
+      Brain brain = entity.GetComponent<Brain>();
+      brain.ControlMode = IntelligenceControlMode.Monster;
+      entity.BlocksSight = false;
+      entity.IsVisible = true;
     }
 
-    void BuildWall(Entity entity) {
-        var info = entity.GetComponent<EntityInfo>();
-        info.Name = "Wall";
-        info.Appearance = "wall";
-        info.Description = "Nothing but solid stone.";
-        var combat = entity.GetComponent<CombatComponent>();
-        combat.CanFight = false;
-        var movement = entity.GetComponent<Movement>();
-        movement.BlocksMove = true;
-        var brain = entity.GetComponent<Brain>();
-        brain.ControlMode = IntelligenceControlMode.None;
-        entity.BlocksSight = true;
-        entity.IsVisible = true;
+    private static void BuildWall(Entity entity) {
+      EntityInfo info = entity.GetComponent<EntityInfo>();
+      info.Name = "Wall";
+      info.Appearance = "wall";
+      info.Description = "Nothing but solid stone.";
+      CombatComponent combat = entity.GetComponent<CombatComponent>();
+      combat.CanFight = false;
+      Movement movement = entity.GetComponent<Movement>();
+      movement.BlocksMove = true;
+      Brain brain = entity.GetComponent<Brain>();
+      brain.ControlMode = IntelligenceControlMode.None;
+      entity.BlocksSight = true;
+      entity.IsVisible = true;
     }
 
-    void BuildHealthPotion(Entity entity) {
-        var info = entity.GetComponent<EntityInfo>();
-        info.Name = "Health Potion";
-        info.Appearance = "healthPotion";
-        info.Description = "It looks like Diet Soda.";
-        var combat = entity.GetComponent<CombatComponent>();
-        combat.CanFight = false;
-        var movement = entity.GetComponent<Movement>();
-        movement.BlocksMove = false;
-        var brain = entity.GetComponent<Brain>();
-        brain.ControlMode = IntelligenceControlMode.None;
-        entity.BlocksSight = false;
-        entity.IsVisible = true;
+    private static void BuildHealthPotion(Entity entity) {
+      EntityInfo info = entity.GetComponent<EntityInfo>();
+      info.Name = "Health Potion";
+      info.Appearance = "healthPotion";
+      info.Description = "It looks like Diet Soda.";
+      CombatComponent combat = entity.GetComponent<CombatComponent>();
+      combat.CanFight = false;
+      Movement movement = entity.GetComponent<Movement>();
+      movement.BlocksMove = false;
+      Brain brain = entity.GetComponent<Brain>();
+      brain.ControlMode = IntelligenceControlMode.None;
+      entity.BlocksSight = false;
+      entity.IsVisible = true;
     }
+
+  }
 }

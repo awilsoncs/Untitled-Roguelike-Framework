@@ -57,7 +57,7 @@ namespace URF.Common.Entities
             if (movement == null) {
                 return $"{entityInfo.Name}::{ID}";
             } else {
-                return $"{entityInfo.Name}::{ID}::{movement.Position})";
+                return $"{entityInfo.Name}::{ID}::{movement.EntityPosition})";
             }
         }
 
