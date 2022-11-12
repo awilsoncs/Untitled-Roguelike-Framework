@@ -9,6 +9,7 @@ URF is currently aimed at two broad groups of developers:
 
 * Experienced roguelike developers who are looking to move to Unity
 * C#/Unity developers looking to build a roguelike without doing *all* of the base work.
+* Anyone interested in wading through a new and evolving project.
 
 In the future, we also aim to support designers with a highly plug-and-play framework similar to software like the *RPGMaker* series.
 
