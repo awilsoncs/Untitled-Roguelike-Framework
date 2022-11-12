@@ -36,7 +36,7 @@ Oof, no. As URF is still in pre-alpha, things are changing way too fast to write
 
 ## I want to see some code but don't know much about Unity projects!
 
-[This directory is the main souce directory](https://github.com/awilsoncs/Untitled-Roguelike-Framework/tree/main/Assets/Scripts).
+[This directory is the main source directory](https://github.com/awilsoncs/Untitled-Roguelike-Framework/tree/main/Assets/Scripts). Everything should be in .cs files.
 
 ## I want to talk about URF!
 
