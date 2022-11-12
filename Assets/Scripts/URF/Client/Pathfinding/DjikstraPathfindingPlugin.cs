@@ -1,13 +1,15 @@
 using UnityEngine;
 using URF.Server.Pathfinding;
 
-namespace URFFrontend {
-    [CreateAssetMenu]
-    public class DjikstraPathfindingPlugin : PathfindingPlugin {
-        public override IPathfinding Impl {get;}
+namespace URF.Client.Pathfinding {
+  [CreateAssetMenu]
+  public class DjikstraPathfindingPlugin : PathfindingPlugin {
 
-        public DjikstraPathfindingPlugin() {
-            Impl = new DjikstraPathfinding();
-        }
+    public override IPathfinding Impl { get; }
+
+    public DjikstraPathfindingPlugin() {
+      Impl = new DjikstraPathfinding();
     }
+
+  }
 }

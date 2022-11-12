@@ -18,7 +18,7 @@ public class PersistentStorage : MonoBehaviour
 			writer.Write(version);
 			o.Save(new GameDataWriter(writer));
 		}
-		Debug.Log($"Game saved to {savePath}");
+		Debug.Log($"GameClient saved to {savePath}");
 	}
 
 	public void Load (IPersistableObject o) {

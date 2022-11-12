@@ -1,20 +1,26 @@
 using UnityEngine;
 
 // Viewable gameObject of the entity
-public class Pawn : MonoBehaviour {
+namespace URF.Client {
+  public class Pawn : MonoBehaviour {
+
+    private SpriteRenderer _spriteRenderer;
+
     public int EntityId { get; set; }
-    private SpriteRenderer spriteRenderer;
-    public bool IsVisible {get; set;}
+
+    public bool IsVisible { get; set; }
 
     private void OnEnable() {
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+      _spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
     }
 
     public void Recycle(PawnFactory pawnFactory) {
-        pawnFactory.Reclaim(this);
+      PawnFactory.Reclaim(this);
     }
 
     public void SetSprite(Sprite sprite) {
-        spriteRenderer.sprite = sprite;
+      _spriteRenderer.sprite = sprite;
     }
+
+  }
 }

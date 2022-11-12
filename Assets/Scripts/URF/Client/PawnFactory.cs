@@ -2,31 +2,40 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Provide an interface to get pawns.
-/// </summary>
-[CreateAssetMenu]
-public class PawnFactory : ScriptableObject {
+namespace URF.Client {
+  /// <summary>
+  /// Provide an interface to get pawns.
+  /// </summary>
+  [CreateAssetMenu]
+  public class PawnFactory : ScriptableObject {
+
     // Hack a dictionary into the inspector. See OnEnable().
     [Serializable]
     private struct NamedSprite {
-        public string name;
-        public Sprite sprite;
+
+      [SerializeField] private string name;
+
+      [SerializeField] private Sprite sprite;
+
+      public readonly string Name => name;
+
+      public readonly Sprite Sprite => sprite;
+
     }
 
     // todo implement pooling behavior
     [SerializeField] private List<NamedSprite> sprites;
-    private Dictionary<string, Sprite> spriteMap;
+
+    private readonly Dictionary<string, Sprite> _spriteMap = new();
 
     private void OnEnable() {
-        // rebuild the spriteMap;
-        spriteMap = new Dictionary<string, Sprite>();
-        foreach (var namedSprite in sprites) {
-            spriteMap[namedSprite.name] = namedSprite.sprite;
-        }
-        if (spriteMap.Count != sprites.Count) {
-            Debug.LogError("Name collision in sprite map. Check the PawnFactory.");
-        }
+      _spriteMap.Clear();
+      foreach(NamedSprite namedSprite in sprites) {
+        _spriteMap[namedSprite.Name] = namedSprite.Sprite;
+      }
+      if(_spriteMap.Count != sprites.Count) {
+        Debug.LogError("Name collision in sprite map. Check the PawnFactory.");
+      }
     }
 
     /// <summary>
@@ -35,20 +44,22 @@ public class PawnFactory : ScriptableObject {
     /// <param name="appearance">A descriptor of the sprite to find.</param>
     /// <returns>A Pawn with the specified appearance.</returns>
     public Pawn Get(string appearance) {
-        GameObject pawnObject = new GameObject();
-        pawnObject.AddComponent<SpriteRenderer>();
-        Pawn pawn = pawnObject.AddComponent<Pawn>();
-        pawn.IsVisible = true;
+      GameObject pawnObject = new GameObject();
+      pawnObject.AddComponent<SpriteRenderer>();
+      Pawn pawn = pawnObject.AddComponent<Pawn>();
+      pawn.IsVisible = true;
 
-        if (!spriteMap.ContainsKey(appearance)) {
-            Debug.LogError($"Sprite map does not contain '{appearance}'. Check the PawnFactory.");
-            return pawn;
-        }
-        pawn.SetSprite(spriteMap[appearance]);
+      if(!_spriteMap.ContainsKey(appearance)) {
+        Debug.LogError($"Sprite map does not contain '{appearance}'. Check the PawnFactory.");
         return pawn;
+      }
+      pawn.SetSprite(_spriteMap[appearance]);
+      return pawn;
     }
 
-    public void Reclaim (Pawn pawn) {
-        Destroy(pawn.gameObject);
+    public static void Reclaim(Pawn pawn) {
+      Destroy(pawn.gameObject);
     }
+
+  }
 }
