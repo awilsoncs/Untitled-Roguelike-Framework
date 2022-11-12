@@ -34,6 +34,10 @@ However, we fully expect to stretch this timeline out. As soon as a roadmap is a
 ## Are there any tutorials or guides?
 Oof, no. As URF is still in pre-alpha, things are changing way too fast to write much documentation. However, once we reach Beta, we will begin to create learning materials.
 
+## I want to see some code but don't know much about Unity projects!
+
+[This directory is the main souce directory](https://github.com/awilsoncs/Untitled-Roguelike-Framework/tree/main/Assets/Scripts).
+
 ## I want to talk about URF!
 
 Please do! You can use our [discussion page](https://github.com/awilsoncs/Untitled-Roguelike-Framework/discussions) for now. At some point between Alpha and Beta, we will expand the community offerings.
