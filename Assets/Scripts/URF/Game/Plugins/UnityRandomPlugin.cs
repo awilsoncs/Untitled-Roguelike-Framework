@@ -2,7 +2,7 @@ using UnityEngine;
 using URF.Server.RandomGeneration;
 
 namespace URF.Game.Plugins {
-  [CreateAssetMenu]
+  [CreateAssetMenu(menuName = "URF Plugins/Random/Unity Random")]
   public class UnityRandomPlugin : RandomGeneratorPlugin {
 
     public override IRandomGenerator Impl { get; }
