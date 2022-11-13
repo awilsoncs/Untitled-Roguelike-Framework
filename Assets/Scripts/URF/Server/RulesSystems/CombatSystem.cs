@@ -8,6 +8,8 @@ using URF.Server.GameState;
 namespace URF.Server.RulesSystems {
   public class CombatSystem : BaseRulesSystem {
 
+    public event EventHandler<EntityAttackedEventArgs> EntityAttacked;
+
     public override List<Type> Components =>
       new() {
         // todo could create an annotation to register these
@@ -46,14 +48,12 @@ namespace URF.Server.RulesSystems {
       if(ev.Attacker == gs.GetMainCharacter().ID) { gs.GameUpdate(); }
     }
 
-    private static void HandleAttack(IGameState gs, IEntity attacker, IEntity defender) {
+    private void HandleAttack(IGameState gs, IEntity attacker, IEntity defender) {
       CombatComponent attackerCombat = attacker.GetComponent<CombatComponent>();
       CombatComponent defenderCombat = defender.GetComponent<CombatComponent>();
 
       int damage = attackerCombat.Damage;
-      gs.PostEvent(new EntityAttackedEvent(attacker, defender, true, damage));
-      gs.Log($"{attacker} will deal {damage} damage.");
-      gs.Log($"{defender} took {damage} damage.");
+      OnEntityAttacked(attacker, defender, true, damage);
 
       int maxHealth = defenderCombat.MaxHealth;
       int currentHealth = defenderCombat.CurrentHealth;
@@ -61,6 +61,16 @@ namespace URF.Server.RulesSystems {
       defenderCombat.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
 
       if(defenderCombat.CurrentHealth <= 0) { gs.Kill(defender); }
+    }
+
+    protected virtual void OnEntityAttacked(
+      IEntity attacker,
+      IEntity defender,
+      bool success,
+      int damage
+    ) {
+      EntityAttackedEventArgs e = new EntityAttackedEventArgs(attacker, defender, success, damage);
+      EntityAttacked?.Invoke(this, e);
     }
 
   }

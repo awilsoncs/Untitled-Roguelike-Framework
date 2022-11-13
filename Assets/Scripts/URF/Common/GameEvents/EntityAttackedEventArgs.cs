@@ -1,7 +1,8 @@
+using System;
 using URF.Common.Entities;
 
 namespace URF.Common.GameEvents {
-  public class EntityAttackedEvent : GameEvent {
+  public class EntityAttackedEventArgs : EventArgs {
 
     /// <summary>The attacking entity's entity ID</summary>
     public IEntity Attacker { get; }
@@ -14,9 +15,7 @@ namespace URF.Common.GameEvents {
 
     public int Damage { get; }
 
-    public override GameEventType EventType => GameEventType.EntityAttacked;
-
-    public EntityAttackedEvent(IEntity attacker, IEntity defender, bool success, int damage) {
+    public EntityAttackedEventArgs(IEntity attacker, IEntity defender, bool success, int damage) {
       Attacker = attacker;
       Defender = defender;
       Success = success;

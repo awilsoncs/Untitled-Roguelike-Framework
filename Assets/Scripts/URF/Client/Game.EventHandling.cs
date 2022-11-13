@@ -35,9 +35,6 @@ namespace URF.Client {
         case GameEventType.MainCharacterChanged:
           HandleMainCharacterChangedEvent((MainCharacterChangedEvent)ev);
           return;
-        case GameEventType.EntityAttacked:
-          HandleEntityAttacked((EntityAttackedEvent)ev);
-          return;
         default:
           Debug.Log($"Unhandled GameEventType {ev.EventType}");
           return;
@@ -120,7 +117,7 @@ namespace URF.Client {
       gui.HealthBar.UpdateHealthBar();
     }
 
-    private void HandleEntityAttacked(EntityAttackedEvent ev) {
+    private void HandleEntityAttacked(object _, EntityAttackedEventArgs ev) {
       EntityInfo attackerInfo = ev.Attacker.GetComponent<EntityInfo>();
       EntityInfo defenderInfo = ev.Defender.GetComponent<EntityInfo>();
 

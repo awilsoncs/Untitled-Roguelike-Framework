@@ -12,7 +12,7 @@ namespace URF.Client {
   /// </summary>
   [DisallowMultipleComponent]
   public partial class GameClient {
-    
+
     [SerializeField] [Tooltip("Custom behavior to inject into the game controller.")]
     private BackendPlugins backendPlugins;
 
@@ -31,7 +31,7 @@ namespace URF.Client {
 
     private Random.State _mainRandomState;
 
-    private IGameState _gameState;
+    private GameState _gameState;
 
     private IEntityFactory _entityFactory;
     // end note
@@ -62,6 +62,7 @@ namespace URF.Client {
       _gameState = new GameState(this, backendPlugins.RandomPlugin.Impl, _entityFactory,
         backendPlugins.FieldOfViewPlugin.Impl, backendPlugins.PathfindingPlugin.Impl,
         backendPlugins.LoggingPlugin.Impl, mapWidth, mapHeight);
+      _gameState.EntityAttacked += HandleEntityAttacked;
       ClearEnemyPositions();
       BeginNewGame();
     }

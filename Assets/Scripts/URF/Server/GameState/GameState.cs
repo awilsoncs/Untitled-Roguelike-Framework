@@ -48,6 +48,8 @@ namespace URF.Server.GameState {
     // Contains references to entities that need to be cleaned up after the game loop.
     private readonly List<IEntity> _killList;
 
+    public event EventHandler<EntityAttackedEventArgs> EntityAttacked;
+
     public GameState(
       IGameClient client,
       IRandomGenerator random,
@@ -84,6 +86,8 @@ namespace URF.Server.GameState {
       RegisterSystem(new EntityInfoSystem());
       RegisterSystem(new MovementSystem());
       RegisterSystem(new GameStartSystem());
+      CombatSystem cs = new();
+      cs.EntityAttacked += EntityAttacked;
       RegisterSystem(new CombatSystem());
       RegisterSystem(new IntelligenceSystem());
 
@@ -336,6 +340,10 @@ namespace URF.Server.GameState {
 
     public bool IsTraversable(Position p) {
       return GetCell(p).IsPassable;
+    }
+
+    protected virtual void OnEntityAttack(EntityAttackedEventArgs e) {
+        EntityAttacked?.Invoke(this, e);
     }
 
   }
