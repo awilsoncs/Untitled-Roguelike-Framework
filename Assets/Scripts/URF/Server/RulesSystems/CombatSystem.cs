@@ -35,7 +35,9 @@ namespace URF.Server.RulesSystems {
 
       defenderCombat.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
 
-      if(defenderCombat.CurrentHealth <= 0) { gs.Kill(defender); }
+      if(defenderCombat.CurrentHealth > 0) { return; }
+      OnGameEvent(new EntityKilledEventArgs(defender));
+      gs.Kill(defender);
     }
 
   }

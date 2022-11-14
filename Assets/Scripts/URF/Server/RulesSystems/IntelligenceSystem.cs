@@ -81,7 +81,7 @@ namespace URF.Server.RulesSystems {
       List<Position> path = _pathfinding.GetPath(costs, entityPosition, mainPosition);
       if(path.Count == 2) {
         // just the start and end means adjacent
-        OnGameAction(new AttackActionEventArgs(entity.ID, gameState.GetMainCharacter().ID));
+        OnGameAction(new AttackActionEventArgs(entity.ID, _mainCharacter.ID));
         return;
       }
 
