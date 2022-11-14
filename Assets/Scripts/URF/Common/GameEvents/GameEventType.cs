@@ -15,7 +15,7 @@ namespace URF.Common.GameEvents {
 
     GameError,
     
-    StartGame,
+    Configure,
 
     // Commands below this line
 
@@ -27,7 +27,11 @@ namespace URF.Common.GameEvents {
 
     Save,
     
-    Load
+    Load,
+
+    SpentTurn,
+    
+    Start
 
   }
 }

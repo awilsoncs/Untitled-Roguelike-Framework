@@ -62,6 +62,7 @@ namespace URF.Server {
       RegisterSystem(new MovementSystem());
       RegisterSystem(new CombatSystem());
       RegisterSystem(new IntelligenceSystem());
+      RegisterSystem(new FieldOfViewSystem());
     }
 
     private void StartGame() {
@@ -75,7 +76,7 @@ namespace URF.Server {
       // actions are only forwarded downwards.
       // todo implement all player actions again
       switch(ev.EventType) {
-        case GameEventType.StartGame:
+        case GameEventType.Configure:
           StartGame();
           break;
       }

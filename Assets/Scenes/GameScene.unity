@@ -218,7 +218,7 @@ RectTransform:
   - {fileID: 902917741}
   - {fileID: 153659308}
   m_Father: {fileID: 1768340208}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -441,7 +441,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1768340208}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &400728304
 GameObject:
@@ -601,7 +601,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1768340208}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &528273203
 GameObject:
@@ -647,11 +647,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00b64f90577943288e390df6783158c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backendPlugins:
-    randomGeneratorPlugin: {fileID: 11400000, guid: 0f0b756e275d0a44a9cd519a88ae3e35, type: 2}
-    fieldOfViewPlugin: {fileID: 11400000, guid: 061b63f164c24fa4f8bb8c859b8fa251, type: 2}
-    loggingPlugin: {fileID: 11400000, guid: 89b2dcb2ef426204d85a6c5905f7fbf3, type: 2}
-    pathfindingPlugin: {fileID: 11400000, guid: fbe201bc907b0a842a399c34bafeafda, type: 2}
   mapWidth: 40
   mapHeight: 20
 --- !u!1 &902917740
@@ -802,9 +797,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 519420032}
   - {fileID: 108323412}
   - {fileID: 368540835}
+  - {fileID: 519420032}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -21,9 +21,10 @@ namespace URF.Server.RulesSystems {
       int entityId = mcm.EntityId;
 
       IEntity entity = gs.GetEntityById(entityId);
-      Position newPos = entity.GetComponent<Movement>().EntityPosition + mcm.Direction;
+      Position position = entity.GetComponent<Movement>().EntityPosition + mcm.Direction;
 
-      gs.MoveEntity(entityId, newPos);
+      gs.MoveEntity(entityId, position);
+      OnGameEvent(new EntityMovedEventArgs(entity, position));
       OnGameEvent(new TurnSpentEventArgs(entity));
     }
 

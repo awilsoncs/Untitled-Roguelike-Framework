@@ -61,7 +61,7 @@ namespace URF.Client {
 
     private void BeginNewGame() {
       ResetEverything();
-      OnPlayerAction(new StartGameActionArgs());
+      OnPlayerAction(new ConfigureActionArgs());
       if(_gameEvents.Count <= 0) {
         Debug.LogError("Client received 0 events from server start.");
       }

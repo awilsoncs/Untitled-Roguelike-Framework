@@ -15,10 +15,11 @@ namespace URF.Server.RulesSystems {
       _entityFactory = pluginBundle.EntityFactory;
     }
 
-    [ActionHandler(GameEventType.StartGame)]
-    public void HandleGameStartCommand(IGameState gs, IActionEventArgs cm) {
-      OnGameEvent(new GameStartedEventArgs((gs.MapWidth, gs.MapHeight)));
+    [ActionHandler(GameEventType.Configure)]
+    public void HandleConfigureCommand(IGameState gs, IActionEventArgs cm) {
+      OnGameEvent(new GameConfiguredEventArgs((gs.MapWidth, gs.MapHeight)));
       BuildDungeon(gs, _random);
+      OnGameEvent( new GameStartedEventArgs() );
     }
 
     private void BuildDungeon(IGameState gs, IRandomGenerator rng) {

@@ -29,8 +29,8 @@ namespace URF.Client {
         case GameEventType.MainCharacterChanged:
           HandleMainCharacterChangedEvent((MainCharacterChangedEventArgs)ev);
           return;
-        case GameEventType.StartGame:
-          HandleGameStartedEvent((GameStartedEventArgs)ev);
+        case GameEventType.Configure:
+          HandleGameConfiguredEvent((GameConfiguredEventArgs)ev);
           return;
         default:
           Debug.Log($"Unhandled GameEventType {ev.EventType}");
@@ -127,7 +127,7 @@ namespace URF.Client {
       gui.HealthBar.UpdateHealthBar();
     }
 
-    private void HandleGameStartedEvent(GameStartedEventArgs ev) {
+    private void HandleGameConfiguredEvent(GameConfiguredEventArgs ev) {
       ConfigureClientMap(ev.MapSize);
       mainCamera.transform.position = new Vector3(ev.MapSize.X / (2 / GameClient.gridMultiple),
         ev.MapSize.Y / (2 / GameClient.gridMultiple), -10);

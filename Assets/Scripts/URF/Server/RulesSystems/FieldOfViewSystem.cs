@@ -22,20 +22,28 @@ namespace URF.Server.RulesSystems {
       _mainCharacter = mcc.Entity;
     }
 
+    [EventHandler(GameEventType.Start)]
+    public void HandleGameStart(IGameState gs, IGameEventArgs cm) {
+      RecalculateFOV(gs);
+    }
+
     [ActionHandler(GameEventType.MoveCommand)]
     public void HandleDebugAction(IGameState gs, IActionEventArgs cm) {
       MoveActionEventArgs ev = (MoveActionEventArgs)cm;
 
       // If it's not the MC, we don't care.
       if(ev.EntityId != _mainCharacter.ID) { return; }
+      RecalculateFOV(gs);
+    }
 
-      IFieldOfViewQueryResult result
-        = _fov.CalculateFOV(gs, _mainCharacter.GetComponent<Movement>().EntityPosition);
+    private void RecalculateFOV(IGameState gs) {
+      Position position = _mainCharacter.GetComponent<Movement>().EntityPosition;
+      IFieldOfViewQueryResult result = _fov.CalculateFOV(gs, position);
       for(int x = 0; x < gs.MapWidth; x++) {
         for(int y = 0; y < gs.MapHeight; y++) {
           bool isVisible = result.IsVisible((x, y));
-          var cell = gs.GetCell((x, y));
-          foreach(var entity in cell.Contents) {
+          Cell cell = gs.GetCell((x, y));
+          foreach(IEntity entity in cell.Contents) {
             entity.IsVisible = isVisible;
             OnGameEvent(new EntityVisibilityChangedEventArgs(entity, isVisible));
           }

@@ -10,7 +10,7 @@ namespace URF.Common.GameEvents {
       Entity = entity;
     }
 
-    public GameEventType EventType => GameEventType.EntityCreated;
+    public GameEventType EventType => GameEventType.SpentTurn;
 
   }
 }
