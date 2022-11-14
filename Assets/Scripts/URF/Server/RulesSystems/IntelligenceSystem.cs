@@ -25,6 +25,8 @@ namespace URF.Server.RulesSystems {
 
     private IPathfinding _pathfinding;
 
+    private IEntity _mainCharacter;
+
     // todo see notes below
     // After implementing the turn controller, convert this system
     // to handle a command emitted by the turn controller.
@@ -35,7 +37,17 @@ namespace URF.Server.RulesSystems {
       _pathfinding = pluginBundle.Pathfinding;
     }
 
-    public override void GameUpdate(IGameState gameState) {
+    [EventHandler(GameEventType.MainCharacterChanged)]
+    public void HandleMainCharacterChanged(IGameState gameState, IGameEventArgs ev) {
+      MainCharacterChangedEventArgs mcc = (MainCharacterChangedEventArgs)ev;
+      _mainCharacter = mcc.Entity;
+    }
+
+    [EventHandler(GameEventType.SpentTurn)]
+    public void RunAI(IGameState gameState, IGameEventArgs ev) {
+      TurnSpentEventArgs turnSpent = (TurnSpentEventArgs)ev;
+      if(turnSpent.Entity != _mainCharacter) { return; }
+
       foreach(IEntity entity in gameState.GetEntities()) {
         IntelligenceControlMode mode = entity.GetComponent<Brain>().ControlMode;
         switch(mode) {
@@ -54,8 +66,7 @@ namespace URF.Server.RulesSystems {
     private void UpdateEntity(IGameState gameState, IEntity entity) {
       // todo handle can't move
       // todo handle can't reach target
-      IEntity mainCharacter = gameState.GetMainCharacter();
-      Movement mainMovement = mainCharacter.GetComponent<Movement>();
+      Movement mainMovement = _mainCharacter.GetComponent<Movement>();
       Position mainPosition = mainMovement.EntityPosition;
 
       Movement entityMovement = entity.GetComponent<Movement>();
