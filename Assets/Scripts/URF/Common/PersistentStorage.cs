@@ -2,7 +2,7 @@ using System.IO;
 using UnityEngine;
 using URF.Common.Persistence;
 
-namespace URF.Game {
+namespace URF.Common {
   /// <summary>
   /// Specify a save path and set up a binary interface to it.
   /// </summary>
