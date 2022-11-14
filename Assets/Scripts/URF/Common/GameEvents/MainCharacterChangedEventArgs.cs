@@ -1,10 +1,11 @@
+using System;
 using URF.Common.Entities;
 
 namespace URF.Common.GameEvents {
   /// <summary>
   /// Notify listeners that the main character has changed.
   /// </summary>
-  public class MainCharacterChangedEvent : GameEvent {
+  public class MainCharacterChangedEventArgs : EventArgs, IGameEventArgs {
 
     /// <summary>
     /// The new main character
@@ -12,9 +13,9 @@ namespace URF.Common.GameEvents {
     public IEntity Entity { get; }
 
     // todo add a reference to the old main character here
-    public override GameEventType EventType => GameEventType.MainCharacterChanged;
+    public GameEventType EventType => GameEventType.MainCharacterChanged;
 
-    public MainCharacterChangedEvent(IEntity entity) {
+    public MainCharacterChangedEventArgs(IEntity entity) {
       Entity = entity;
     }
 

@@ -1,10 +1,11 @@
+using System;
 using URF.Common.Entities;
 
 namespace URF.Common.GameEvents {
   /// <summary>
   /// Notify listeners that an entity has moved.
   /// </summary>
-  public class EntityMovedEvent : GameEvent {
+  public class EntityMovedEventArgs : EventArgs, IGameEventArgs {
 
     /// <summary>
     /// The entity that moved.
@@ -17,9 +18,9 @@ namespace URF.Common.GameEvents {
     public Position Position { get; }
 
     // todo add an old position
-    public override GameEventType EventType => GameEventType.EntityMoved;
+    public GameEventType EventType => GameEventType.EntityMoved;
 
-    public EntityMovedEvent(IEntity entity, Position position) {
+    public EntityMovedEventArgs(IEntity entity, Position position) {
       Entity = entity;
       Position = position;
     }

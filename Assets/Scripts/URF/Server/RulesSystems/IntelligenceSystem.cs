@@ -4,19 +4,26 @@ using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
 using URF.Common.Persistence;
+using URF.Server.FieldOfView;
 using URF.Server.GameState;
+using URF.Server.Pathfinding;
 
 namespace URF.Server.RulesSystems {
   public enum IntelligenceControlMode {
 
     // NOTE: player is controlled externally, use control mode None.
     None,
+
     Monster
 
   }
 
   // todo need to make this require movement and combat systems
   public class IntelligenceSystem : BaseRulesSystem {
+
+    private IFieldOfView _fov;
+
+    private IPathfinding _pathfinding;
 
     // todo see notes below
     // After implementing the turn controller, convert this system
@@ -33,7 +40,7 @@ namespace URF.Server.RulesSystems {
           case IntelligenceControlMode.None:
             break;
           default:
-            gameState.Log($"Forgot to support intelligence mode {mode}");
+            OnGameEvent(new GameErroredEventArgs($"Forgot to support intelligence mode {mode}"));
             break;
         }
       }
@@ -48,24 +55,24 @@ namespace URF.Server.RulesSystems {
 
       Movement entityMovement = entity.GetComponent<Movement>();
       Position entityPosition = entityMovement.EntityPosition;
-      if(!gameState.FieldOfView.IsVisible(gameState, entityPosition, mainPosition)) {
+      if(!_fov.IsVisible(gameState, entityPosition, mainPosition)) {
         // entity can't see the player, just dawdle.
         return;
       }
 
       float[][] costs = GetMovementCosts(gameState);
       // take a step along the path
-      List<Position> path = gameState.Pathfinding.GetPath(costs, entityPosition, mainPosition);
+      List<Position> path = _pathfinding.GetPath(costs, entityPosition, mainPosition);
       if(path.Count == 2) {
         // just the start and end means adjacent
-        gameState.PostEvent(new AttackCommand(entity.ID, gameState.GetMainCharacter().ID));
+        OnGameCommand(new AttackActionEventArgs(entity.ID, gameState.GetMainCharacter().ID));
         return;
       }
 
       // calculate the direction to step
       Position nextStep = path[1];
       (int, int) mp = (nextStep.X - entityPosition.X, nextStep.Y - entityPosition.Y);
-      gameState.PostEvent(new MoveCommand(entity.ID, mp));
+      OnGameCommand(new MoveActionEventArgs(entity.ID, mp));
     }
 
     private static float[][] GetMovementCosts(IGameState gs) {

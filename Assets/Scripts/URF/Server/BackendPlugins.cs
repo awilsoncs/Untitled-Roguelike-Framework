@@ -4,7 +4,7 @@ using URF.Client.Pathfinding;
 using URF.Common.Logging;
 using URF.Game.Plugins;
 
-namespace URF.Game {
+namespace URF.Server {
   [Serializable]
   public class BackendPlugins {
 

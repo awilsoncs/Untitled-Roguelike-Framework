@@ -9,7 +9,7 @@ namespace URF.Server.FieldOfView {
   public class RaycastingFov : IFieldOfView {
 
     private static Algorithms.PlotFunction GetPlotter(
-      IBuildable gameState,
+      IGameState gameState,
       IDictionary<Position, bool> results
     ) {
       return p => {

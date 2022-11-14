@@ -2,7 +2,7 @@ using System;
 using URF.Common.Entities;
 
 namespace URF.Common.GameEvents {
-  public class EntityAttackedEventArgs : EventArgs {
+  public class EntityAttackedEventArgs : EventArgs, IGameEventArgs {
 
     /// <summary>The attacking entity's entity ID</summary>
     public IEntity Attacker { get; }
@@ -21,6 +21,8 @@ namespace URF.Common.GameEvents {
       Success = success;
       Damage = damage;
     }
+
+    public GameEventType EventType => GameEventType.EntityAttacked;
 
   }
 }

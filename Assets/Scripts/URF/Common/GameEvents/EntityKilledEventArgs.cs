@@ -1,3 +1,4 @@
+using System;
 using URF.Common.Entities;
 
 namespace URF.Common.GameEvents {
@@ -5,16 +6,16 @@ namespace URF.Common.GameEvents {
   /// <summary>
   /// Notify listeners that an entity has been removed from the game.
   /// </summary>
-  public class EntityKilledEvent : GameEvent {
+  public class EntityKilledEventArgs : EventArgs, IGameEventArgs {
 
     /// <summary>
     /// The entity that was removed.
     /// </summary>
     public IEntity Entity { get; }
 
-    public override GameEventType EventType => GameEventType.EntityKilled;
+    public GameEventType EventType => GameEventType.EntityKilled;
 
-    public EntityKilledEvent(IEntity entity) {
+    public EntityKilledEventArgs(IEntity entity) {
       Entity = entity;
     }
 

@@ -1,8 +1,10 @@
+using System;
+
 namespace URF.Common.GameEvents {
   /// <summary>
   /// Indicate that the player intends to attack another entity.
   /// </summary>
-  public class AttackCommand : GameEvent {
+  public class AttackActionEventArgs : EventArgs, IActionEventArgs {
 
     /// <summary>The defender's entity ID</summary>
     public int Attacker { get; }
@@ -10,11 +12,9 @@ namespace URF.Common.GameEvents {
     /// <summary>The defender's entity ID</summary>
     public int Defender { get; }
 
-    public override GameEventType EventType => GameEventType.AttackCommand;
+    public GameEventType EventType => GameEventType.AttackCommand;
 
-    public override bool IsCommand => true;
-
-    public AttackCommand(int attacker, int defender) {
+    public AttackActionEventArgs(int attacker, int defender) {
       Attacker = attacker;
       Defender = defender;
     }

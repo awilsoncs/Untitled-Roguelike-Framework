@@ -1,16 +1,18 @@
+using System;
+
 namespace URF.Common.GameEvents {
     /// <summary>
     /// Notify listeners that the game has experienced an error.
     /// </summary>
-    public class GameErrorEvent : GameEvent {
+    public class GameErroredEventArgs : EventArgs, IGameEventArgs {
         /// <summary>
         /// The error message
         /// </summary>
         public string Message { get; }
 
-        public override GameEventType EventType => GameEventType.GameError;
+        public GameEventType EventType => GameEventType.GameError;
 
-        public GameErrorEvent (string message) {
+        public GameErroredEventArgs (string message) {
             Message = message;
         }
     }
