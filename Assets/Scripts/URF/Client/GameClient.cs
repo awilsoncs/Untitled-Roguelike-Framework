@@ -62,6 +62,9 @@ namespace URF.Client {
     private void BeginNewGame() {
       ResetEverything();
       OnPlayerAction(new StartGameActionArgs());
+      if(_gameEvents.Count <= 0) {
+        Debug.LogError("Client received 0 events from server start.");
+      }
     }
 
     private void ResetEverything() {
@@ -71,7 +74,7 @@ namespace URF.Client {
       _entityPosition.Clear();
     }
 
-    public void ConfigureClientMap(Position mapSize) {
+    private void ConfigureClientMap(Position mapSize) {
       _entitiesByPosition = new List<IEntity>[mapSize.X][];
       for(int x = 0; x < mapSize.X; x++) {
         _entitiesByPosition[x] = new List<IEntity>[mapSize.Y];

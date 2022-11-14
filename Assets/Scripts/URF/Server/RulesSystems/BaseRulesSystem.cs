@@ -16,14 +16,14 @@ namespace URF.Server.RulesSystems {
 
     public event EventHandler<IGameEventArgs> GameEvent;
 
-    public event EventHandler<IActionEventArgs> GameCommand;
+    public event EventHandler<IActionEventArgs> GameAction;
 
     protected virtual void OnGameEvent(IGameEventArgs e) {
       GameEvent?.Invoke(this, e);
     }
 
-    protected virtual void OnGameCommand(IActionEventArgs e) {
-      GameCommand?.Invoke(this, e);
+    protected virtual void OnGameAction(IActionEventArgs e) {
+      GameAction?.Invoke(this, e);
     }
 
   }

@@ -24,10 +24,6 @@ namespace URF.Server {
 
     [SerializeField] private int mapHeight = 20;
 
-    private int MapWidth => mapWidth;
-
-    private int MapHeight => mapHeight;
-
     private IGameState _gameState;
 
     private IEntityFactory _entityFactory;
@@ -75,17 +71,26 @@ namespace URF.Server {
       Random.InitState(seed);
     }
 
-    protected override void HandleAction(object sender, IActionEventArgs e) {
+    protected override void HandleAction(object sender, IActionEventArgs ev) {
+      // actions are only forwarded downwards.
       // todo implement all player actions again
-      switch(e.EventType) {
+      switch(ev.EventType) {
         case GameEventType.StartGame:
           StartGame();
           break;
       }
 
-      foreach(ActionHandler actionHandler in _actionHandlers[e.EventType]) {
-        actionHandler(_gameState, e);
+      foreach(ActionHandler actionHandler in _actionHandlers[ev.EventType]) {
+        actionHandler(_gameState, ev);
       }
+    }
+
+    private void HandleEvent(object sender, IGameEventArgs e) {
+      foreach(EventHandler eventHandler in _eventHandlers[e.EventType]) {
+        eventHandler(_gameState, e);
+      }
+      // Forward to outside listeners
+      OnGameEvent(e);
     }
 
     private void RegisterSystem(IRulesSystem system) {
@@ -96,6 +101,8 @@ namespace URF.Server {
       // grant references to the plugins
       system.ApplyPlugins(_pluginBundle);
       _entityFactory.UpdateEntitySpec(system.Components);
+      system.GameEvent += HandleEvent;
+      system.GameAction += HandleAction;
     }
 
     private void RegisterRulesSystemListeners(IRulesSystem system) {

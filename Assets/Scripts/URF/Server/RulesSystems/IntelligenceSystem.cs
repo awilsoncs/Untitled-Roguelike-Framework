@@ -70,14 +70,14 @@ namespace URF.Server.RulesSystems {
       List<Position> path = _pathfinding.GetPath(costs, entityPosition, mainPosition);
       if(path.Count == 2) {
         // just the start and end means adjacent
-        OnGameCommand(new AttackActionEventArgs(entity.ID, gameState.GetMainCharacter().ID));
+        OnGameAction(new AttackActionEventArgs(entity.ID, gameState.GetMainCharacter().ID));
         return;
       }
 
       // calculate the direction to step
       Position nextStep = path[1];
       (int, int) mp = (nextStep.X - entityPosition.X, nextStep.Y - entityPosition.Y);
-      OnGameCommand(new MoveActionEventArgs(entity.ID, mp));
+      OnGameAction(new MoveActionEventArgs(entity.ID, mp));
     }
 
     private static float[][] GetMovementCosts(IGameState gs) {

@@ -11,11 +11,13 @@ namespace URF.Server.RulesSystems {
 
   public interface IRulesSystem : IGameEventChannel {
 
+    public event EventHandler<IActionEventArgs> GameAction;
+
     List<Type> Components { get; }
 
     void ApplyPlugins(PluginBundle pluginBundle);
-    
+
     void GameUpdate(IGameState gameState);
-    
+
   }
 }

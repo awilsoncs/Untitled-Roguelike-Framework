@@ -17,8 +17,8 @@ namespace URF.Server.RulesSystems {
 
     [ActionHandler(GameEventType.StartGame)]
     public void HandleGameStartCommand(IGameState gs, IActionEventArgs cm) {
+      OnGameEvent(new GameStartedEventArgs((gs.MapWidth, gs.MapHeight)));
       BuildDungeon(gs, _random);
-      OnGameEvent(new GameStartedEventArgs((gs.MapWidth, gs.MapWidth)));
     }
 
     private void BuildDungeon(IGameState gs, IRandomGenerator rng) {
@@ -58,6 +58,7 @@ namespace URF.Server.RulesSystems {
       IEntity entity = _entityFactory.Get(bluePrint);
       gs.CreateEntityAtPosition(entity, position);
       OnGameEvent(new EntityCreatedEventArgs(entity));
+      OnGameEvent(new EntityMovedEventArgs(entity, position));
       return entity;
     }
     
