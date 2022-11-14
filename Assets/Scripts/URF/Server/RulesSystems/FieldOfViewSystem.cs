@@ -11,6 +11,10 @@ namespace URF.Server.RulesSystems {
 
     private IEntity _mainCharacter;
 
+    public override void ApplyPlugins(PluginBundle pluginBundle) {
+      _fov = pluginBundle.FieldOfView;
+    }
+
     [EventHandler(GameEventType.MainCharacterChanged)]
     public void HandleMainCharacterChanged(IGameState gs, IGameEventArgs ev) {
       // Track the main character so we know where to update the FOV from

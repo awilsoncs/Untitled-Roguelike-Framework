@@ -11,9 +11,11 @@ namespace URF.Server.RulesSystems {
 
   public interface IRulesSystem : IGameEventChannel {
 
-    void GameUpdate(IGameState gameState);
-
     List<Type> Components { get; }
 
+    void ApplyPlugins(PluginBundle pluginBundle);
+    
+    void GameUpdate(IGameState gameState);
+    
   }
 }

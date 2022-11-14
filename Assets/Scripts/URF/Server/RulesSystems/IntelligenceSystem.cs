@@ -30,6 +30,11 @@ namespace URF.Server.RulesSystems {
     // to handle a command emitted by the turn controller.
     public override List<Type> Components => new() { typeof(Brain) };
 
+    public override void ApplyPlugins(PluginBundle pluginBundle) {
+      _fov = pluginBundle.FieldOfView;
+      _pathfinding = pluginBundle.Pathfinding;
+    }
+
     public override void GameUpdate(IGameState gameState) {
       foreach(IEntity entity in gameState.GetEntities()) {
         IntelligenceControlMode mode = entity.GetComponent<Brain>().ControlMode;

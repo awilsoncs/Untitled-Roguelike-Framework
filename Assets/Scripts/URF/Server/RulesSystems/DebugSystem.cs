@@ -10,6 +10,11 @@ namespace URF.Server.RulesSystems {
 
     private IEntityFactory _entityFactory;
 
+    public override void ApplyPlugins(PluginBundle pluginBundle) {
+      _random = pluginBundle.Random;
+      _entityFactory = pluginBundle.EntityFactory;
+    }
+
     [ActionHandler(GameEventType.DebugCommand)]
     public void HandleDebugAction(IGameState gs, IActionEventArgs cm) {
       DebugActionEventArgs ev = (DebugActionEventArgs)cm;

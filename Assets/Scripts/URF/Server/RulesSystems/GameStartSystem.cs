@@ -9,7 +9,12 @@ namespace URF.Server.RulesSystems {
 
     private IRandomGenerator _random;
     private IEntityFactory _entityFactory;
-    
+
+    public override void ApplyPlugins(PluginBundle pluginBundle) {
+      _random = pluginBundle.Random;
+      _entityFactory = pluginBundle.EntityFactory;
+    }
+
     [ActionHandler(GameEventType.StartGame)]
     public void HandleGameStartCommand(IGameState gs, IActionEventArgs cm) {
       BuildDungeon(gs, _random);
