@@ -16,12 +16,6 @@ namespace URF.Server.RulesSystems {
       OnGameEvent(new GameStartedEventArgs((gs.MapWidth, gs.MapWidth)));
     }
 
-    private void PutEntity(IGameState gs, string bluePrint, Position position) {
-      IEntity entity = _entityFactory.Get(bluePrint);
-      gs.CreateEntityAtPosition(entity, position);
-      OnGameEvent(new EntityCreatedEventArgs(entity));
-    }
-
     private void BuildDungeon(IGameState gs, IRandomGenerator rng) {
       for(int i = 0; i < gs.MapWidth; i++) {
         PutEntity(gs, "wall", (i, 0));
@@ -33,9 +27,7 @@ namespace URF.Server.RulesSystems {
         PutEntity(gs, "wall", (gs.MapWidth - 1, i));
       }
 
-      IEntity player = _entityFactory.Get("player");
-      gs.CreateEntityAtPosition(player, (gs.MapWidth / 2, gs.MapHeight / 2));
-      OnGameEvent(new EntityCreatedEventArgs(player));
+      IEntity player = PutEntity(gs, "player", (gs.MapWidth / 2, gs.MapHeight / 2));
       OnGameEvent(new MainCharacterChangedEventArgs(player));
       
       for(int i = 0; i < 4; i++) {
@@ -55,6 +47,13 @@ namespace URF.Server.RulesSystems {
         int y = rng.GetInt(1, gs.MapHeight - 2);
         PutEntity(gs, "healthPotion", (x, y));
       }
+    }
+    
+    private IEntity PutEntity(IGameState gs, string bluePrint, Position position) {
+      IEntity entity = _entityFactory.Get(bluePrint);
+      gs.CreateEntityAtPosition(entity, position);
+      OnGameEvent(new EntityCreatedEventArgs(entity));
+      return entity;
     }
     
   }
