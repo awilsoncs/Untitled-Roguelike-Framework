@@ -1,5 +1,6 @@
 # Untitled Roguelike Framework (URF)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/baa8d2a7827845d9b8a4634c7e28d3ab)](https://www.codacy.com/gh/awilsoncs/Untitled-Roguelike-Framework/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=awilsoncs/Untitled-Roguelike-Framework&amp;utm_campaign=Badge_Grade)
 
 URF is a flexible framework for building turn-based, tile-based games in Unity.
 
