@@ -14,10 +14,8 @@ using URF.Server.RandomGeneration;
 using URF.Server.RulesSystems;
 using EventHandler = URF.Server.RulesSystems.EventHandler;
 
-namespace URF.Server
-{
-  public class GameServer : BaseGameEventChannel
-  {
+namespace URF.Server {
+  public class GameServer : BaseGameEventChannel {
 
     [SerializeField] private int mapWidth = 40;
 
@@ -25,124 +23,105 @@ namespace URF.Server
 
     [SerializeField] private PersistentStorage persistentStorage;
 
-    private readonly Dictionary<GameEventType, List<ActionHandler>> actionHandlers = new();
+    private IGameState _gameState;
 
-    private readonly Dictionary<GameEventType, List<EventHandler>> eventHandlers = new();
+    private readonly Dictionary<GameEventType, List<EventHandler>> _eventHandlers = new();
 
-    private IGameState gameState;
+    private readonly Dictionary<GameEventType, List<ActionHandler>> _actionHandlers = new();
 
-    private bool inGameUpdateLoop;
+    private bool _isFieldOfViewDirty;
 
-    private bool isFieldOfViewDirty;
+    private bool _inGameUpdateLoop;
 
-    private List<IEntity> killList;
+    private List<IEntity> _killList;
 
-    private PluginBundle pluginBundle;
+    private PluginBundle _pluginBundle;
 
-    private void Start()
-    {
-      this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
-      foreach (GameEventType value in Enum.GetValues(typeof(GameEventType)))
-      {
-        this.eventHandlers[value] = new List<EventHandler>();
-        this.actionHandlers[value] = new List<ActionHandler>();
+    private void Start() {
+      _gameState = new GameState.GameState(mapWidth, mapHeight);
+      foreach(GameEventType value in Enum.GetValues(typeof(GameEventType))) {
+        _eventHandlers[value] = new List<EventHandler>();
+        _actionHandlers[value] = new List<ActionHandler>();
       }
 
-      this.pluginBundle = new PluginBundle(
-        new UnityRandom(),
-        new RaycastingFov(),
-        new UnityDebugLogging(),
-        new DjikstraPathfinding(),
-        new EntityFactory(),
-        this.persistentStorage);
+      _pluginBundle = new PluginBundle(new UnityRandom(), new RaycastingFov(),
+        new UnityDebugLogging(), new DjikstraPathfinding(), new EntityFactory(), persistentStorage);
 
-      this.RegisterSystem(new GameStartSystem());
-      this.RegisterSystem(new DebugSystem());
-      this.RegisterSystem(new EntityInfoSystem());
-      this.RegisterSystem(new MovementSystem());
-      this.RegisterSystem(new CombatSystem());
-      this.RegisterSystem(new IntelligenceSystem());
-      this.RegisterSystem(new FieldOfViewSystem());
-      this.RegisterSystem(new SerializationSystem());
+      RegisterSystem(new GameStartSystem());
+      RegisterSystem(new DebugSystem());
+      RegisterSystem(new EntityInfoSystem());
+      RegisterSystem(new MovementSystem());
+      RegisterSystem(new CombatSystem());
+      RegisterSystem(new IntelligenceSystem());
+      RegisterSystem(new FieldOfViewSystem());
+      RegisterSystem(new SerializationSystem());
     }
 
-    private void StartGame()
-    {
-      this.pluginBundle.Random.Rotate();
+    private void StartGame() {
+      _pluginBundle.Random.Rotate();
     }
 
-    protected override void HandleAction(object sender, IActionEventArgs ev)
-    {
-      switch (ev.EventType)
-      {
+    protected override void HandleAction(object sender, IActionEventArgs ev) {
+      switch(ev.EventType) {
         case GameEventType.Configure:
-          this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
-          this.StartGame();
+          _gameState = new GameState.GameState(mapWidth, mapHeight);
+          StartGame();
           break;
         case GameEventType.Load:
-          this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
+          _gameState = new GameState.GameState(mapWidth, mapHeight);
           break;
       }
 
-      foreach (ActionHandler actionHandler in this.actionHandlers[ev.EventType])
-      {
-        actionHandler(this.gameState, ev);
+      foreach(ActionHandler actionHandler in _actionHandlers[ev.EventType]) {
+        actionHandler(_gameState, ev);
       }
     }
 
-    private void HandleEvent(object sender, IGameEventArgs e)
-    {
-      foreach (EventHandler eventHandler in this.eventHandlers[e.EventType])
-      {
-        eventHandler(this.gameState, e);
+    private void HandleEvent(object sender, IGameEventArgs e) {
+      foreach(EventHandler eventHandler in _eventHandlers[e.EventType]) {
+        eventHandler(_gameState, e);
       }
-
       // Forward to outside listeners
-      this.OnGameEvent(e);
+      OnGameEvent(e);
     }
 
-    private void RegisterSystem(IRulesSystem system)
-    {
+    private void RegisterSystem(IRulesSystem system) {
       // Gather up listener methods
-      this.RegisterRulesSystemListeners(system);
-
+      RegisterRulesSystemListeners(system);
       // grant references to the plugins
-      system.ApplyPlugins(this.pluginBundle);
-      this.pluginBundle.EntityFactory.UpdateEntitySpec(system.Components);
-      system.GameEvent += this.HandleEvent;
-      system.GameAction += this.HandleAction;
+      system.ApplyPlugins(_pluginBundle);
+      _pluginBundle.EntityFactory.UpdateEntitySpec(system.Components);
+      system.GameEvent += HandleEvent;
+      system.GameAction += HandleAction;
     }
 
-    private void RegisterRulesSystemListeners(IRulesSystem system)
-    {
+    private void RegisterRulesSystemListeners(IRulesSystem system) {
       // https://stackoverflow.com/questions/3467765/find-methods-that-have-custom-attribute-using-reflection
       // Dig up methods in a rules system with EventHandler and ActionHandler attribute,
       // then store those in the server's event handler registry.
-      IEnumerable<MethodInfo> eventHandlerMethods = system.GetType().GetMethods().Where(
-        x => Attribute.GetCustomAttributes(x, typeof(EventHandlerAttribute)).Length > 0);
+      IEnumerable<MethodInfo> eventHandlerMethods = system.GetType().GetMethods().Where(x =>
+        Attribute.GetCustomAttributes(x, typeof(EventHandlerAttribute)).Length > 0);
 
-      foreach (MethodInfo method in eventHandlerMethods)
-      {
-        object[] attributes = method.GetCustomAttributes(typeof(EventHandlerAttribute), false);
-        foreach (object attribute in attributes)
-        {
+      foreach(MethodInfo method in eventHandlerMethods) {
+        object[] eventHandlers = method.GetCustomAttributes(typeof(EventHandlerAttribute), false);
+        foreach(object attribute in eventHandlers) {
           EventHandlerAttribute eha = (EventHandlerAttribute)attribute;
-          this.eventHandlers[eha.EventType].Add(
-            (gs, ev) => { method.Invoke(system, new object[] { gs, ev }); });
+          _eventHandlers[eha.EventType].Add((gs, ev) => {
+            method.Invoke(system, new object[] { gs, ev });
+          });
         }
       }
 
-      IEnumerable<MethodInfo> actionHandlerMethods = system.GetType().GetMethods().Where(
-        x => Attribute.GetCustomAttributes(x, typeof(ActionHandlerAttribute)).Length > 0);
+      IEnumerable<MethodInfo> actionHandlerMethods = system.GetType().GetMethods().Where(x =>
+        Attribute.GetCustomAttributes(x, typeof(ActionHandlerAttribute)).Length > 0);
 
-      foreach (MethodInfo method in actionHandlerMethods)
-      {
-        object[] attributes = method.GetCustomAttributes(typeof(ActionHandlerAttribute), false);
-        foreach (object attribute in attributes)
-        {
+      foreach(MethodInfo method in actionHandlerMethods) {
+        object[] actionHandlers = method.GetCustomAttributes(typeof(ActionHandlerAttribute), false);
+        foreach(object attribute in actionHandlers) {
           ActionHandlerAttribute eha = (ActionHandlerAttribute)attribute;
-          this.actionHandlers[eha.EventType].Add(
-            (gs, ev) => { method.Invoke(system, new object[] { gs, ev }); });
+          _actionHandlers[eha.EventType].Add((gs, ev) => {
+            method.Invoke(system, new object[] { gs, ev });
+          });
         }
       }
     }
