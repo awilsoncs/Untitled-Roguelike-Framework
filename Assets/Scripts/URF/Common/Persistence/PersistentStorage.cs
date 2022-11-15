@@ -1,8 +1,7 @@
 using System.IO;
 using UnityEngine;
-using URF.Common.Persistence;
 
-namespace URF.Common {
+namespace URF.Common.Persistence {
   /// <summary>
   /// Specify a save path and set up a binary interface to it.
   /// </summary>

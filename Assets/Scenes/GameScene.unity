@@ -649,6 +649,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapWidth: 40
   mapHeight: 20
+  _persistentStorage: {fileID: 1839148938}
 --- !u!1 &902917740
 GameObject:
   m_ObjectHideFlags: 0

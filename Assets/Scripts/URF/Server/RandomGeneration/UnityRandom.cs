@@ -1,7 +1,6 @@
 using UnityEngine;
-using URF.Server.RandomGeneration;
 
-namespace URF.Game.Plugins {
+namespace URF.Server.RandomGeneration {
   public class UnityRandom : IRandomGenerator {
 
     public int GetInt(int begin, int end) {

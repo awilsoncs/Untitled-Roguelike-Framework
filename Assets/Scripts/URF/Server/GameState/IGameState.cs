@@ -35,5 +35,7 @@ namespace URF.Server.GameState {
 
     void FinishUpdate();
 
+    public void SetMainCharacter(int id);
+
   }
 }

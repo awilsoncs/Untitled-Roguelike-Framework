@@ -7,22 +7,22 @@ using URF.Common.Entities;
 using URF.Common.GameEvents;
 using URF.Common.Logging;
 using URF.Common.Persistence;
-using URF.Game.Plugins;
 using URF.Server.FieldOfView;
 using URF.Server.GameState;
 using URF.Server.Pathfinding;
+using URF.Server.RandomGeneration;
 using URF.Server.RulesSystems;
 using EventHandler = URF.Server.RulesSystems.EventHandler;
 using Random = UnityEngine.Random;
 
 namespace URF.Server {
   public class GameServer : BaseGameEventChannel {
-
-    private const int saveVersion = 1;
-
+    
     [SerializeField] private int mapWidth = 40;
 
     [SerializeField] private int mapHeight = 20;
+
+    [SerializeField] private PersistentStorage _persistentStorage;
 
     private IGameState _gameState;
 
@@ -54,7 +54,7 @@ namespace URF.Server {
       }
 
       _pluginBundle = new PluginBundle(new UnityRandom(), new RaycastingFov(),
-        new UnityDebugLogging(), new DjikstraPathfinding(), _entityFactory);
+        new UnityDebugLogging(), new DjikstraPathfinding(), _entityFactory, _persistentStorage);
 
       RegisterSystem(new GameStartSystem());
       RegisterSystem(new DebugSystem());
@@ -63,6 +63,7 @@ namespace URF.Server {
       RegisterSystem(new CombatSystem());
       RegisterSystem(new IntelligenceSystem());
       RegisterSystem(new FieldOfViewSystem());
+      RegisterSystem(new SerializationSystem());
     }
 
     private void StartGame() {
@@ -77,7 +78,11 @@ namespace URF.Server {
       // todo implement all player actions again
       switch(ev.EventType) {
         case GameEventType.Configure:
+          _gameState = new GameState.GameState(mapWidth, mapHeight, _entityFactory);
           StartGame();
+          break;
+        case GameEventType.Load:
+          _gameState = new GameState.GameState(mapWidth, mapHeight, _entityFactory);
           break;
       }
 
@@ -134,30 +139,6 @@ namespace URF.Server {
           });
         }
       }
-    }
-
-    public void GameUpdate() {
-      // todo refactor this to read from two queues:
-      // 1st, the backend command queue
-      // 2nd, when the 1st is empty, read from the receiving command queue
-      _gameState.BeginUpdate();
-      foreach(IRulesSystem t in _rulesSystems) { t.GameUpdate(_gameState); }
-      _gameState.FinishUpdate();
-    }
-
-    public void Save(GameDataWriter writer) {
-      writer.Write(Random.state);
-      _gameState.Save(writer);
-    }
-
-    public void Load(GameDataReader reader) {
-      int version = reader.Version;
-      if(version > saveVersion) {
-        Debug.LogError("Unsupported future save version " + version);
-        return;
-      }
-      Random.state = reader.ReadRandomState();
-      _gameState.Load(reader);
     }
 
   }

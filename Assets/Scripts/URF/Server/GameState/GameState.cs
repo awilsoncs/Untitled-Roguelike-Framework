@@ -36,10 +36,11 @@ namespace URF.Server.GameState {
     ) {
       MapWidth = mapWidth;
       MapHeight = mapHeight;
+      _entityFactory = entityFactory;
+
       _entities = new();
       _killList = new();
       _entitiesById = new();
-      _entityFactory = entityFactory;
 
       _map = new Cell[MapWidth][];
       for(int i = 0; i < MapWidth; i++) {
@@ -170,7 +171,6 @@ namespace URF.Server.GameState {
     }
 
     private void LoadGame(GameDataReader reader) {
-      // Perform all logic related to loading the game into the BoardController.
       int count = reader.ReadInt();
       for(int i = 0; i < count; i++) {
         var entityID = reader.ReadInt();

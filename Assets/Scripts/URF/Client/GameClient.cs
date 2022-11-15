@@ -4,7 +4,7 @@ using URF.Client.GUI;
 using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
-using URF.Game;
+using URF.Common.Persistence;
 using URF.Server;
 
 namespace URF.Client {
@@ -12,7 +12,7 @@ namespace URF.Client {
   /// GameClient client view
   /// </summary>
   [DisallowMultipleComponent]
-  public partial class GameClient : IPlayerActionChannel {
+  public partial class GameClient : MonoBehaviour, IPlayerActionChannel {
 
     [SerializeField] private GuiComponents gui;
     
@@ -68,10 +68,14 @@ namespace URF.Client {
     }
 
     private void ResetEverything() {
+      foreach(Pawn pawn in _pawns) {
+        pawn.Recycle(pawnFactory);
+      }
       _pawns.Clear();
       _pawnsByID.Clear();
       _gameEvents.Clear();
       _entityPosition.Clear();
+      _entitiesByPosition = null;
     }
 
     private void ConfigureClientMap(Position mapSize) {
