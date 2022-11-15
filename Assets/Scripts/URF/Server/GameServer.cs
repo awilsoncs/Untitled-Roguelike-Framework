@@ -17,7 +17,7 @@ using Random = UnityEngine.Random;
 
 namespace URF.Server {
   public class GameServer : BaseGameEventChannel {
-    
+
     [SerializeField] private int mapWidth = 40;
 
     [SerializeField] private int mapHeight = 20;
@@ -67,10 +67,7 @@ namespace URF.Server {
     }
 
     private void StartGame() {
-      Random.state = _mainRandomState;
-      int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
-      _mainRandomState = Random.state;
-      Random.InitState(seed);
+      _pluginBundle.Random.Rotate();
     }
 
     protected override void HandleAction(object sender, IActionEventArgs ev) {

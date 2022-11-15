@@ -4,6 +4,7 @@ using URF.Common.Entities;
 using URF.Common.GameEvents;
 using URF.Common.Persistence;
 using URF.Server.GameState;
+using URF.Server.RandomGeneration;
 
 namespace URF.Server.RulesSystems {
   public class SerializationSystem : BaseRulesSystem, IPersistableObject {
@@ -18,9 +19,12 @@ namespace URF.Server.RulesSystems {
 
     private IGameState _gameState;
 
+    private IRandomGenerator _randomGenerator;
+
     public override void ApplyPlugins(PluginBundle pluginBundle) {
       _persistentStorage = pluginBundle.PersistentStorage;
       _entityFactory = pluginBundle.EntityFactory;
+      _randomGenerator = pluginBundle.Random;
     }
 
     [EventHandler(GameEventType.MainCharacterChanged)]
@@ -42,6 +46,7 @@ namespace URF.Server.RulesSystems {
     }
 
     public void Save(GameDataWriter writer) {
+      _randomGenerator.Save(writer);
       List<IEntity> entities = _gameState.GetEntities();
       writer.Write(entities.Count);
       writer.Write(_mainCharacter.ID);
@@ -52,6 +57,7 @@ namespace URF.Server.RulesSystems {
     }
 
     public void Load(GameDataReader reader) {
+      _randomGenerator.Load(reader);
       Position mapSize = (_gameState.MapWidth, _gameState.MapHeight);
       OnGameEvent(new GameConfiguredEventArgs(mapSize));
       int count = reader.ReadInt();

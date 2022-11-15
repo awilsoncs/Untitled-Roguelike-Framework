@@ -1,3 +1,4 @@
+using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
 using URF.Server.GameState;
@@ -21,9 +22,11 @@ namespace URF.Server.RulesSystems {
       switch(ev.Method) {
         case DebugActionEventArgs.DebugMethod.SpawnCrab:
           IEntity crab = _entityFactory.Get("crab");
-          gs.CreateEntityAtPosition(crab,
-            (_random.GetInt(1, gs.MapWidth - 2), _random.GetInt(1, gs.MapHeight - 2)));
+          Position position = (_random.GetInt(1, gs.MapWidth - 2),
+            _random.GetInt(1, gs.MapHeight - 2));
+          gs.CreateEntityAtPosition(crab, position);
           OnGameEvent(new EntityCreatedEventArgs(crab));
+          OnGameEvent(new EntityMovedEventArgs(crab, position));
           return;
         default:
           OnGameEvent(new GameErroredEventArgs($"Unknown debug method {ev.Method}"));
