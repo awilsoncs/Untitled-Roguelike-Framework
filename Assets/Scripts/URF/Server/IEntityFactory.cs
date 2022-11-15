@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using URF.Common.Entities;
 
-namespace URF.Server.GameState {
+namespace URF.Server {
   public interface IEntityFactory {
 
     Entity Get();

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
@@ -47,12 +47,12 @@ namespace URF.Server.RulesSystems {
 
     public void Save(GameDataWriter writer) {
       _randomGenerator.Save(writer);
-      List<IEntity> entities = _gameState.GetEntities();
+      ReadOnlyCollection<IEntity> entities = _gameState.GetEntities();
       writer.Write(entities.Count);
       writer.Write(_mainCharacter.ID);
-      for(int i = 0; i < entities.Count; i++) {
-        writer.Write(entities[i].ID);
-        entities[i].Save(writer);
+      foreach(IEntity entity in entities) {
+        writer.Write(entity.ID);
+        entity.Save(writer);
       }
     }
 

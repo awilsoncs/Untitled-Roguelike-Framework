@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using URF.Common.Entities;
 using URF.Server.RulesSystems;
 
-namespace URF.Server.GameState {
+namespace URF.Server {
   public class EntityFactory : IEntityFactory {
 
     private int _idCounter;

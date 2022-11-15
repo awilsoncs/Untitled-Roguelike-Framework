@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using URF.Common.Entities;
-using URF.Common.GameEvents;
 using URF.Common.Persistence;
-using URF.Server.GameState;
 
 namespace URF.Server.RulesSystems {
   /// <summary>
@@ -13,15 +11,8 @@ namespace URF.Server.RulesSystems {
 
     public override List<Type> Components =>
       new() {
-        // todo could create an annotation to register these
         typeof(EntityInfo)
       };
-
-    [EventHandler(GameEventType.MainCharacterChanged)]
-    public void HandleMainCharacterChanged(IGameState gs, IGameEventArgs ev) {
-      MainCharacterChangedEventArgs mcc = (MainCharacterChangedEventArgs)ev;
-      gs.SetMainCharacter(mcc.Entity.ID);
-    }
 
   }
 

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using URF.Common;
 using URF.Common.Entities;
 
@@ -15,7 +15,7 @@ namespace URF.Server.GameState {
 
     void MoveEntity(int id, Position position);
 
-    List<IEntity> GetEntities();
+    ReadOnlyCollection<IEntity> GetEntities();
     
     void CreateEntityAtPosition(IEntity entity, Position position);
 
@@ -25,11 +25,5 @@ namespace URF.Server.GameState {
 
     Cell GetCell(Position p);
 
-    void BeginUpdate();
-
-    void FinishUpdate();
-
-    void SetMainCharacter(int id);
-    
   }
 }
