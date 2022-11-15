@@ -22,7 +22,7 @@ namespace URF.Server {
 
     [SerializeField] private int mapHeight = 20;
 
-    [SerializeField] private PersistentStorage _persistentStorage;
+    [SerializeField] private PersistentStorage persistentStorage;
 
     private IGameState _gameState;
 
@@ -54,7 +54,7 @@ namespace URF.Server {
       }
 
       _pluginBundle = new PluginBundle(new UnityRandom(), new RaycastingFov(),
-        new UnityDebugLogging(), new DjikstraPathfinding(), _entityFactory, _persistentStorage);
+        new UnityDebugLogging(), new DjikstraPathfinding(), _entityFactory, persistentStorage);
 
       RegisterSystem(new GameStartSystem());
       RegisterSystem(new DebugSystem());
