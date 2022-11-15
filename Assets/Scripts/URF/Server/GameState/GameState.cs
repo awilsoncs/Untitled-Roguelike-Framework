@@ -152,41 +152,6 @@ namespace URF.Server.GameState {
       return _entitiesById.ContainsKey(id);
     }
 
-    public void Save(GameDataWriter writer) {
-      writer.Write(_entities.Count);
-      for(int i = 0; i < _entities.Count; i++) {
-        writer.Write(_entities[i].ID);
-        _entities[i].Save(writer);
-      }
-
-      writer.Write(_mainCharacter.ID);
-    }
-
-    /// <summary>
-    /// todo
-    /// </summary>
-    /// <param name="reader"></param>
-    public void Load(GameDataReader reader) {
-      LoadGame(reader);
-    }
-
-    private void LoadGame(GameDataReader reader) {
-      int count = reader.ReadInt();
-      for(int i = 0; i < count; i++) {
-        var entityID = reader.ReadInt();
-        var entity = _entityFactory.Get();
-        entity.ID = entityID;
-        entity.Load(reader);
-
-        _entities.Add(entity);
-        _entitiesById.Add(entity.ID, entity);
-        var pos = entity.GetComponent<Movement>().EntityPosition;
-        PlaceEntity(entity.ID, pos);
-      }
-
-      _mainCharacter = _entitiesById[reader.ReadInt()];
-    }
-
     public (int, int) GetMapSize() {
       return (MapWidth, MapHeight);
     }

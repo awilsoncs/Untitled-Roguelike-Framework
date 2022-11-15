@@ -1,19 +1,13 @@
 using System.Collections.Generic;
 using URF.Common;
 using URF.Common.Entities;
-using URF.Common.GameEvents;
-using URF.Common.Persistence;
 
 namespace URF.Server.GameState {
-  public interface IGameState : IPersistableObject {
+  public interface IGameState {
 
     void Kill(IEntity entity);
 
     (int, int) GetMapSize();
-
-    IEntity GetMainCharacter();
-
-    bool EntityExists(int id);
 
     IEntity GetEntityById(int id);
 
@@ -35,7 +29,7 @@ namespace URF.Server.GameState {
 
     void FinishUpdate();
 
-    public void SetMainCharacter(int id);
-
+    void SetMainCharacter(int id);
+    
   }
 }

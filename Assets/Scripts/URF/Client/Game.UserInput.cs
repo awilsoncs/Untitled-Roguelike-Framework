@@ -45,7 +45,10 @@ namespace URF.Client {
       else if(Input.GetKeyDown(spawnKey)) { SpawnCrab(); }
       else if(Input.GetKeyDown(mapKey)) { ToggleFieldOfView(); }
       else if(Input.GetKeyDown(saveKey)) { OnPlayerAction(new SaveActionEventArgs()); }
-      else if(Input.GetKeyDown(loadKey)) { OnPlayerAction(new LoadActionEventArgs()); }
+      else if(Input.GetKeyDown(loadKey)) {
+        ResetEverything();
+        OnPlayerAction(new LoadActionEventArgs());
+      }
       else if(Input.GetKeyDown(newGameKey)) { BeginNewGame();}
     }
 
