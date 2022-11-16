@@ -1,4 +1,4 @@
-name: Actions 😎
+name: PR Workflow 🎉
 
 on: [push, pull_request]
 
