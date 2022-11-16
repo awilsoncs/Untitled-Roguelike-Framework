@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: Test results
+          name: Test Results
           path: artifacts
           if-no-files-found: error
 
@@ -47,8 +47,8 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: Coverage results
-          path: CodeCoverage
+          name: Coverage Results
+          path: ${{ steps.test.outputs.coveragePath }}
           if-no-files-found: error
 
       # upload coverage report to codacy    
