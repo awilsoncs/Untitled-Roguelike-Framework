@@ -40,6 +40,7 @@ jobs:
         with:
           name: Test results
           path: artifacts
+          if-no-files-found: error
 
       - name: Save Coverage Report
         id: saveCoverage
@@ -47,7 +48,8 @@ jobs:
         if: always()
         with:
           name: Coverage results
-          path: ${{ steps.test.outputs.coveragePath }}
+          path: CodeCoverage
+          if-no-files-found: error
 
       # upload coverage report to codacy    
       - name: Send Coverage Report
