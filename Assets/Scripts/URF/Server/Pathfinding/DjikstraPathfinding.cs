@@ -62,13 +62,13 @@ namespace URF.Server.Pathfinding {
     /// <returns></returns>
     private static bool IsImprovedPath(
       PriorityQueue<float, Position> frontier,
-      Dictionary<Position, float> visitedNodes,
+      IReadOnlyDictionary<Position, float> visitedNodes,
       Position successor,
       float totalCost
     ) {
       return !visitedNodes.ContainsKey(successor) ||
         (frontier.Contains(successor) && frontier.PriorityOf(successor) > totalCost) ||
-        (visitedNodes[successor] > totalCost);
+        visitedNodes[successor] > totalCost;
     }
 
     /// <summary>
@@ -76,8 +76,8 @@ namespace URF.Server.Pathfinding {
     /// </summary>
     private static void UpdateNodeInventoryWithNewPath(
       PriorityQueue<float, Position> frontier,
-      Dictionary<Position, float> visitedNodes,
-      Dictionary<Position, Position> nodesByBestPredecessor,
+      IDictionary<Position, float> visitedNodes,
+      IDictionary<Position, Position> nodesByBestPredecessor,
       Position node,
       Position successor,
       float totalCost
