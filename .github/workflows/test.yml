@@ -28,7 +28,14 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
-          
+        
+      - name: Save coverage report
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Coverage results
+          path: ${{ steps.myTestStep.outputs.coveragePath }}
+
       # upload coverage report to codacy    
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
