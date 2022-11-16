@@ -8,36 +8,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checkout
-      - name: Checkout repository
+      - id: checkout
         uses: actions/checkout@v2
         with:
           lfs: true
 
-      # Cache
-      - uses: actions/cache@v2
+      - id: cache
+        uses: actions/cache@v2
         with:
           path: Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
 
-      # Test
-      - name: Run tests
+      - id: test
         uses: game-ci/unity-test-runner@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
         
-      - name: Save coverage report
+      - id: saveCoverage
         uses: actions/upload-artifact@v2
         if: always()
         with:
           name: Coverage results
-          path: ${{ steps.myTestStep.outputs.coveragePath }}
+          path: ${{ steps.test.outputs.coveragePath }}
 
       # upload coverage report to codacy    
-      - name: Run codacy-coverage-reporter
+      - id: reportCodacy
+        name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           api-token: ${{ secrets.CODACY_API_TOKEN }}
