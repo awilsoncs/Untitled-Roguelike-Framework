@@ -1,13 +1,30 @@
-name: Test Commit
-on:
-  workflow_dispatch: {}
+name: Actions 😎
+
+on: [push, pull_request]
+
 jobs:
-  test:
-    name: Test Job
+  build:
+    name: Build my project ✨
     runs-on: ubuntu-latest
     steps:
-      - name: print cwd
-        run: echo "$PWD"
-      - uses: game-ci/unity-test-runner@v2
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      # Cache
+      - uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      # Test
+      - name: Run tests
+        uses: game-ci/unity-test-runner@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
