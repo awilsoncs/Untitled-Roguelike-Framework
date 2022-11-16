@@ -22,7 +22,10 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-
+            
+      - name: Set up Coverage Directory
+        run: mkdir CodeCoverage
+  
       - name: Run Automated Tests
         id: test
         uses: game-ci/unity-test-runner@v2
