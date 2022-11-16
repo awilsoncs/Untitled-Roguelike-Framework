@@ -6,6 +6,8 @@ jobs:
     name: Test Job
     runs-on: ubuntu-latest
     steps:
+      - name: print cwd
+        run: echo "$PWD"
       - uses: game-ci/unity-test-runner@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
