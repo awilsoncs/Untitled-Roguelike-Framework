@@ -25,6 +25,9 @@ jobs:
             
       - name: Set up Coverage Directory
         run: mkdir CodeCoverage
+        
+      - name: Checking
+        run: ls ./CodeCoverage
   
       - name: Run Automated Tests
         id: test
