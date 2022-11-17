@@ -1,95 +1,362 @@
-using System.Collections.Generic;
-using UnityEngine;
-using URF.Client.GUI;
-using URF.Common;
-using URF.Common.Entities;
-using URF.Common.GameEvents;
-using URF.Common.Persistence;
-using URF.Server;
-
 namespace URF.Client {
+  using System;
+  using System.Linq;
+  using System.Collections.Generic;
+  using UnityEngine;
+  using URF.Client.GUI;
+  using URF.Common;
+  using URF.Common.Entities;
+  using URF.Common.GameEvents;
+  using URF.Server;
+  using URF.Server.RulesSystems;
+
   /// <summary>
   /// GameClient client view
   /// </summary>
   [DisallowMultipleComponent]
   public partial class GameClient : MonoBehaviour, IPlayerActionChannel {
 
+    public event EventHandler<IActionEventArgs> PlayerAction;
+
+#pragma warning disable IDE0044
+    // Unity inspector fields can't be made readonly.
     [SerializeField] private GuiComponents gui;
-    
-    private const float gridMultiple = 0.5f;
 
     [SerializeField] private Camera mainCamera;
 
-    [SerializeField] private PersistentStorage storage;
-    
     [SerializeField] private BaseGameEventChannel gameEventChannel;
-    
+
     [SerializeField] private PawnFactory pawnFactory;
 
-    private readonly List<Pawn> _pawns = new();
+    [SerializeField] private KeyCode newGameKey = KeyCode.N;
 
-    private readonly Dictionary<int, Pawn> _pawnsByID = new();
+    [SerializeField] private KeyCode saveKey = KeyCode.S;
 
-    private int _mainCharacterId;
+    [SerializeField] private KeyCode loadKey = KeyCode.L;
 
-    private (int, int) _mainCharacterPosition;
+    [SerializeField] private KeyCode upKey = KeyCode.UpArrow;
 
-    private readonly Queue<IGameEventArgs> _gameEvents = new();
+    [SerializeField] private KeyCode downKey = KeyCode.DownArrow;
+
+    [SerializeField] private KeyCode leftKey = KeyCode.LeftArrow;
+
+    [SerializeField] private KeyCode rightKey = KeyCode.RightArrow;
+
+    [SerializeField] private KeyCode spawnKey = KeyCode.C;
+
+    [SerializeField] private KeyCode mapKey = KeyCode.M;
+#pragma warning restore 	IDE0044
+
+    private const float GridMultiple = 0.5f;
+
+    private readonly List<Pawn> pawns = new();
+
+    private readonly Dictionary<int, Pawn> pawnsByID = new();
+
+    private int mainCharacterId;
+
+    private (int, int) mainCharacterPosition;
+
+    private readonly Queue<IGameEventArgs> gameEvents = new();
 
     // track attackable enemies so that we can attack instead of attempt to move
-    private readonly Dictionary<int, (int, int)> _entityPosition = new();
+    private readonly Dictionary<int, (int, int)> entityPosition = new();
 
     // todo add a convenience type here to simplify initialization
-    private List<IEntity>[][] _entitiesByPosition;
+    private List<IEntity>[][] entitiesByPosition;
 
+    private bool usingFOV = true;
+
+#pragma warning disable IDE0051
+    // Unity message events appear unused to simple IDEs.
     private void Start() {
-      gameEventChannel.GameEvent += EnqueueGameEvent;
-      gameEventChannel.Connect(this);
-      BeginNewGame();
-    }
-
-    private void EnqueueGameEvent(object sender, IGameEventArgs e) {
-      _gameEvents.Enqueue(e);
+      this.gameEventChannel.GameEvent += this.EnqueueGameEvent;
+      this.gameEventChannel.Connect(this);
+      this.BeginNewGame();
     }
 
     private void Update() {
-      while(_gameEvents.Count > 0) {
-        HandleGameEvent(_gameEvents.Dequeue());
+      while (this.gameEvents.Count > 0) {
+        this.HandleGameEvent(this.gameEvents.Dequeue());
       }
-      HandleUserInput();
+      this.HandleUserInput();
     }
+#pragma warning restore IDE0051
+
+    private void EnqueueGameEvent(object sender, IGameEventArgs e) => this.gameEvents.Enqueue(e);
 
     private void BeginNewGame() {
-      ResetEverything();
-      OnPlayerAction(new ConfigureActionArgs());
-      if(_gameEvents.Count <= 0) {
+      this.ResetEverything();
+      this.OnPlayerAction(new ConfigureActionArgs());
+      if (this.gameEvents.Count <= 0) {
         Debug.LogError("Client received 0 events from server start.");
       }
     }
 
     private void ResetEverything() {
-      foreach(Pawn pawn in _pawns) {
-        pawn.Recycle(pawnFactory);
+      foreach (Pawn pawn in this.pawns) {
+        pawn.Recycle(this.pawnFactory);
       }
-      _pawns.Clear();
-      _pawnsByID.Clear();
-      _gameEvents.Clear();
-      _entityPosition.Clear();
-      _entitiesByPosition = null;
+      this.pawns.Clear();
+      this.pawnsByID.Clear();
+      this.gameEvents.Clear();
+      this.entityPosition.Clear();
+      this.entitiesByPosition = null;
     }
 
     private void ConfigureClientMap(Position mapSize) {
-      _entitiesByPosition = new List<IEntity>[mapSize.X][];
-      for(int x = 0; x < mapSize.X; x++) {
-        _entitiesByPosition[x] = new List<IEntity>[mapSize.Y];
-        for(int y = 0; y < mapSize.Y; y++) { _entitiesByPosition[x][y] = new List<IEntity>(); }
+      this.entitiesByPosition = new List<IEntity>[mapSize.X][];
+      for (int x = 0; x < mapSize.X; x++) {
+        this.entitiesByPosition[x] = new List<IEntity>[mapSize.Y];
+        for (int y = 0; y < mapSize.Y; y++) {
+          this.entitiesByPosition[x][y] = new List<IEntity>();
+        }
       }
     }
 
     private void ClearGame() {
-      foreach(Pawn pawn in _pawns) { pawn.Recycle(pawnFactory); }
-      _pawns.Clear();
-      _pawnsByID.Clear();
+      foreach (Pawn pawn in this.pawns) {
+        pawn.Recycle(this.pawnFactory);
+      }
+      this.pawns.Clear();
+      this.pawnsByID.Clear();
+    }
+
+
+    private void HandleGameEvent(IGameEventArgs ev) {
+      switch (ev.EventType) {
+        case GameEventType.EntityMoved:
+          this.HandleEntityMoved((EntityMovedEventArgs)ev);
+          return;
+        case GameEventType.EntityCreated:
+          this.HandleEntityCreated((EntityCreatedEventArgs)ev);
+          return;
+        case GameEventType.EntityAttacked:
+          this.HandleEntityAttacked((EntityAttackedEventArgs)ev);
+          return;
+        case GameEventType.EntityKilled:
+          this.HandleEntityKilled((EntityKilledEventArgs)ev);
+          return;
+        case GameEventType.EntityVisibilityChanged:
+          this.HandleEntityVisibilityChanged((EntityVisibilityChangedEventArgs)ev);
+          return;
+        case GameEventType.GameError:
+          this.HandleGameErrorEvent((GameErroredEventArgs)ev);
+          return;
+        case GameEventType.MainCharacterChanged:
+          this.HandleMainCharacterChangedEvent((MainCharacterChangedEventArgs)ev);
+          return;
+        case GameEventType.Configure:
+          this.HandleGameConfiguredEvent((GameConfiguredEventArgs)ev);
+          return;
+        case GameEventType.AttackCommand:
+          break;
+        case GameEventType.MoveCommand:
+          break;
+        case GameEventType.DebugCommand:
+          break;
+        case GameEventType.Save:
+          break;
+        case GameEventType.Load:
+          break;
+        case GameEventType.SpentTurn:
+          break;
+        case GameEventType.Start:
+          break;
+        default:
+          Debug.Log($"Unhandled GameEventType {ev.EventType}");
+          return;
+      }
+    }
+
+    private void HandleEntityMoved(EntityMovedEventArgs ev) {
+      Pawn pawn = this.pawnsByID[ev.Entity.ID];
+      int x = ev.Position.X;
+      int y = ev.Position.Y;
+      pawn.transform.position = new Vector3(x * GridMultiple, y * GridMultiple, 0f);
+      if (this.entityPosition.ContainsKey(ev.Entity.ID)) {
+        (int x0, int y0) = this.entityPosition[ev.Entity.ID];
+        _ = this.entitiesByPosition[x0][y0].Remove(ev.Entity);
+      }
+      this.entityPosition[ev.Entity.ID] = (x, y);
+      this.entitiesByPosition[x][y].Add(ev.Entity);
+
+      if (ev.Entity.ID == this.mainCharacterId) {
+        this.mainCharacterPosition = (x, y);
+      }
+    }
+
+    private void HandleEntityCreated(EntityCreatedEventArgs ev) {
+      IEntity entity = ev.Entity;
+      int id = entity.ID;
+      EntityInfo info = entity.GetComponent<EntityInfo>();
+      string appearance = info.Appearance;
+      Pawn pawn = this.pawnFactory.Get(appearance);
+      pawn.EntityId = id;
+      this.pawns.Add(pawn);
+      pawn.gameObject.name = $"Pawn::{id} {appearance}";
+      Debug.Log($"Pawn created {id}::{appearance}");
+      this.pawnsByID[id] = pawn;
+      if (!entity.IsVisible && this.usingFOV) {
+        pawn.gameObject.SetActive(false);
+      }
+    }
+
+    private void HandleEntityKilled(EntityKilledEventArgs ev) {
+      EntityInfo info = ev.Entity.GetComponent<EntityInfo>();
+      Debug.Log($"Entity {info.Name} has been killed.");
+      int id = ev.Entity.ID;
+      if (id == this.mainCharacterId) {
+        Debug.Log("Player died, reloading...");
+        this.ClearGame();
+        this.BeginNewGame();
+      }
+
+      Pawn pawn = this.pawnsByID[id];
+      // todo consider tracking save index
+      int index = this.pawns.FindIndex(t => t.EntityId == id);
+      int lastIndex = this.pawns.Count - 1;
+      if (index < lastIndex) {
+        this.pawns[index] = this.pawns[lastIndex];
+      }
+      this.pawns.RemoveAt(lastIndex);
+      _ = this.pawnsByID.Remove(id);
+      pawn.Recycle(this.pawnFactory);
+
+      (int x, int y) = this.entityPosition[id];
+      _ = this.entityPosition.Remove(id);
+      _ = this.entitiesByPosition[x][y].Remove(ev.Entity);
+    }
+
+    private void HandleEntityVisibilityChanged(EntityVisibilityChangedEventArgs ev) {
+      int id = ev.Entity.ID;
+      bool newVis = ev.NewVisibility;
+      this.pawnsByID[id].IsVisible = newVis;
+      if (this.usingFOV || newVis) {
+        this.pawnsByID[id].gameObject.SetActive(newVis);
+      }
+    }
+
+    private void HandleGameErrorEvent(GameErroredEventArgs ev) {
+      string message = ev.Message;
+      Debug.LogError(message);
+    }
+
+    private void HandleMainCharacterChangedEvent(MainCharacterChangedEventArgs ev) {
+      IEntity mainCharacter = ev.Entity;
+      this.mainCharacterId = ev.Entity.ID;
+      this.mainCharacterPosition = this.entityPosition[this.mainCharacterId];
+      CombatComponent stats = mainCharacter.GetComponent<CombatComponent>();
+      this.gui.HealthBar.CurrentHealth = stats.CurrentHealth;
+      this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
+      // todo should link updates to properties
+      this.gui.HealthBar.UpdateHealthBar();
+    }
+
+    private void HandleEntityAttacked(EntityAttackedEventArgs ev) {
+      EntityInfo attackerInfo = ev.Attacker.GetComponent<EntityInfo>();
+      EntityInfo defenderInfo = ev.Defender.GetComponent<EntityInfo>();
+
+      string attackerName = attackerInfo.Name;
+      string defenderName = defenderInfo.Name;
+
+      this.gui.MessageBox.AddMessage($"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
+      if (ev.Defender.ID != this.mainCharacterId || !ev.Success) {
+        return;
+      }
+      this.gui.HealthBar.CurrentHealth -= ev.Damage;
+      this.gui.HealthBar.UpdateHealthBar();
+    }
+
+    private void HandleGameConfiguredEvent(GameConfiguredEventArgs ev) {
+      this.ConfigureClientMap(ev.MapSize);
+      this.mainCamera.transform.position = new Vector3(
+        ev.MapSize.X / (2 / GridMultiple),
+        ev.MapSize.Y / (2 / GridMultiple),
+        -10
+      );
+    }
+
+    protected virtual void OnPlayerAction(IActionEventArgs ev) => PlayerAction?.Invoke(this, ev);
+
+    private void HandleUserInput() {
+      if (Input.GetMouseButtonDown(0)) {
+        this.MouseClicked(Input.mousePosition);
+      } else if (Input.GetKeyDown(this.leftKey)) {
+        this.Move(-1, 0);
+      } else if (Input.GetKeyDown(this.rightKey)) {
+        this.Move(1, 0);
+      } else if (Input.GetKeyDown(this.upKey)) {
+        this.Move(0, 1);
+      } else if (Input.GetKeyDown(this.downKey)) {
+        this.Move(0, -1);
+      } else if (Input.GetKeyDown(this.spawnKey)) {
+        this.SpawnCrab();
+      } else if (Input.GetKeyDown(this.mapKey)) {
+        this.ToggleFieldOfView();
+      } else if (Input.GetKeyDown(this.saveKey)) {
+        this.OnPlayerAction(new SaveActionEventArgs());
+      } else if (Input.GetKeyDown(this.loadKey)) {
+        this.ResetEverything();
+        this.OnPlayerAction(new LoadActionEventArgs());
+      } else if (Input.GetKeyDown(this.newGameKey)) {
+        this.BeginNewGame();
+      } else {
+        // The player didn't send any known input.
+      }
+    }
+
+    private void MouseClicked(Vector3 clickPos) {
+      Vector3 worldPos = this.mainCamera.ScreenToWorldPoint(clickPos);
+      Position pos = new(
+        (int)((worldPos.x / GridMultiple) + 0.5f),
+        (int)((worldPos.y / GridMultiple) + 0.5f)
+      );
+      if (this.entitiesByPosition[pos.X][pos.Y].Count > 0) {
+        List<IEntity> entities = this.entitiesByPosition[pos.X][pos.Y];
+        foreach (IEntity entity in entities) {
+          EntityInfo entityInfo = entity.GetComponent<EntityInfo>();
+          string description = entityInfo.Description;
+          this.gui.MessageBox.AddMessage(description);
+        }
+      } else {
+        this.gui.MessageBox.AddMessage("There's nothing there.");
+      }
+    }
+
+    private void Move(int mx, int my) {
+      int x = this.mainCharacterPosition.Item1 + mx;
+      int y = this.mainCharacterPosition.Item2 + my;
+      List<IEntity> fighters = new();
+      List<IEntity> blockers = new();
+      List<IEntity> entities = this.entitiesByPosition[x][y];
+      foreach (IEntity entity in entities) {
+        if (entity.GetComponent<CombatComponent>().CanFight) {
+          fighters.Add(entity);
+        } else if (entity.GetComponent<Movement>().BlocksMove) {
+          blockers.Add(entity);
+        } else {
+          // this entity can be stepped on or into
+        }
+      }
+
+      if (fighters.Any()) {
+        this.OnPlayerAction(new AttackActionEventArgs(this.mainCharacterId, fighters.First().ID));
+      } else if (blockers.Any()) {
+        Debug.Log("Bonk!");
+      } else {
+        this.OnPlayerAction(new MoveActionEventArgs(this.mainCharacterId, (mx, my)));
+      }
+    }
+
+    private void SpawnCrab() => this.OnPlayerAction(DebugActionEventArgs.SpawnCrab());
+
+    private void ToggleFieldOfView() {
+      this.usingFOV = !this.usingFOV;
+      Debug.Log(this.usingFOV ? "Debug: FOV on" : "Debug: FOV off");
+      foreach (Pawn t in this.pawns) {
+        t.gameObject.SetActive(t.IsVisible || !this.usingFOV);
+      }
     }
 
   }

@@ -1,6 +1,12 @@
 name: PR Workflow 🎉
 
-on: [push, pull_request]
+on:
+  pull_request:
+    paths:
+      - 'Assets/Scripts/**'
+  push:
+    paths:
+      - 'Assets/Scripts/**'
 
 jobs:
   build:
@@ -30,22 +36,14 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          testMode: playmode
 
       - name: Save Test Results
         uses: actions/upload-artifact@v2
-        if: always()
+        if: failure()
         with:
           name: Test Results
           path: artifacts
-          if-no-files-found: error
-
-      - name: Save Coverage Report
-        id: saveCoverage
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: Coverage Results
-          path: ${{ steps.test.outputs.coveragePath }}
           if-no-files-found: error
 
       # upload coverage report to codacy    
@@ -54,4 +52,4 @@ jobs:
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           api-token: ${{ secrets.CODACY_API_TOKEN }}
-          coverage-reports: cobertura.xml
+          coverage-reports: ${{ steps.test.outputs.coveragePath }}/workspace-opencov/Automated/TestCoverageResults_????.xml

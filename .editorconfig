@@ -1,730 +1,453 @@
+# Version: 4.1.1 (Using https://semver.org/)
+# Updated: 2022-05-23
+# See https://github.com/RehanSaeed/EditorConfig/releases for release notes.
+# See https://github.com/RehanSaeed/EditorConfig for updates to this file.
+# See http://EditorConfig.org for more information about .editorconfig files.
+
+##########################################
+# Common Settings
+##########################################
+
+# This file is the top-most EditorConfig file
+root = true
+
+# All Files
 [*]
 charset = utf-8
-end_of_line = crlf
-indent_size = 4
 indent_style = space
-insert_final_newline = false
-max_line_length = 100
-tab_width = 4
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+line_length = 100
+
+##########################################
+# File Extension Settings
+##########################################
+
+# Visual Studio Solution Files
+[*.sln]
+indent_style = tab
+
+# Visual Studio XML Project Files
+[*.{csproj,vbproj,vcxproj.filters,proj,projitems,shproj}]
+indent_size = 2
+
+# XML Configuration Files
+[*.{xml,config,props,targets,nuspec,resx,ruleset,vsixmanifest,vsct}]
+indent_size = 2
+
+# JSON Files
+[*.{json,json5,webmanifest}]
+indent_size = 2
+
+# YAML Files
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown Files
+[*.{md,mdx}]
 trim_trailing_whitespace = false
-ij_continuation_indent_size = 8
-ij_formatter_off_tag = @formatter:off
-ij_formatter_on_tag = @formatter:on
-ij_formatter_tags_enabled = false
-ij_smart_tabs = false
-ij_visual_guides = 100
-ij_wrap_on_typing = false
 
-[*.cs]
-ij_visual_guides = none
-
-[*.cshtml]
-ij_visual_guides = none
-
-[*.css]
-ij_visual_guides = none
-ij_css_align_closing_brace_with_properties = false
-ij_css_blank_lines_around_nested_selector = 1
-ij_css_blank_lines_between_blocks = 1
-ij_css_block_comment_add_space = false
-ij_css_brace_placement = end_of_line
-ij_css_enforce_quotes_on_format = false
-ij_css_hex_color_long_format = false
-ij_css_hex_color_lower_case = false
-ij_css_hex_color_short_format = false
-ij_css_hex_color_upper_case = false
-ij_css_keep_blank_lines_in_code = 2
-ij_css_keep_indents_on_empty_lines = false
-ij_css_keep_single_line_blocks = false
-ij_css_properties_order = font,font-family,font-size,font-weight,font-style,font-variant,font-size-adjust,font-stretch,line-height,position,z-index,top,right,bottom,left,display,visibility,float,clear,overflow,overflow-x,overflow-y,clip,zoom,align-content,align-items,align-self,flex,flex-flow,flex-basis,flex-direction,flex-grow,flex-shrink,flex-wrap,justify-content,order,box-sizing,width,min-width,max-width,height,min-height,max-height,margin,margin-top,margin-right,margin-bottom,margin-left,padding,padding-top,padding-right,padding-bottom,padding-left,table-layout,empty-cells,caption-side,border-spacing,border-collapse,list-style,list-style-position,list-style-type,list-style-image,content,quotes,counter-reset,counter-increment,resize,cursor,user-select,nav-index,nav-up,nav-right,nav-down,nav-left,transition,transition-delay,transition-timing-function,transition-duration,transition-property,transform,transform-origin,animation,animation-name,animation-duration,animation-play-state,animation-timing-function,animation-delay,animation-iteration-count,animation-direction,text-align,text-align-last,vertical-align,white-space,text-decoration,text-emphasis,text-emphasis-color,text-emphasis-style,text-emphasis-position,text-indent,text-justify,letter-spacing,word-spacing,text-outline,text-transform,text-wrap,text-overflow,text-overflow-ellipsis,text-overflow-mode,word-wrap,word-break,tab-size,hyphens,pointer-events,opacity,color,border,border-width,border-style,border-color,border-top,border-top-width,border-top-style,border-top-color,border-right,border-right-width,border-right-style,border-right-color,border-bottom,border-bottom-width,border-bottom-style,border-bottom-color,border-left,border-left-width,border-left-style,border-left-color,border-radius,border-top-left-radius,border-top-right-radius,border-bottom-right-radius,border-bottom-left-radius,border-image,border-image-source,border-image-slice,border-image-width,border-image-outset,border-image-repeat,outline,outline-width,outline-style,outline-color,outline-offset,background,background-color,background-image,background-repeat,background-attachment,background-position,background-position-x,background-position-y,background-clip,background-origin,background-size,box-decoration-break,box-shadow,text-shadow
-ij_css_space_after_colon = true
-ij_css_space_before_opening_brace = true
-ij_css_use_double_quotes = true
-ij_css_value_alignment = do_not_align
-
-[*.less]
+# Web Files
+[*.{htm,html,js,jsm,ts,tsx,cjs,cts,ctsx,mjs,mts,mtsx,css,sass,scss,less,pcss,svg,vue}]
 indent_size = 2
-ij_visual_guides = none
-ij_less_align_closing_brace_with_properties = false
-ij_less_blank_lines_around_nested_selector = 1
-ij_less_blank_lines_between_blocks = 1
-ij_less_block_comment_add_space = false
-ij_less_brace_placement = 0
-ij_less_enforce_quotes_on_format = false
-ij_less_hex_color_long_format = false
-ij_less_hex_color_lower_case = false
-ij_less_hex_color_short_format = false
-ij_less_hex_color_upper_case = false
-ij_less_keep_blank_lines_in_code = 2
-ij_less_keep_indents_on_empty_lines = false
-ij_less_keep_single_line_blocks = false
-ij_less_line_comment_add_space = false
-ij_less_line_comment_at_first_column = false
-ij_less_properties_order = font,font-family,font-size,font-weight,font-style,font-variant,font-size-adjust,font-stretch,line-height,position,z-index,top,right,bottom,left,display,visibility,float,clear,overflow,overflow-x,overflow-y,clip,zoom,align-content,align-items,align-self,flex,flex-flow,flex-basis,flex-direction,flex-grow,flex-shrink,flex-wrap,justify-content,order,box-sizing,width,min-width,max-width,height,min-height,max-height,margin,margin-top,margin-right,margin-bottom,margin-left,padding,padding-top,padding-right,padding-bottom,padding-left,table-layout,empty-cells,caption-side,border-spacing,border-collapse,list-style,list-style-position,list-style-type,list-style-image,content,quotes,counter-reset,counter-increment,resize,cursor,user-select,nav-index,nav-up,nav-right,nav-down,nav-left,transition,transition-delay,transition-timing-function,transition-duration,transition-property,transform,transform-origin,animation,animation-name,animation-duration,animation-play-state,animation-timing-function,animation-delay,animation-iteration-count,animation-direction,text-align,text-align-last,vertical-align,white-space,text-decoration,text-emphasis,text-emphasis-color,text-emphasis-style,text-emphasis-position,text-indent,text-justify,letter-spacing,word-spacing,text-outline,text-transform,text-wrap,text-overflow,text-overflow-ellipsis,text-overflow-mode,word-wrap,word-break,tab-size,hyphens,pointer-events,opacity,color,border,border-width,border-style,border-color,border-top,border-top-width,border-top-style,border-top-color,border-right,border-right-width,border-right-style,border-right-color,border-bottom,border-bottom-width,border-bottom-style,border-bottom-color,border-left,border-left-width,border-left-style,border-left-color,border-radius,border-top-left-radius,border-top-right-radius,border-bottom-right-radius,border-bottom-left-radius,border-image,border-image-source,border-image-slice,border-image-width,border-image-outset,border-image-repeat,outline,outline-width,outline-style,outline-color,outline-offset,background,background-color,background-image,background-repeat,background-attachment,background-position,background-position-x,background-position-y,background-clip,background-origin,background-size,box-decoration-break,box-shadow,text-shadow
-ij_less_space_after_colon = true
-ij_less_space_before_opening_brace = true
-ij_less_use_double_quotes = true
-ij_less_value_alignment = 0
 
-[*.properties]
-ij_visual_guides = none
-ij_properties_align_group_field_declarations = false
-ij_properties_keep_blank_lines = false
-ij_properties_key_value_delimiter = equals
-ij_properties_spaces_around_key_value_delimiter = false
+# Batch Files
+[*.{cmd,bat}]
+end_of_line = crlf
 
-[*.sass]
-indent_size = 2
-ij_visual_guides = none
-ij_sass_align_closing_brace_with_properties = false
-ij_sass_blank_lines_around_nested_selector = 1
-ij_sass_blank_lines_between_blocks = 1
-ij_sass_brace_placement = 0
-ij_sass_enforce_quotes_on_format = false
-ij_sass_hex_color_long_format = false
-ij_sass_hex_color_lower_case = false
-ij_sass_hex_color_short_format = false
-ij_sass_hex_color_upper_case = false
-ij_sass_keep_blank_lines_in_code = 2
-ij_sass_keep_indents_on_empty_lines = false
-ij_sass_keep_single_line_blocks = false
-ij_sass_line_comment_add_space = false
-ij_sass_line_comment_at_first_column = false
-ij_sass_properties_order = font,font-family,font-size,font-weight,font-style,font-variant,font-size-adjust,font-stretch,line-height,position,z-index,top,right,bottom,left,display,visibility,float,clear,overflow,overflow-x,overflow-y,clip,zoom,align-content,align-items,align-self,flex,flex-flow,flex-basis,flex-direction,flex-grow,flex-shrink,flex-wrap,justify-content,order,box-sizing,width,min-width,max-width,height,min-height,max-height,margin,margin-top,margin-right,margin-bottom,margin-left,padding,padding-top,padding-right,padding-bottom,padding-left,table-layout,empty-cells,caption-side,border-spacing,border-collapse,list-style,list-style-position,list-style-type,list-style-image,content,quotes,counter-reset,counter-increment,resize,cursor,user-select,nav-index,nav-up,nav-right,nav-down,nav-left,transition,transition-delay,transition-timing-function,transition-duration,transition-property,transform,transform-origin,animation,animation-name,animation-duration,animation-play-state,animation-timing-function,animation-delay,animation-iteration-count,animation-direction,text-align,text-align-last,vertical-align,white-space,text-decoration,text-emphasis,text-emphasis-color,text-emphasis-style,text-emphasis-position,text-indent,text-justify,letter-spacing,word-spacing,text-outline,text-transform,text-wrap,text-overflow,text-overflow-ellipsis,text-overflow-mode,word-wrap,word-break,tab-size,hyphens,pointer-events,opacity,color,border,border-width,border-style,border-color,border-top,border-top-width,border-top-style,border-top-color,border-right,border-right-width,border-right-style,border-right-color,border-bottom,border-bottom-width,border-bottom-style,border-bottom-color,border-left,border-left-width,border-left-style,border-left-color,border-radius,border-top-left-radius,border-top-right-radius,border-bottom-right-radius,border-bottom-left-radius,border-image,border-image-source,border-image-slice,border-image-width,border-image-outset,border-image-repeat,outline,outline-width,outline-style,outline-color,outline-offset,background,background-color,background-image,background-repeat,background-attachment,background-position,background-position-x,background-position-y,background-clip,background-origin,background-size,box-decoration-break,box-shadow,text-shadow
-ij_sass_space_after_colon = true
-ij_sass_space_before_opening_brace = true
-ij_sass_use_double_quotes = true
-ij_sass_value_alignment = 0
+# Bash Files
+[*.sh]
+end_of_line = lf
 
-[*.scss]
-indent_size = 2
-ij_visual_guides = none
-ij_scss_align_closing_brace_with_properties = false
-ij_scss_blank_lines_around_nested_selector = 1
-ij_scss_blank_lines_between_blocks = 1
-ij_scss_block_comment_add_space = false
-ij_scss_brace_placement = 0
-ij_scss_enforce_quotes_on_format = false
-ij_scss_hex_color_long_format = false
-ij_scss_hex_color_lower_case = false
-ij_scss_hex_color_short_format = false
-ij_scss_hex_color_upper_case = false
-ij_scss_keep_blank_lines_in_code = 2
-ij_scss_keep_indents_on_empty_lines = false
-ij_scss_keep_single_line_blocks = false
-ij_scss_line_comment_add_space = false
-ij_scss_line_comment_at_first_column = false
-ij_scss_properties_order = font,font-family,font-size,font-weight,font-style,font-variant,font-size-adjust,font-stretch,line-height,position,z-index,top,right,bottom,left,display,visibility,float,clear,overflow,overflow-x,overflow-y,clip,zoom,align-content,align-items,align-self,flex,flex-flow,flex-basis,flex-direction,flex-grow,flex-shrink,flex-wrap,justify-content,order,box-sizing,width,min-width,max-width,height,min-height,max-height,margin,margin-top,margin-right,margin-bottom,margin-left,padding,padding-top,padding-right,padding-bottom,padding-left,table-layout,empty-cells,caption-side,border-spacing,border-collapse,list-style,list-style-position,list-style-type,list-style-image,content,quotes,counter-reset,counter-increment,resize,cursor,user-select,nav-index,nav-up,nav-right,nav-down,nav-left,transition,transition-delay,transition-timing-function,transition-duration,transition-property,transform,transform-origin,animation,animation-name,animation-duration,animation-play-state,animation-timing-function,animation-delay,animation-iteration-count,animation-direction,text-align,text-align-last,vertical-align,white-space,text-decoration,text-emphasis,text-emphasis-color,text-emphasis-style,text-emphasis-position,text-indent,text-justify,letter-spacing,word-spacing,text-outline,text-transform,text-wrap,text-overflow,text-overflow-ellipsis,text-overflow-mode,word-wrap,word-break,tab-size,hyphens,pointer-events,opacity,color,border,border-width,border-style,border-color,border-top,border-top-width,border-top-style,border-top-color,border-right,border-right-width,border-right-style,border-right-color,border-bottom,border-bottom-width,border-bottom-style,border-bottom-color,border-left,border-left-width,border-left-style,border-left-color,border-radius,border-top-left-radius,border-top-right-radius,border-bottom-right-radius,border-bottom-left-radius,border-image,border-image-source,border-image-slice,border-image-width,border-image-outset,border-image-repeat,outline,outline-width,outline-style,outline-color,outline-offset,background,background-color,background-image,background-repeat,background-attachment,background-position,background-position-x,background-position-y,background-clip,background-origin,background-size,box-decoration-break,box-shadow,text-shadow
-ij_scss_space_after_colon = true
-ij_scss_space_before_opening_brace = true
-ij_scss_use_double_quotes = true
-ij_scss_value_alignment = 0
+# Makefiles
+[Makefile]
+indent_style = tab
 
-[*.shader]
-ij_visual_guides = none
+##########################################
+# Default .NET Code Style Severities
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/configuration-options#scope
+##########################################
 
-[*.styl]
-indent_size = 2
-ij_visual_guides = none
-ij_stylus_align_closing_brace_with_properties = false
-ij_stylus_blank_lines_around_nested_selector = 1
-ij_stylus_blank_lines_between_blocks = 1
-ij_stylus_brace_placement = 0
-ij_stylus_enforce_quotes_on_format = false
-ij_stylus_hex_color_long_format = false
-ij_stylus_hex_color_lower_case = false
-ij_stylus_hex_color_short_format = false
-ij_stylus_hex_color_upper_case = false
-ij_stylus_keep_blank_lines_in_code = 2
-ij_stylus_keep_indents_on_empty_lines = false
-ij_stylus_keep_single_line_blocks = false
-ij_stylus_properties_order = font,font-family,font-size,font-weight,font-style,font-variant,font-size-adjust,font-stretch,line-height,position,z-index,top,right,bottom,left,display,visibility,float,clear,overflow,overflow-x,overflow-y,clip,zoom,align-content,align-items,align-self,flex,flex-flow,flex-basis,flex-direction,flex-grow,flex-shrink,flex-wrap,justify-content,order,box-sizing,width,min-width,max-width,height,min-height,max-height,margin,margin-top,margin-right,margin-bottom,margin-left,padding,padding-top,padding-right,padding-bottom,padding-left,table-layout,empty-cells,caption-side,border-spacing,border-collapse,list-style,list-style-position,list-style-type,list-style-image,content,quotes,counter-reset,counter-increment,resize,cursor,user-select,nav-index,nav-up,nav-right,nav-down,nav-left,transition,transition-delay,transition-timing-function,transition-duration,transition-property,transform,transform-origin,animation,animation-name,animation-duration,animation-play-state,animation-timing-function,animation-delay,animation-iteration-count,animation-direction,text-align,text-align-last,vertical-align,white-space,text-decoration,text-emphasis,text-emphasis-color,text-emphasis-style,text-emphasis-position,text-indent,text-justify,letter-spacing,word-spacing,text-outline,text-transform,text-wrap,text-overflow,text-overflow-ellipsis,text-overflow-mode,word-wrap,word-break,tab-size,hyphens,pointer-events,opacity,color,border,border-width,border-style,border-color,border-top,border-top-width,border-top-style,border-top-color,border-right,border-right-width,border-right-style,border-right-color,border-bottom,border-bottom-width,border-bottom-style,border-bottom-color,border-left,border-left-width,border-left-style,border-left-color,border-radius,border-top-left-radius,border-top-right-radius,border-bottom-right-radius,border-bottom-left-radius,border-image,border-image-source,border-image-slice,border-image-width,border-image-outset,border-image-repeat,outline,outline-width,outline-style,outline-color,outline-offset,background,background-color,background-image,background-repeat,background-attachment,background-position,background-position-x,background-position-y,background-clip,background-origin,background-size,box-decoration-break,box-shadow,text-shadow
-ij_stylus_space_after_colon = true
-ij_stylus_space_before_opening_brace = true
-ij_stylus_use_double_quotes = true
-ij_stylus_value_alignment = 0
+[*.{cs,csx,cake,vb,vbx}]
+# Default Severity for all .NET Code Style rules below
+dotnet_analyzer_diagnostic.severity = warning
 
-[*.vb]
-ij_visual_guides = none
+##########################################
+# Language Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/language-rules
+##########################################
 
-[*.vue]
-indent_size = 2
-tab_width = 2
-ij_continuation_indent_size = 4
-ij_visual_guides = none
-ij_vue_indent_children_of_top_level = template
-ij_vue_interpolation_new_line_after_start_delimiter = true
-ij_vue_interpolation_new_line_before_end_delimiter = true
-ij_vue_interpolation_wrap = off
-ij_vue_keep_indents_on_empty_lines = false
-ij_vue_spaces_within_interpolation_expressions = true
+# .NET Style Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/language-rules#net-style-rules
+[*.{cs,csx,cake,vb,vbx}]
+# "this." and "Me." qualifiers
+dotnet_style_qualification_for_field = true:warning
+dotnet_style_qualification_for_property = true:warning
+dotnet_style_qualification_for_method = true:warning
+dotnet_style_qualification_for_event = true:warning
+# Language keywords instead of framework type names for type references
+dotnet_style_predefined_type_for_locals_parameters_members = true:warning
+dotnet_style_predefined_type_for_member_access = true:warning
+# Modifier preferences
+dotnet_style_require_accessibility_modifiers = always:warning
+csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async:warning
+visual_basic_preferred_modifier_order = Partial,Default,Private,Protected,Public,Friend,NotOverridable,Overridable,MustOverride,Overloads,Overrides,MustInherit,NotInheritable,Static,Shared,Shadows,ReadOnly,WriteOnly,Dim,Const,WithEvents,Widening,Narrowing,Custom,Async:warning
+dotnet_style_readonly_field = true:warning
+# Parentheses preferences
+dotnet_style_parentheses_in_arithmetic_binary_operators = always_for_clarity:warning
+dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:warning
+dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:warning
+dotnet_style_parentheses_in_other_operators = never_if_unnecessary:warning
+# Expression-level preferences
+dotnet_style_object_initializer = true:warning
+dotnet_style_collection_initializer = true:warning
+dotnet_style_explicit_tuple_names = true:warning
+dotnet_style_prefer_inferred_tuple_names = true:warning
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:warning
+dotnet_style_prefer_auto_properties = true:warning
+dotnet_style_prefer_conditional_expression_over_assignment = false:suggestion
+dotnet_diagnostic.IDE0045.severity = suggestion
+dotnet_style_prefer_conditional_expression_over_return = false:suggestion
+dotnet_diagnostic.IDE0046.severity = suggestion
+dotnet_style_prefer_compound_assignment = true:warning
+dotnet_style_prefer_simplified_interpolation = true:warning
+dotnet_style_prefer_simplified_boolean_expressions = true:warning
+# Null-checking preferences
+dotnet_style_coalesce_expression = true:warning
+dotnet_style_null_propagation = true:warning
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
+# File header preferences
+# file_header_template = <copyright file="{fileName}" company="PROJECT-AUTHOR">\n© PROJECT-AUTHOR\n</copyright>
+# If you use StyleCop, you'll need to disable SA1636: File header copyright text should match.
+# dotnet_diagnostic.SA1636.severity = none
+# Undocumented
+dotnet_style_operator_placement_when_wrapping = end_of_line:warning
+csharp_style_prefer_null_check_over_type_check = true:warning
 
-[.editorconfig]
-ij_visual_guides = none
-ij_editorconfig_align_group_field_declarations = false
-ij_editorconfig_space_after_colon = false
-ij_editorconfig_space_after_comma = true
-ij_editorconfig_space_before_colon = false
-ij_editorconfig_space_before_comma = false
-ij_editorconfig_spaces_around_assignment_operators = true
+# C# Style Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/language-rules#c-style-rules
+[*.{cs,csx,cake}]
+# 'var' preferences
+csharp_style_var_for_built_in_types = false:warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = false:warning
+# Expression-bodied members
+csharp_style_expression_bodied_methods = true:warning
+csharp_style_expression_bodied_constructors = true:warning
+csharp_style_expression_bodied_operators = true:warning
+csharp_style_expression_bodied_properties = true:warning
+csharp_style_expression_bodied_indexers = true:warning
+csharp_style_expression_bodied_accessors = true:warning
+csharp_style_expression_bodied_lambdas = true:warning
+csharp_style_expression_bodied_local_functions = true:warning
+# Pattern matching preferences
+csharp_style_pattern_matching_over_is_with_cast_check = true:warning
+csharp_style_pattern_matching_over_as_with_null_check = true:warning
+csharp_style_prefer_switch_expression = true:warning
+csharp_style_prefer_pattern_matching = true:warning
+csharp_style_prefer_not_pattern = true:warning
+# Expression-level preferences
+csharp_style_inlined_variable_declaration = true:warning
+csharp_prefer_simple_default_expression = true:warning
+csharp_style_pattern_local_over_anonymous_function = true:warning
+csharp_style_deconstructed_variable_declaration = true:warning
+csharp_style_prefer_index_operator = true:warning
+csharp_style_prefer_range_operator = true:warning
+csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
+# "Null" checking preferences
+csharp_style_throw_expression = true:warning
+csharp_style_conditional_delegate_call = true:warning
+# Code block preferences
+csharp_prefer_braces = true:warning
+csharp_prefer_simple_using_statement = true:suggestion
+dotnet_diagnostic.IDE0063.severity = suggestion
+# 'using' directive preferences
+csharp_using_directive_placement = inside_namespace:warning
+# Modifier preferences
+csharp_prefer_static_local_function = true:warning
 
-[{*.ant,*.appxmanifest,*.axml,*.cscfg,*.csdef,*.disco,*.filelayout,*.fxml,*.jhm,*.jnlp,*.jrxml,*.manifest,*.myapp,*.nuspec,*.rng,*.stylecop,*.svcmap,*.tld,*.tps,*.wadcfgx,*.webref,*.wsdl,*.xml,*.xsd,*.xsl,*.xslt,*.xul,StyleCop.Cache}]
-ij_visual_guides = none
-ij_xml_align_attributes = true
-ij_xml_align_text = false
-ij_xml_attribute_wrap = normal
-ij_xml_block_comment_add_space = false
-ij_xml_block_comment_at_first_column = true
-ij_xml_keep_blank_lines = 2
-ij_xml_keep_indents_on_empty_lines = false
-ij_xml_keep_line_breaks = true
-ij_xml_keep_line_breaks_in_text = true
-ij_xml_keep_whitespaces = false
-ij_xml_keep_whitespaces_around_cdata = preserve
-ij_xml_keep_whitespaces_inside_cdata = false
-ij_xml_line_comment_at_first_column = true
-ij_xml_space_after_tag_name = false
-ij_xml_space_around_equals_in_attribute = false
-ij_xml_space_inside_empty_tag = false
-ij_xml_text_wrap = normal
+##########################################
+# Unnecessary Code Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/unnecessary-code-rules
+##########################################
 
-[{*.ats,*.cts,*.mts,*.ts}]
-ij_continuation_indent_size = 4
-ij_visual_guides = none
-ij_typescript_align_imports = false
-ij_typescript_align_multiline_array_initializer_expression = false
-ij_typescript_align_multiline_binary_operation = false
-ij_typescript_align_multiline_chained_methods = false
-ij_typescript_align_multiline_extends_list = false
-ij_typescript_align_multiline_for = true
-ij_typescript_align_multiline_parameters = true
-ij_typescript_align_multiline_parameters_in_calls = false
-ij_typescript_align_multiline_ternary_operation = false
-ij_typescript_align_object_properties = 0
-ij_typescript_align_union_types = false
-ij_typescript_align_var_statements = 0
-ij_typescript_array_initializer_new_line_after_left_brace = false
-ij_typescript_array_initializer_right_brace_on_new_line = false
-ij_typescript_array_initializer_wrap = off
-ij_typescript_assignment_wrap = off
-ij_typescript_binary_operation_sign_on_next_line = false
-ij_typescript_binary_operation_wrap = off
-ij_typescript_blacklist_imports = rxjs/Rx,node_modules/**,**/node_modules/**,@angular/material,@angular/material/typings/**
-ij_typescript_blank_lines_after_imports = 1
-ij_typescript_blank_lines_around_class = 1
-ij_typescript_blank_lines_around_field = 0
-ij_typescript_blank_lines_around_field_in_interface = 0
-ij_typescript_blank_lines_around_function = 1
-ij_typescript_blank_lines_around_method = 1
-ij_typescript_blank_lines_around_method_in_interface = 1
-ij_typescript_block_brace_style = end_of_line
-ij_typescript_block_comment_add_space = false
-ij_typescript_block_comment_at_first_column = true
-ij_typescript_call_parameters_new_line_after_left_paren = false
-ij_typescript_call_parameters_right_paren_on_new_line = false
-ij_typescript_call_parameters_wrap = off
-ij_typescript_catch_on_new_line = false
-ij_typescript_chained_call_dot_on_new_line = true
-ij_typescript_class_brace_style = end_of_line
-ij_typescript_comma_on_new_line = false
-ij_typescript_do_while_brace_force = never
-ij_typescript_else_on_new_line = false
-ij_typescript_enforce_trailing_comma = keep
-ij_typescript_enum_constants_wrap = on_every_item
-ij_typescript_extends_keyword_wrap = off
-ij_typescript_extends_list_wrap = off
-ij_typescript_field_prefix = _
-ij_typescript_file_name_style = relaxed
-ij_typescript_finally_on_new_line = false
-ij_typescript_for_brace_force = never
-ij_typescript_for_statement_new_line_after_left_paren = false
-ij_typescript_for_statement_right_paren_on_new_line = false
-ij_typescript_for_statement_wrap = off
-ij_typescript_force_quote_style = false
-ij_typescript_force_semicolon_style = false
-ij_typescript_function_expression_brace_style = end_of_line
-ij_typescript_if_brace_force = never
-ij_typescript_import_merge_members = global
-ij_typescript_import_prefer_absolute_path = global
-ij_typescript_import_sort_members = true
-ij_typescript_import_sort_module_name = false
-ij_typescript_import_use_node_resolution = true
-ij_typescript_imports_wrap = on_every_item
-ij_typescript_indent_case_from_switch = true
-ij_typescript_indent_chained_calls = true
-ij_typescript_indent_package_children = 0
-ij_typescript_jsdoc_include_types = false
-ij_typescript_jsx_attribute_value = braces
-ij_typescript_keep_blank_lines_in_code = 2
-ij_typescript_keep_first_column_comment = true
-ij_typescript_keep_indents_on_empty_lines = false
-ij_typescript_keep_line_breaks = true
-ij_typescript_keep_simple_blocks_in_one_line = false
-ij_typescript_keep_simple_methods_in_one_line = false
-ij_typescript_line_comment_add_space = true
-ij_typescript_line_comment_at_first_column = false
-ij_typescript_method_brace_style = end_of_line
-ij_typescript_method_call_chain_wrap = off
-ij_typescript_method_parameters_new_line_after_left_paren = false
-ij_typescript_method_parameters_right_paren_on_new_line = false
-ij_typescript_method_parameters_wrap = off
-ij_typescript_object_literal_wrap = on_every_item
-ij_typescript_parentheses_expression_new_line_after_left_paren = false
-ij_typescript_parentheses_expression_right_paren_on_new_line = false
-ij_typescript_place_assignment_sign_on_next_line = false
-ij_typescript_prefer_as_type_cast = false
-ij_typescript_prefer_explicit_types_function_expression_returns = false
-ij_typescript_prefer_explicit_types_function_returns = false
-ij_typescript_prefer_explicit_types_vars_fields = false
-ij_typescript_prefer_parameters_wrap = false
-ij_typescript_reformat_c_style_comments = false
-ij_typescript_space_after_colon = true
-ij_typescript_space_after_comma = true
-ij_typescript_space_after_dots_in_rest_parameter = false
-ij_typescript_space_after_generator_mult = true
-ij_typescript_space_after_property_colon = true
-ij_typescript_space_after_quest = true
-ij_typescript_space_after_type_colon = true
-ij_typescript_space_after_unary_not = false
-ij_typescript_space_before_async_arrow_lparen = true
-ij_typescript_space_before_catch_keyword = true
-ij_typescript_space_before_catch_left_brace = true
-ij_typescript_space_before_catch_parentheses = true
-ij_typescript_space_before_class_lbrace = true
-ij_typescript_space_before_class_left_brace = true
-ij_typescript_space_before_colon = true
-ij_typescript_space_before_comma = false
-ij_typescript_space_before_do_left_brace = true
-ij_typescript_space_before_else_keyword = true
-ij_typescript_space_before_else_left_brace = true
-ij_typescript_space_before_finally_keyword = true
-ij_typescript_space_before_finally_left_brace = true
-ij_typescript_space_before_for_left_brace = true
-ij_typescript_space_before_for_parentheses = true
-ij_typescript_space_before_for_semicolon = false
-ij_typescript_space_before_function_left_parenth = true
-ij_typescript_space_before_generator_mult = false
-ij_typescript_space_before_if_left_brace = true
-ij_typescript_space_before_if_parentheses = true
-ij_typescript_space_before_method_call_parentheses = false
-ij_typescript_space_before_method_left_brace = true
-ij_typescript_space_before_method_parentheses = false
-ij_typescript_space_before_property_colon = false
-ij_typescript_space_before_quest = true
-ij_typescript_space_before_switch_left_brace = true
-ij_typescript_space_before_switch_parentheses = true
-ij_typescript_space_before_try_left_brace = true
-ij_typescript_space_before_type_colon = false
-ij_typescript_space_before_unary_not = false
-ij_typescript_space_before_while_keyword = true
-ij_typescript_space_before_while_left_brace = true
-ij_typescript_space_before_while_parentheses = true
-ij_typescript_spaces_around_additive_operators = true
-ij_typescript_spaces_around_arrow_function_operator = true
-ij_typescript_spaces_around_assignment_operators = true
-ij_typescript_spaces_around_bitwise_operators = true
-ij_typescript_spaces_around_equality_operators = true
-ij_typescript_spaces_around_logical_operators = true
-ij_typescript_spaces_around_multiplicative_operators = true
-ij_typescript_spaces_around_relational_operators = true
-ij_typescript_spaces_around_shift_operators = true
-ij_typescript_spaces_around_unary_operator = false
-ij_typescript_spaces_within_array_initializer_brackets = false
-ij_typescript_spaces_within_brackets = false
-ij_typescript_spaces_within_catch_parentheses = false
-ij_typescript_spaces_within_for_parentheses = false
-ij_typescript_spaces_within_if_parentheses = false
-ij_typescript_spaces_within_imports = false
-ij_typescript_spaces_within_interpolation_expressions = false
-ij_typescript_spaces_within_method_call_parentheses = false
-ij_typescript_spaces_within_method_parentheses = false
-ij_typescript_spaces_within_object_literal_braces = false
-ij_typescript_spaces_within_object_type_braces = true
-ij_typescript_spaces_within_parentheses = false
-ij_typescript_spaces_within_switch_parentheses = false
-ij_typescript_spaces_within_type_assertion = false
-ij_typescript_spaces_within_union_types = true
-ij_typescript_spaces_within_while_parentheses = false
-ij_typescript_special_else_if_treatment = true
-ij_typescript_ternary_operation_signs_on_next_line = false
-ij_typescript_ternary_operation_wrap = off
-ij_typescript_union_types_wrap = on_every_item
-ij_typescript_use_chained_calls_group_indents = false
-ij_typescript_use_double_quotes = true
-ij_typescript_use_explicit_js_extension = auto
-ij_typescript_use_path_mapping = always
-ij_typescript_use_public_modifier = false
-ij_typescript_use_semicolon_after_statement = true
-ij_typescript_var_declaration_wrap = normal
-ij_typescript_while_brace_force = never
-ij_typescript_while_on_new_line = false
-ij_typescript_wrap_comments = false
+# .NET Unnecessary code rules
+[*.{cs,csx,cake,vb,vbx}]
+dotnet_code_quality_unused_parameters = all:warning
+dotnet_remove_unnecessary_suppression_exclusions = none:warning
 
-[{*.axaml,*.paml,*.xaml}]
-ij_visual_guides = none
+# C# Unnecessary code rules
+[*.{cs,csx,cake}]
+csharp_style_unused_value_expression_statement_preference = discard_variable:suggestion
+dotnet_diagnostic.IDE0058.severity = suggestion
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+dotnet_diagnostic.IDE0059.severity = suggestion
 
-[{*.bash,*.sh,*.zsh}]
-indent_size = 2
-tab_width = 2
-ij_visual_guides = none
-ij_shell_binary_ops_start_line = false
-ij_shell_keep_column_alignment_padding = false
-ij_shell_minify_program = false
-ij_shell_redirect_followed_by_space = false
-ij_shell_switch_cases_indented = false
-ij_shell_use_unix_line_separator = true
+##########################################
+# Formatting Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules
+##########################################
 
-[{*.c,*.c++,*.cc,*.cg,*.cginc,*.compute,*.cp,*.cpp,*.cu,*.cxx,*.hlsl,*.hlslinc,*.ino,*.usf}]
-ij_visual_guides = none
+# .NET formatting rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#net-formatting-rules
+[*.{cs,csx,cake,vb,vbx}]
+# Organize using directives
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+# Dotnet namespace options
+dotnet_style_namespace_match_folder = true:suggestion
+dotnet_diagnostic.IDE0130.severity = suggestion
 
-[{*.cjs,*.js}]
-ij_continuation_indent_size = 4
-ij_visual_guides = none
-ij_javascript_align_imports = false
-ij_javascript_align_multiline_array_initializer_expression = false
-ij_javascript_align_multiline_binary_operation = false
-ij_javascript_align_multiline_chained_methods = false
-ij_javascript_align_multiline_extends_list = false
-ij_javascript_align_multiline_for = true
-ij_javascript_align_multiline_parameters = true
-ij_javascript_align_multiline_parameters_in_calls = false
-ij_javascript_align_multiline_ternary_operation = false
-ij_javascript_align_object_properties = 0
-ij_javascript_align_union_types = false
-ij_javascript_align_var_statements = 0
-ij_javascript_array_initializer_new_line_after_left_brace = false
-ij_javascript_array_initializer_right_brace_on_new_line = false
-ij_javascript_array_initializer_wrap = off
-ij_javascript_assignment_wrap = off
-ij_javascript_binary_operation_sign_on_next_line = false
-ij_javascript_binary_operation_wrap = off
-ij_javascript_blacklist_imports = rxjs/Rx,node_modules/**,**/node_modules/**,@angular/material,@angular/material/typings/**
-ij_javascript_blank_lines_after_imports = 1
-ij_javascript_blank_lines_around_class = 1
-ij_javascript_blank_lines_around_field = 0
-ij_javascript_blank_lines_around_function = 1
-ij_javascript_blank_lines_around_method = 1
-ij_javascript_block_brace_style = end_of_line
-ij_javascript_block_comment_add_space = false
-ij_javascript_block_comment_at_first_column = true
-ij_javascript_call_parameters_new_line_after_left_paren = false
-ij_javascript_call_parameters_right_paren_on_new_line = false
-ij_javascript_call_parameters_wrap = off
-ij_javascript_catch_on_new_line = false
-ij_javascript_chained_call_dot_on_new_line = true
-ij_javascript_class_brace_style = end_of_line
-ij_javascript_comma_on_new_line = false
-ij_javascript_do_while_brace_force = never
-ij_javascript_else_on_new_line = false
-ij_javascript_enforce_trailing_comma = keep
-ij_javascript_extends_keyword_wrap = off
-ij_javascript_extends_list_wrap = off
-ij_javascript_field_prefix = _
-ij_javascript_file_name_style = relaxed
-ij_javascript_finally_on_new_line = false
-ij_javascript_for_brace_force = never
-ij_javascript_for_statement_new_line_after_left_paren = false
-ij_javascript_for_statement_right_paren_on_new_line = false
-ij_javascript_for_statement_wrap = off
-ij_javascript_force_quote_style = false
-ij_javascript_force_semicolon_style = false
-ij_javascript_function_expression_brace_style = end_of_line
-ij_javascript_if_brace_force = never
-ij_javascript_import_merge_members = global
-ij_javascript_import_prefer_absolute_path = global
-ij_javascript_import_sort_members = true
-ij_javascript_import_sort_module_name = false
-ij_javascript_import_use_node_resolution = true
-ij_javascript_imports_wrap = on_every_item
-ij_javascript_indent_case_from_switch = true
-ij_javascript_indent_chained_calls = true
-ij_javascript_indent_package_children = 0
-ij_javascript_jsx_attribute_value = braces
-ij_javascript_keep_blank_lines_in_code = 2
-ij_javascript_keep_first_column_comment = true
-ij_javascript_keep_indents_on_empty_lines = false
-ij_javascript_keep_line_breaks = true
-ij_javascript_keep_simple_blocks_in_one_line = false
-ij_javascript_keep_simple_methods_in_one_line = false
-ij_javascript_line_comment_add_space = true
-ij_javascript_line_comment_at_first_column = false
-ij_javascript_method_brace_style = end_of_line
-ij_javascript_method_call_chain_wrap = off
-ij_javascript_method_parameters_new_line_after_left_paren = false
-ij_javascript_method_parameters_right_paren_on_new_line = false
-ij_javascript_method_parameters_wrap = off
-ij_javascript_object_literal_wrap = on_every_item
-ij_javascript_parentheses_expression_new_line_after_left_paren = false
-ij_javascript_parentheses_expression_right_paren_on_new_line = false
-ij_javascript_place_assignment_sign_on_next_line = false
-ij_javascript_prefer_as_type_cast = false
-ij_javascript_prefer_explicit_types_function_expression_returns = false
-ij_javascript_prefer_explicit_types_function_returns = false
-ij_javascript_prefer_explicit_types_vars_fields = false
-ij_javascript_prefer_parameters_wrap = false
-ij_javascript_reformat_c_style_comments = false
-ij_javascript_space_after_colon = true
-ij_javascript_space_after_comma = true
-ij_javascript_space_after_dots_in_rest_parameter = false
-ij_javascript_space_after_generator_mult = true
-ij_javascript_space_after_property_colon = true
-ij_javascript_space_after_quest = true
-ij_javascript_space_after_type_colon = true
-ij_javascript_space_after_unary_not = false
-ij_javascript_space_before_async_arrow_lparen = true
-ij_javascript_space_before_catch_keyword = true
-ij_javascript_space_before_catch_left_brace = true
-ij_javascript_space_before_catch_parentheses = true
-ij_javascript_space_before_class_lbrace = true
-ij_javascript_space_before_class_left_brace = true
-ij_javascript_space_before_colon = true
-ij_javascript_space_before_comma = false
-ij_javascript_space_before_do_left_brace = true
-ij_javascript_space_before_else_keyword = true
-ij_javascript_space_before_else_left_brace = true
-ij_javascript_space_before_finally_keyword = true
-ij_javascript_space_before_finally_left_brace = true
-ij_javascript_space_before_for_left_brace = true
-ij_javascript_space_before_for_parentheses = true
-ij_javascript_space_before_for_semicolon = false
-ij_javascript_space_before_function_left_parenth = true
-ij_javascript_space_before_generator_mult = false
-ij_javascript_space_before_if_left_brace = true
-ij_javascript_space_before_if_parentheses = true
-ij_javascript_space_before_method_call_parentheses = false
-ij_javascript_space_before_method_left_brace = true
-ij_javascript_space_before_method_parentheses = false
-ij_javascript_space_before_property_colon = false
-ij_javascript_space_before_quest = true
-ij_javascript_space_before_switch_left_brace = true
-ij_javascript_space_before_switch_parentheses = true
-ij_javascript_space_before_try_left_brace = true
-ij_javascript_space_before_type_colon = false
-ij_javascript_space_before_unary_not = false
-ij_javascript_space_before_while_keyword = true
-ij_javascript_space_before_while_left_brace = true
-ij_javascript_space_before_while_parentheses = true
-ij_javascript_spaces_around_additive_operators = true
-ij_javascript_spaces_around_arrow_function_operator = true
-ij_javascript_spaces_around_assignment_operators = true
-ij_javascript_spaces_around_bitwise_operators = true
-ij_javascript_spaces_around_equality_operators = true
-ij_javascript_spaces_around_logical_operators = true
-ij_javascript_spaces_around_multiplicative_operators = true
-ij_javascript_spaces_around_relational_operators = true
-ij_javascript_spaces_around_shift_operators = true
-ij_javascript_spaces_around_unary_operator = false
-ij_javascript_spaces_within_array_initializer_brackets = false
-ij_javascript_spaces_within_brackets = false
-ij_javascript_spaces_within_catch_parentheses = false
-ij_javascript_spaces_within_for_parentheses = false
-ij_javascript_spaces_within_if_parentheses = false
-ij_javascript_spaces_within_imports = false
-ij_javascript_spaces_within_interpolation_expressions = false
-ij_javascript_spaces_within_method_call_parentheses = false
-ij_javascript_spaces_within_method_parentheses = false
-ij_javascript_spaces_within_object_literal_braces = false
-ij_javascript_spaces_within_object_type_braces = true
-ij_javascript_spaces_within_parentheses = false
-ij_javascript_spaces_within_switch_parentheses = false
-ij_javascript_spaces_within_type_assertion = false
-ij_javascript_spaces_within_union_types = true
-ij_javascript_spaces_within_while_parentheses = false
-ij_javascript_special_else_if_treatment = true
-ij_javascript_ternary_operation_signs_on_next_line = false
-ij_javascript_ternary_operation_wrap = off
-ij_javascript_union_types_wrap = on_every_item
-ij_javascript_use_chained_calls_group_indents = false
-ij_javascript_use_double_quotes = true
-ij_javascript_use_explicit_js_extension = auto
-ij_javascript_use_path_mapping = always
-ij_javascript_use_public_modifier = false
-ij_javascript_use_semicolon_after_statement = true
-ij_javascript_var_declaration_wrap = normal
-ij_javascript_while_brace_force = never
-ij_javascript_while_on_new_line = false
-ij_javascript_wrap_comments = false
+# C# formatting rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#c-formatting-rules
+[*.{cs,csx,cake}]
+# Newline options
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#new-line-options
+csharp_new_line_before_open_brace = none
+csharp_new_line_after_open_brace = none
+csharp_new_line_before_close_brace = true
+csharp_new_line_before_else = false
+csharp_new_line_before_catch = false
+csharp_new_line_before_finally = false
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
+# Indentation options
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#indentation-options
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = no_change
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+csharp_indent_case_contents_when_block = true
+# Spacing options
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#spacing-options
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_parentheses = false
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_after_comma = true
+csharp_space_before_comma = false
+csharp_space_after_dot = false
+csharp_space_before_dot = false
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_around_declaration_statements = false
+csharp_space_before_open_square_brackets = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_square_brackets = false
+# Wrap options
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#wrap-options
+csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = false
+# Namespace options
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/formatting-rules#namespace-options
+csharp_style_namespace_declarations = block_scoped:warning
 
-[{*.cjsx,*.coffee}]
-indent_size = 2
-tab_width = 2
-ij_continuation_indent_size = 2
-ij_visual_guides = none
-ij_coffeescript_align_function_body = false
-ij_coffeescript_align_imports = false
-ij_coffeescript_align_multiline_array_initializer_expression = true
-ij_coffeescript_align_multiline_parameters = true
-ij_coffeescript_align_multiline_parameters_in_calls = false
-ij_coffeescript_align_object_properties = 0
-ij_coffeescript_align_union_types = false
-ij_coffeescript_align_var_statements = 0
-ij_coffeescript_array_initializer_new_line_after_left_brace = false
-ij_coffeescript_array_initializer_right_brace_on_new_line = false
-ij_coffeescript_array_initializer_wrap = normal
-ij_coffeescript_blacklist_imports = rxjs/Rx,node_modules/**,**/node_modules/**,@angular/material,@angular/material/typings/**
-ij_coffeescript_blank_lines_around_function = 1
-ij_coffeescript_call_parameters_new_line_after_left_paren = false
-ij_coffeescript_call_parameters_right_paren_on_new_line = false
-ij_coffeescript_call_parameters_wrap = normal
-ij_coffeescript_chained_call_dot_on_new_line = true
-ij_coffeescript_comma_on_new_line = false
-ij_coffeescript_enforce_trailing_comma = keep
-ij_coffeescript_field_prefix = _
-ij_coffeescript_file_name_style = relaxed
-ij_coffeescript_force_quote_style = false
-ij_coffeescript_force_semicolon_style = false
-ij_coffeescript_function_expression_brace_style = end_of_line
-ij_coffeescript_import_merge_members = global
-ij_coffeescript_import_prefer_absolute_path = global
-ij_coffeescript_import_sort_members = true
-ij_coffeescript_import_sort_module_name = false
-ij_coffeescript_import_use_node_resolution = true
-ij_coffeescript_imports_wrap = on_every_item
-ij_coffeescript_indent_chained_calls = true
-ij_coffeescript_indent_package_children = 0
-ij_coffeescript_jsx_attribute_value = braces
-ij_coffeescript_keep_blank_lines_in_code = 2
-ij_coffeescript_keep_first_column_comment = true
-ij_coffeescript_keep_indents_on_empty_lines = false
-ij_coffeescript_keep_line_breaks = true
-ij_coffeescript_keep_simple_methods_in_one_line = false
-ij_coffeescript_method_parameters_new_line_after_left_paren = false
-ij_coffeescript_method_parameters_right_paren_on_new_line = false
-ij_coffeescript_method_parameters_wrap = off
-ij_coffeescript_object_literal_wrap = on_every_item
-ij_coffeescript_prefer_as_type_cast = false
-ij_coffeescript_prefer_explicit_types_function_expression_returns = false
-ij_coffeescript_prefer_explicit_types_function_returns = false
-ij_coffeescript_prefer_explicit_types_vars_fields = false
-ij_coffeescript_reformat_c_style_comments = false
-ij_coffeescript_space_after_comma = true
-ij_coffeescript_space_after_dots_in_rest_parameter = false
-ij_coffeescript_space_after_generator_mult = true
-ij_coffeescript_space_after_property_colon = true
-ij_coffeescript_space_after_type_colon = true
-ij_coffeescript_space_after_unary_not = false
-ij_coffeescript_space_before_async_arrow_lparen = true
-ij_coffeescript_space_before_class_lbrace = true
-ij_coffeescript_space_before_comma = false
-ij_coffeescript_space_before_function_left_parenth = true
-ij_coffeescript_space_before_generator_mult = false
-ij_coffeescript_space_before_property_colon = false
-ij_coffeescript_space_before_type_colon = false
-ij_coffeescript_space_before_unary_not = false
-ij_coffeescript_spaces_around_additive_operators = true
-ij_coffeescript_spaces_around_arrow_function_operator = true
-ij_coffeescript_spaces_around_assignment_operators = true
-ij_coffeescript_spaces_around_bitwise_operators = true
-ij_coffeescript_spaces_around_equality_operators = true
-ij_coffeescript_spaces_around_logical_operators = true
-ij_coffeescript_spaces_around_multiplicative_operators = true
-ij_coffeescript_spaces_around_relational_operators = true
-ij_coffeescript_spaces_around_shift_operators = true
-ij_coffeescript_spaces_around_unary_operator = false
-ij_coffeescript_spaces_within_array_initializer_braces = false
-ij_coffeescript_spaces_within_array_initializer_brackets = false
-ij_coffeescript_spaces_within_imports = false
-ij_coffeescript_spaces_within_index_brackets = false
-ij_coffeescript_spaces_within_interpolation_expressions = false
-ij_coffeescript_spaces_within_method_call_parentheses = false
-ij_coffeescript_spaces_within_method_parentheses = false
-ij_coffeescript_spaces_within_object_braces = false
-ij_coffeescript_spaces_within_object_literal_braces = false
-ij_coffeescript_spaces_within_object_type_braces = true
-ij_coffeescript_spaces_within_range_brackets = false
-ij_coffeescript_spaces_within_type_assertion = false
-ij_coffeescript_spaces_within_union_types = true
-ij_coffeescript_union_types_wrap = on_every_item
-ij_coffeescript_use_chained_calls_group_indents = false
-ij_coffeescript_use_double_quotes = true
-ij_coffeescript_use_explicit_js_extension = auto
-ij_coffeescript_use_path_mapping = always
-ij_coffeescript_use_public_modifier = false
-ij_coffeescript_use_semicolon_after_statement = false
-ij_coffeescript_var_declaration_wrap = normal
+##########################################
+# .NET Naming Rules
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/naming-rules
+##########################################
 
-[{*.fs,*.fsi,*.ml,*.mli}]
-ij_visual_guides = none
+[*.{cs,csx,cake,vb,vbx}]
 
-[{*.har,*.inputactions,*.jsb2,*.jsb3,*.json,.babelrc,.eslintrc,.stylelintrc,bowerrc,jest.config}]
-indent_size = 2
-ij_visual_guides = none
-ij_json_array_wrapping = split_into_lines
-ij_json_keep_blank_lines_in_code = 0
-ij_json_keep_indents_on_empty_lines = false
-ij_json_keep_line_breaks = true
-ij_json_keep_trailing_comma = false
-ij_json_object_wrapping = split_into_lines
-ij_json_property_alignment = do_not_align
-ij_json_space_after_colon = true
-ij_json_space_after_comma = true
-ij_json_space_before_colon = false
-ij_json_space_before_comma = false
-ij_json_spaces_within_braces = false
-ij_json_spaces_within_brackets = false
-ij_json_wrap_long_lines = false
+##########################################
+# Styles
+##########################################
 
-[{*.htm,*.html,*.ng,*.sht,*.shtm,*.shtml}]
-ij_visual_guides = none
-ij_html_add_new_line_before_tags = body,div,p,form,h1,h2,h3
-ij_html_align_attributes = true
-ij_html_align_text = false
-ij_html_attribute_wrap = normal
-ij_html_block_comment_add_space = false
-ij_html_block_comment_at_first_column = true
-ij_html_do_not_align_children_of_min_lines = 0
-ij_html_do_not_break_if_inline_tags = title,h1,h2,h3,h4,h5,h6,p
-ij_html_do_not_indent_children_of_tags = html,body,thead,tbody,tfoot
-ij_html_enforce_quotes = false
-ij_html_inline_tags = a,abbr,acronym,b,basefont,bdo,big,br,cite,cite,code,dfn,em,font,i,img,input,kbd,label,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var
-ij_html_keep_blank_lines = 2
-ij_html_keep_indents_on_empty_lines = false
-ij_html_keep_line_breaks = true
-ij_html_keep_line_breaks_in_text = true
-ij_html_keep_whitespaces = false
-ij_html_keep_whitespaces_inside = span,pre,textarea
-ij_html_line_comment_at_first_column = true
-ij_html_new_line_after_last_attribute = never
-ij_html_new_line_before_first_attribute = never
-ij_html_quote_style = double
-ij_html_remove_new_line_before_tags = br
-ij_html_space_after_tag_name = false
-ij_html_space_around_equality_in_attribute = false
-ij_html_space_inside_empty_tag = false
-ij_html_text_wrap = normal
+# camel_case_style - Define the camelCase style
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+# pascal_case_style - Define the PascalCase style
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+# first_upper_style - The first character must start with an upper-case character
+dotnet_naming_style.first_upper_style.capitalization = first_word_upper
+# prefix_interface_with_i_style - Interfaces must be PascalCase and the first character of an interface must be an 'I'
+dotnet_naming_style.prefix_interface_with_i_style.capitalization = pascal_case
+dotnet_naming_style.prefix_interface_with_i_style.required_prefix = I
+# prefix_type_parameters_with_t_style - Generic Type Parameters must be PascalCase and the first character must be a 'T'
+dotnet_naming_style.prefix_type_parameters_with_t_style.capitalization = pascal_case
+dotnet_naming_style.prefix_type_parameters_with_t_style.required_prefix = T
+# disallowed_style - Anything that has this style applied is marked as disallowed
+dotnet_naming_style.disallowed_style.capitalization  = pascal_case
+dotnet_naming_style.disallowed_style.required_prefix = ____RULE_VIOLATION____
+dotnet_naming_style.disallowed_style.required_suffix = ____RULE_VIOLATION____
+# internal_error_style - This style should never occur... if it does, it indicates a bug in file or in the parser using the file
+dotnet_naming_style.internal_error_style.capitalization  = pascal_case
+dotnet_naming_style.internal_error_style.required_prefix = ____INTERNAL_ERROR____
+dotnet_naming_style.internal_error_style.required_suffix = ____INTERNAL_ERROR____
 
-[{*.jade,*.pug}]
-ij_visual_guides = none
+##########################################
+# .NET Design Guideline Field Naming Rules
+# Naming rules for fields follow the .NET Framework design guidelines
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/index
+##########################################
 
-[{*.markdown,*.md}]
-max_line_length = 80
-ij_visual_guides = 80
-ij_markdown_force_one_space_after_blockquote_symbol = true
-ij_markdown_force_one_space_after_header_symbol = true
-ij_markdown_force_one_space_after_list_bullet = true
-ij_markdown_force_one_space_between_words = true
-ij_markdown_insert_quote_arrows_on_wrap = true
-ij_markdown_keep_indents_on_empty_lines = false
-ij_markdown_keep_line_breaks_inside_text_blocks = true
-ij_markdown_max_lines_around_block_elements = 1
-ij_markdown_max_lines_around_header = 1
-ij_markdown_max_lines_between_paragraphs = 1
-ij_markdown_min_lines_around_block_elements = 1
-ij_markdown_min_lines_around_header = 1
-ij_markdown_min_lines_between_paragraphs = 1
-ij_markdown_wrap_text_if_long = true
-ij_markdown_wrap_text_inside_blockquotes = true
+# All public/protected/protected_internal constant fields must be PascalCase
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/field
+dotnet_naming_symbols.public_protected_constant_fields_group.applicable_accessibilities = public, protected, protected_internal
+dotnet_naming_symbols.public_protected_constant_fields_group.required_modifiers         = const
+dotnet_naming_symbols.public_protected_constant_fields_group.applicable_kinds           = field
+dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.symbols    = public_protected_constant_fields_group
+dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.style      = pascal_case_style
+dotnet_naming_rule.public_protected_constant_fields_must_be_pascal_case_rule.severity   = warning
 
-[{*.yaml,*.yml}]
-indent_size = 2
-ij_visual_guides = none
-ij_yaml_align_values_properties = do_not_align
-ij_yaml_autoinsert_sequence_marker = true
-ij_yaml_block_mapping_on_new_line = false
-ij_yaml_indent_sequence_value = true
-ij_yaml_keep_indents_on_empty_lines = false
-ij_yaml_keep_line_breaks = true
-ij_yaml_sequence_on_new_line = false
-ij_yaml_space_before_colon = false
-ij_yaml_spaces_within_braces = true
-ij_yaml_spaces_within_brackets = true
+# All public/protected/protected_internal static readonly fields must be PascalCase
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/field
+dotnet_naming_symbols.public_protected_static_readonly_fields_group.applicable_accessibilities = public, protected, protected_internal
+dotnet_naming_symbols.public_protected_static_readonly_fields_group.required_modifiers         = static, readonly
+dotnet_naming_symbols.public_protected_static_readonly_fields_group.applicable_kinds           = field
+dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.symbols    = public_protected_static_readonly_fields_group
+dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.style      = pascal_case_style
+dotnet_naming_rule.public_protected_static_readonly_fields_must_be_pascal_case_rule.severity   = warning
+
+# No other public/protected/protected_internal fields are allowed
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/field
+dotnet_naming_symbols.other_public_protected_fields_group.applicable_accessibilities = public, protected, protected_internal
+dotnet_naming_symbols.other_public_protected_fields_group.applicable_kinds           = field
+dotnet_naming_rule.other_public_protected_fields_disallowed_rule.symbols             = other_public_protected_fields_group
+dotnet_naming_rule.other_public_protected_fields_disallowed_rule.style               = disallowed_style
+dotnet_naming_rule.other_public_protected_fields_disallowed_rule.severity            = error
+
+##########################################
+# StyleCop Field Naming Rules
+# Naming rules for fields follow the StyleCop analyzers
+# This does not override any rules using disallowed_style above
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers
+##########################################
+
+# All constant fields must be PascalCase
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1303.md
+dotnet_naming_symbols.stylecop_constant_fields_group.applicable_accessibilities = public, internal, protected_internal, protected, private_protected, private
+dotnet_naming_symbols.stylecop_constant_fields_group.required_modifiers         = const
+dotnet_naming_symbols.stylecop_constant_fields_group.applicable_kinds           = field
+dotnet_naming_rule.stylecop_constant_fields_must_be_pascal_case_rule.symbols    = stylecop_constant_fields_group
+dotnet_naming_rule.stylecop_constant_fields_must_be_pascal_case_rule.style      = pascal_case_style
+dotnet_naming_rule.stylecop_constant_fields_must_be_pascal_case_rule.severity   = warning
+
+# All static readonly fields must be PascalCase
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1311.md
+dotnet_naming_symbols.stylecop_static_readonly_fields_group.applicable_accessibilities = public, internal, protected_internal, protected, private_protected, private
+dotnet_naming_symbols.stylecop_static_readonly_fields_group.required_modifiers         = static, readonly
+dotnet_naming_symbols.stylecop_static_readonly_fields_group.applicable_kinds           = field
+dotnet_naming_rule.stylecop_static_readonly_fields_must_be_pascal_case_rule.symbols    = stylecop_static_readonly_fields_group
+dotnet_naming_rule.stylecop_static_readonly_fields_must_be_pascal_case_rule.style      = pascal_case_style
+dotnet_naming_rule.stylecop_static_readonly_fields_must_be_pascal_case_rule.severity   = warning
+
+# No non-private instance fields are allowed
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1401.md
+dotnet_naming_symbols.stylecop_fields_must_be_private_group.applicable_accessibilities = public, internal, protected_internal, protected, private_protected
+dotnet_naming_symbols.stylecop_fields_must_be_private_group.applicable_kinds           = field
+dotnet_naming_rule.stylecop_instance_fields_must_be_private_rule.symbols               = stylecop_fields_must_be_private_group
+dotnet_naming_rule.stylecop_instance_fields_must_be_private_rule.style                 = disallowed_style
+dotnet_naming_rule.stylecop_instance_fields_must_be_private_rule.severity              = error
+
+# Private fields must be camelCase
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1306.md
+dotnet_naming_symbols.stylecop_private_fields_group.applicable_accessibilities = private
+dotnet_naming_symbols.stylecop_private_fields_group.applicable_kinds           = field
+dotnet_naming_rule.stylecop_private_fields_must_be_camel_case_rule.symbols     = stylecop_private_fields_group
+dotnet_naming_rule.stylecop_private_fields_must_be_camel_case_rule.style       = camel_case_style
+dotnet_naming_rule.stylecop_private_fields_must_be_camel_case_rule.severity    = warning
+
+# Local variables must be camelCase
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1312.md
+dotnet_naming_symbols.stylecop_local_fields_group.applicable_accessibilities = local
+dotnet_naming_symbols.stylecop_local_fields_group.applicable_kinds           = local
+dotnet_naming_rule.stylecop_local_fields_must_be_camel_case_rule.symbols     = stylecop_local_fields_group
+dotnet_naming_rule.stylecop_local_fields_must_be_camel_case_rule.style       = camel_case_style
+dotnet_naming_rule.stylecop_local_fields_must_be_camel_case_rule.severity    = silent
+
+# This rule should never fire.  However, it's included for at least two purposes:
+# First, it helps to understand, reason about, and root-case certain types of issues, such as bugs in .editorconfig parsers.
+# Second, it helps to raise immediate awareness if a new field type is added (as occurred recently in C#).
+dotnet_naming_symbols.sanity_check_uncovered_field_case_group.applicable_accessibilities = *
+dotnet_naming_symbols.sanity_check_uncovered_field_case_group.applicable_kinds           = field
+dotnet_naming_rule.sanity_check_uncovered_field_case_rule.symbols  = sanity_check_uncovered_field_case_group
+dotnet_naming_rule.sanity_check_uncovered_field_case_rule.style    = internal_error_style
+dotnet_naming_rule.sanity_check_uncovered_field_case_rule.severity = error
+
+
+##########################################
+# Other Naming Rules
+##########################################
+
+# All of the following must be PascalCase:
+# - Namespaces
+#   https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-namespaces
+#   https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1300.md
+# - Classes and Enumerations
+#   https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces
+#   https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1300.md
+# - Delegates
+#   https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces#names-of-common-types
+# - Constructors, Properties, Events, Methods
+#   https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-type-members
+dotnet_naming_symbols.element_group.applicable_kinds = namespace, class, enum, struct, delegate, event, method, property
+dotnet_naming_rule.element_rule.symbols              = element_group
+dotnet_naming_rule.element_rule.style                = pascal_case_style
+dotnet_naming_rule.element_rule.severity             = warning
+
+# Interfaces use PascalCase and are prefixed with uppercase 'I'
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces
+dotnet_naming_symbols.interface_group.applicable_kinds = interface
+dotnet_naming_rule.interface_rule.symbols              = interface_group
+dotnet_naming_rule.interface_rule.style                = prefix_interface_with_i_style
+dotnet_naming_rule.interface_rule.severity             = warning
+
+# Generics Type Parameters use PascalCase and are prefixed with uppercase 'T'
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces
+dotnet_naming_symbols.type_parameter_group.applicable_kinds = type_parameter
+dotnet_naming_rule.type_parameter_rule.symbols              = type_parameter_group
+dotnet_naming_rule.type_parameter_rule.style                = prefix_type_parameters_with_t_style
+dotnet_naming_rule.type_parameter_rule.severity             = warning
+
+# Function parameters use camelCase
+# https://docs.microsoft.com/dotnet/standard/design-guidelines/naming-parameters
+dotnet_naming_symbols.parameters_group.applicable_kinds = parameter
+dotnet_naming_rule.parameters_rule.symbols              = parameters_group
+dotnet_naming_rule.parameters_rule.style                = camel_case_style
+dotnet_naming_rule.parameters_rule.severity             = warning
+
+##########################################
+# License
+##########################################
+# The following applies as to the .editorconfig file ONLY, and is
+# included below for reference, per the requirements of the license
+# corresponding to this .editorconfig file.
+# See: https://github.com/RehanSaeed/EditorConfig
+#
+# MIT License
+#
+# Copyright (c) 2017-2019 Muhammad Rehan Saeed
+# Copyright (c) 2019 Henry Gabryjelski
+#
+# Permission is hereby granted, free of charge, to any
+# person obtaining a copy of this software and associated
+# documentation files (the "Software"), to deal in the
+# Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute,
+# sublicense, and/or sell copies of the Software, and to permit
+# persons to whom the Software is furnished to do so, subject
+# to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
+##########################################
