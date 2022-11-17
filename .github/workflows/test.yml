@@ -40,15 +40,6 @@ jobs:
           path: artifacts
           if-no-files-found: error
 
-      - name: Save Coverage Report
-        id: saveCoverage
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: CoverageResults
-          path: ${{ steps.test.outputs.coveragePath }}
-          if-no-files-found: error
-
       # upload coverage report to codacy    
       - name: Send Coverage Report
         id: reportCodacy
