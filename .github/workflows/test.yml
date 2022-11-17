@@ -55,4 +55,4 @@ jobs:
         uses: codacy/codacy-coverage-reporter-action@v1
         with:
           api-token: ${{ secrets.CODACY_API_TOKEN }}
-          coverage-reports: ${{ steps.test.outputs.coveragePath }}/workspace-opencov/*
+          coverage-reports: ${{ steps.test.outputs.coveragePath }}/workspace-opencov/Automated/TestCoverageResults_????.xml
