@@ -1,0 +1,57 @@
+name: PR Workflow 🎉
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Test the Project ✨
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout
+      - name: Checkout the Repo
+        id: checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Check the Cache
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+  
+      - name: Run Automated Tests
+        id: test
+        uses: game-ci/unity-test-runner@v2
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save Test Results
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Test Results
+          path: artifacts
+          if-no-files-found: error
+
+      - name: Save Coverage Report
+        id: saveCoverage
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: Coverage Results
+          path: ${{ steps.test.outputs.coveragePath }}
+          if-no-files-found: error
+
+      # upload coverage report to codacy    
+      - name: Send Coverage Report
+        id: reportCodacy
+        uses: codacy/codacy-coverage-reporter-action@v1
+        with:
+          api-token: ${{ secrets.CODACY_API_TOKEN }}
+          coverage-reports: cobertura.xml
