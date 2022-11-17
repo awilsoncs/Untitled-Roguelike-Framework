@@ -33,11 +33,12 @@ jobs:
 
       - name: Save Test Results
         uses: actions/upload-artifact@v2
-        if: always()
+        if: failure()
         with:
           name: Test Results
           path: artifacts
           if-no-files-found: error
+          testMode: playmode
 
       - name: Save Coverage Report
         id: saveCoverage
