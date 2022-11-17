@@ -14,7 +14,7 @@ namespace URF.Client {
   /// GameClient client view
   /// </summary>
   [DisallowMultipleComponent]
-  public partial class GameClient : MonoBehaviour, IPlayerActionChannel {
+  public class GameClient : MonoBehaviour, IPlayerActionChannel {
 
     public event EventHandler<IActionEventArgs> PlayerAction;
 
