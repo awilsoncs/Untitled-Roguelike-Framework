@@ -1,4 +1,5 @@
 {
     "recommendations": [
+        "davidanson.vscode-markdownlint"
     ]
 }
