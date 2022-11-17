@@ -30,6 +30,7 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          testMode: playmode
 
       - name: Save Test Results
         uses: actions/upload-artifact@v2
@@ -38,7 +39,6 @@ jobs:
           name: Test Results
           path: artifacts
           if-no-files-found: error
-          testMode: playmode
 
       - name: Save Coverage Report
         id: saveCoverage
