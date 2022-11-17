@@ -14,17 +14,24 @@ namespace URF.Common.GameEvents {
     MainCharacterChanged,
 
     GameError,
-
-    GameStarted,
+    
+    Configure,
 
     // Commands below this line
-    StartGameCommand,
 
     AttackCommand,
 
     MoveCommand,
 
-    DebugCommand
+    DebugCommand,
+
+    Save,
+    
+    Load,
+
+    SpentTurn,
+    
+    Start
 
   }
 }

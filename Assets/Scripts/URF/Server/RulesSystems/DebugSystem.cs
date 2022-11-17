@@ -1,19 +1,35 @@
+using URF.Common;
+using URF.Common.Entities;
 using URF.Common.GameEvents;
 using URF.Server.GameState;
+using URF.Server.RandomGeneration;
 
 namespace URF.Server.RulesSystems {
   public class DebugSystem : BaseRulesSystem {
 
-    [EventHandler(GameEventType.DebugCommand)]
-    public void HandleDebugCommand(IGameState gs, IGameEvent cm) {
-      DebugCommand ev = (DebugCommand)cm;
+    private IRandomGenerator _random;
+
+    private IEntityFactory _entityFactory;
+
+    public override void ApplyPlugins(PluginBundle pluginBundle) {
+      _random = pluginBundle.Random;
+      _entityFactory = pluginBundle.EntityFactory;
+    }
+
+    [ActionHandler(GameEventType.DebugCommand)]
+    public void HandleDebugAction(IGameState gs, IActionEventArgs cm) {
+      DebugActionEventArgs ev = (DebugActionEventArgs)cm;
       switch(ev.Method) {
-        case DebugCommand.DebugMethod.SpawnCrab:
-          gs.CreateEntityAtPosition("crab",
-            (gs.Random.GetInt(1, gs.MapWidth - 2), gs.Random.GetInt(1, gs.MapHeight - 2)));
+        case DebugActionEventArgs.DebugMethod.SpawnCrab:
+          IEntity crab = _entityFactory.Get("crab");
+          Position position = (_random.GetInt(1, gs.MapWidth - 2),
+            _random.GetInt(1, gs.MapHeight - 2));
+          gs.CreateEntityAtPosition(crab, position);
+          OnGameEvent(new EntityCreatedEventArgs(crab));
+          OnGameEvent(new EntityMovedEventArgs(crab, position));
           return;
         default:
-          gs.PostError($"Unknown debug method {ev.Method}");
+          OnGameEvent(new GameErroredEventArgs($"Unknown debug method {ev.Method}"));
           return;
       }
     }

@@ -14,53 +14,30 @@ namespace URF.Server.RulesSystems {
         typeof(CombatComponent)
       };
 
-    [EventHandler(GameEventType.AttackCommand)]
-    public void HandleAttackCommand(IGameState gs, IGameEvent cm) {
-      AttackCommand ev = (AttackCommand)cm;
-      if(!gs.EntityExists(ev.Attacker)) {
-        gs.PostError($"Attacking entity {ev.Attacker} does not exist.");
-        return;
-      }
-
-      if(!gs.EntityExists(ev.Defender)) {
-        gs.PostError($"Defender entity {ev.Defender} does not exist.");
-        return;
-      }
-
+    [ActionHandler(GameEventType.AttackCommand)]
+    public void HandleAttackAction(IGameState gs, IActionEventArgs cm) {
+      AttackActionEventArgs ev = (AttackActionEventArgs)cm;
       IEntity attacker = gs.GetEntityById(ev.Attacker);
-      CombatComponent attackerCombat = attacker.GetComponent<CombatComponent>();
       IEntity defender = gs.GetEntityById(ev.Defender);
-      CombatComponent defenderCombat = defender.GetComponent<CombatComponent>();
-
-      if(!attackerCombat.CanFight) {
-        gs.PostError($"{attacker} cannot fight. Check the Entity definition.");
-        return;
-      }
-
-      if(!defenderCombat.CanFight) {
-        gs.PostError($"Illegal attack attempted...(defender {defender})");
-        return;
-      }
-
       HandleAttack(gs, attacker, defender);
-      if(ev.Attacker == gs.GetMainCharacter().ID) { gs.GameUpdate(); }
+      OnGameEvent(new TurnSpentEventArgs(attacker));
     }
 
-    private static void HandleAttack(IGameState gs, IEntity attacker, IEntity defender) {
+    private void HandleAttack(IGameState gs, IEntity attacker, IEntity defender) {
       CombatComponent attackerCombat = attacker.GetComponent<CombatComponent>();
       CombatComponent defenderCombat = defender.GetComponent<CombatComponent>();
 
       int damage = attackerCombat.Damage;
-      gs.PostEvent(new EntityAttackedEvent(attacker, defender, true, damage));
-      gs.Log($"{attacker} will deal {damage} damage.");
-      gs.Log($"{defender} took {damage} damage.");
+      OnGameEvent(new EntityAttackedEventArgs(attacker, defender, true, damage));
 
       int maxHealth = defenderCombat.MaxHealth;
       int currentHealth = defenderCombat.CurrentHealth;
 
       defenderCombat.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
 
-      if(defenderCombat.CurrentHealth <= 0) { gs.Kill(defender); }
+      if(defenderCombat.CurrentHealth > 0) { return; }
+      OnGameEvent(new EntityKilledEventArgs(defender));
+      gs.Kill(defender);
     }
 
   }

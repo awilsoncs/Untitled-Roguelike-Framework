@@ -1,48 +1,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 using URF.Client.GUI;
+using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
-using URF.Game;
-using URF.Server.GameState;
+using URF.Common.Persistence;
+using URF.Server;
 
 namespace URF.Client {
   /// <summary>
   /// GameClient client view
   /// </summary>
   [DisallowMultipleComponent]
-  public partial class GameClient {
-    
-    [SerializeField] [Tooltip("Custom behavior to inject into the game controller.")]
-    private BackendPlugins backendPlugins;
+  public partial class GameClient : MonoBehaviour, IPlayerActionChannel {
 
     [SerializeField] private GuiComponents gui;
-
-    // NOTE: move this stuff to the game configurator
-    private const int saveVersion = 1;
+    
+    private const float gridMultiple = 0.5f;
 
     [SerializeField] private Camera mainCamera;
 
     [SerializeField] private PersistentStorage storage;
+    
+    [SerializeField] private BaseGameEventChannel gameEventChannel;
+    
+    [SerializeField] private PawnFactory pawnFactory;
 
-    [SerializeField] private int mapWidth = 40;
+    private readonly List<Pawn> _pawns = new();
 
-    [SerializeField] private int mapHeight = 20;
-
-    private Random.State _mainRandomState;
-
-    private IGameState _gameState;
-
-    private IEntityFactory _entityFactory;
-    // end note
-
-    private int MapWidth => mapWidth;
-
-    private int MapHeight => mapHeight;
+    private readonly Dictionary<int, Pawn> _pawnsByID = new();
 
     private int _mainCharacterId;
 
     private (int, int) _mainCharacterPosition;
+
+    private readonly Queue<IGameEventArgs> _gameEvents = new();
 
     // track attackable enemies so that we can attack instead of attempt to move
     private readonly Dictionary<int, (int, int)> _entityPosition = new();
@@ -51,48 +43,50 @@ namespace URF.Client {
     private List<IEntity>[][] _entitiesByPosition;
 
     private void Start() {
-      _mainRandomState = Random.state;
-      // roughly halfway across the map
-      mainCamera.transform.position = new Vector3(mapWidth / (2 / GameClient.gridMultiple),
-        mapHeight / (2 / GameClient.gridMultiple), -10);
-      // perform initial setup
-      _pawns.Clear();
-      _pawnsByID.Clear();
-      _entityFactory = new EntityFactory();
-      _gameState = new GameState(this, backendPlugins.RandomPlugin.Impl, _entityFactory,
-        backendPlugins.FieldOfViewPlugin.Impl, backendPlugins.PathfindingPlugin.Impl,
-        backendPlugins.LoggingPlugin.Impl, mapWidth, mapHeight);
-      ClearEnemyPositions();
+      gameEventChannel.GameEvent += EnqueueGameEvent;
+      gameEventChannel.Connect(this);
       BeginNewGame();
     }
 
+    private void EnqueueGameEvent(object sender, IGameEventArgs e) {
+      _gameEvents.Enqueue(e);
+    }
+
     private void Update() {
+      while(_gameEvents.Count > 0) {
+        HandleGameEvent(_gameEvents.Dequeue());
+      }
       HandleUserInput();
     }
 
     private void BeginNewGame() {
-      // set up the new game seed
-      Random.state = _mainRandomState;
-      int seed = Random.Range(0, int.MaxValue) ^ (int)Time.unscaledTime;
-      _mainRandomState = Random.state;
-      Random.InitState(seed);
-      ClearEnemyPositions();
-      _gameState.PostEvent(new StartGameCommand());
+      ResetEverything();
+      OnPlayerAction(new ConfigureActionArgs());
+      if(_gameEvents.Count <= 0) {
+        Debug.LogError("Client received 0 events from server start.");
+      }
     }
 
-    private void ClearEnemyPositions() {
+    private void ResetEverything() {
+      foreach(Pawn pawn in _pawns) {
+        pawn.Recycle(pawnFactory);
+      }
+      _pawns.Clear();
+      _pawnsByID.Clear();
+      _gameEvents.Clear();
       _entityPosition.Clear();
-      _entitiesByPosition = new List<IEntity>[MapWidth][];
-      for(int x = 0; x < MapWidth; x++) {
-        _entitiesByPosition[x] = new List<IEntity>[MapHeight];
-        for(int y = 0; y < MapHeight; y++) { _entitiesByPosition[x][y] = new List<IEntity>(); }
+      _entitiesByPosition = null;
+    }
+
+    private void ConfigureClientMap(Position mapSize) {
+      _entitiesByPosition = new List<IEntity>[mapSize.X][];
+      for(int x = 0; x < mapSize.X; x++) {
+        _entitiesByPosition[x] = new List<IEntity>[mapSize.Y];
+        for(int y = 0; y < mapSize.Y; y++) { _entitiesByPosition[x][y] = new List<IEntity>(); }
       }
     }
 
     private void ClearGame() {
-      _gameState = new GameState(this, backendPlugins.RandomPlugin.Impl, _entityFactory,
-        backendPlugins.FieldOfViewPlugin.Impl, backendPlugins.PathfindingPlugin.Impl,
-        backendPlugins.LoggingPlugin.Impl, mapWidth, mapHeight);
       foreach(Pawn pawn in _pawns) { pawn.Recycle(pawnFactory); }
       _pawns.Clear();
       _pawnsByID.Clear();

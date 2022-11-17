@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +8,13 @@ using URF.Common.GameEvents;
 using URF.Server.RulesSystems;
 
 namespace URF.Client {
-  public partial class GameClient : IGameClient {
+  public partial class GameClient {
+
+    public event EventHandler<IActionEventArgs> PlayerAction;
+
+    protected virtual void OnPlayerAction(IActionEventArgs e) {
+      PlayerAction?.Invoke(this, e);
+    }
 
     [SerializeField] private KeyCode newGameKey = KeyCode.N;
 
@@ -37,12 +44,12 @@ namespace URF.Client {
       else if(Input.GetKeyDown(downKey)) { Move(0, -1); }
       else if(Input.GetKeyDown(spawnKey)) { SpawnCrab(); }
       else if(Input.GetKeyDown(mapKey)) { ToggleFieldOfView(); }
-      else if(Input.GetKeyDown(saveKey)) { storage.Save(this, saveVersion); }
-      else if(Input.GetKeyDown(loadKey)) { storage.Load(this); }
-      else if(Input.GetKeyDown(newGameKey)) {
-        ClearGame();
-        BeginNewGame();
+      else if(Input.GetKeyDown(saveKey)) { OnPlayerAction(new SaveActionEventArgs()); }
+      else if(Input.GetKeyDown(loadKey)) {
+        ResetEverything();
+        OnPlayerAction(new LoadActionEventArgs());
       }
+      else if(Input.GetKeyDown(newGameKey)) { BeginNewGame();}
     }
 
     private void MouseClicked(Vector3 clickPos) {
@@ -72,14 +79,14 @@ namespace URF.Client {
       }
 
       if(fighters.Any()) {
-        _gameState.PostEvent(new AttackCommand(_mainCharacterId, fighters.First().ID));
+        OnPlayerAction(new AttackActionEventArgs(_mainCharacterId, fighters.First().ID));
       }
       else if(blockers.Any()) { Debug.Log("Bonk!"); }
-      else { _gameState.PostEvent(new MoveCommand(_mainCharacterId, (mx, my))); }
+      else { OnPlayerAction(new MoveActionEventArgs(_mainCharacterId, (mx, my))); }
     }
 
     private void SpawnCrab() {
-      _gameState.PostEvent(DebugCommand.SpawnCrab());
+      OnPlayerAction(DebugActionEventArgs.SpawnCrab());
     }
 
     private void ToggleFieldOfView() {

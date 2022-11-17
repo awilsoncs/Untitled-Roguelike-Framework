@@ -1,5 +1,4 @@
 using URF.Common.Persistence;
-using URF.Server.GameState;
 
 namespace URF.Common.Entities {
   /// <summary>
@@ -21,14 +20,7 @@ namespace URF.Common.Entities {
     /// Whether the entity is currently visible to the player.
     /// </summary>
     bool IsVisible { get; set; }
-
-    /// <summary>
-    /// Recycle this entity at the given factory.
-    /// </summary>
-    /// <param name="entityFactory">A reference to a factory that can dispose 
-    /// of this entity properly.</param>
-    void Recycle(IEntityFactory entityFactory);
-
+    
     T GetComponent<T>() where T : BaseComponent;
 
   }

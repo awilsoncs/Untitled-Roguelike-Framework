@@ -33,9 +33,5 @@ namespace URF.Common.Persistence {
       _writer.Write(value.z);
     }
 
-    public void Write(Random.State value) {
-      _writer.Write(JsonUtility.ToJson(value));
-    }
-
   }
 }

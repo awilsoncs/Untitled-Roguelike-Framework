@@ -21,9 +21,27 @@ namespace Tests.Common
 
         [Test]
         public void TestEquality() {
-            var a = new Position(5, 10);
-            var b = new Position(5, 10);
+            Position a = new(5, 10);
+            Position b = new(5, 10);
             Assert.That(a, Is.EqualTo(b));
         }
+
+        [Test]
+        public void TestToString() {
+          Position a = new(8, 13);
+          Position b = new(5, 8);
+
+          Assert.That(a.ToString(), Is.EqualTo("(8,13)"));
+          Assert.That(b.ToString(), Is.EqualTo("(5,8)"));
+        }
+
+        [Test]
+        public void TestAddition() {
+          Position a = new(8, 13);
+          Position b = new(5, 8);
+          
+          Assert.That(a + b, Is.EqualTo(new Position(13, 21)));
+        }
+
     }
 }

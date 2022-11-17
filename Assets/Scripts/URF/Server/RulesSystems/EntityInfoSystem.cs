@@ -11,7 +11,6 @@ namespace URF.Server.RulesSystems {
 
     public override List<Type> Components =>
       new() {
-        // todo could create an annotation to register these
         typeof(EntityInfo)
       };
 

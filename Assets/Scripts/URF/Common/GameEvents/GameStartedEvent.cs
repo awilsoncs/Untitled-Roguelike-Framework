@@ -1,10 +1,12 @@
+using System;
+
 namespace URF.Common.GameEvents {
   /// <summary>
-  /// Notify listeners that a new game has begun.
+  /// Notify listeners that the server has decided on settings.
   /// </summary>
-  public class GameStartedEvent : GameEvent {
+  public class GameStartedEventArgs : EventArgs, IGameEventArgs {
 
-    public override GameEventType EventType => GameEventType.GameStarted;
+    public GameEventType EventType => GameEventType.Start;
 
   }
 }

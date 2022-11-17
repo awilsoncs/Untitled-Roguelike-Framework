@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
@@ -7,36 +6,31 @@ using URF.Server.RulesSystems;
 namespace URF.Client {
   public partial class GameClient {
 
-    [SerializeField] private PawnFactory pawnFactory;
-
-    private readonly List<Pawn> _pawns = new();
-
-    private readonly Dictionary<int, Pawn> _pawnsByID = new();
-
-    private const float gridMultiple = 0.5f;
-
-    public void PostEvent(IGameEvent ev) {
+    private void HandleGameEvent(IGameEventArgs ev) {
       switch(ev.EventType) {
         case GameEventType.EntityMoved:
-          HandleEntityMoved((EntityMovedEvent)ev);
+          HandleEntityMoved((EntityMovedEventArgs)ev);
           return;
         case GameEventType.EntityCreated:
-          HandleEntityCreated((EntityCreatedEvent)ev);
-          return;
-        case GameEventType.EntityKilled:
-          HandleEntityKilled((EntityKilledEvent)ev);
-          return;
-        case GameEventType.EntityVisibilityChanged:
-          HandleEntityVisibilityChanged((EntityVisibilityChangedEvent)ev);
-          return;
-        case GameEventType.GameError:
-          HandleGameErrorEvent((GameErrorEvent)ev);
-          return;
-        case GameEventType.MainCharacterChanged:
-          HandleMainCharacterChangedEvent((MainCharacterChangedEvent)ev);
+          HandleEntityCreated((EntityCreatedEventArgs)ev);
           return;
         case GameEventType.EntityAttacked:
-          HandleEntityAttacked((EntityAttackedEvent)ev);
+          HandleEntityAttacked((EntityAttackedEventArgs)ev);
+          return;
+        case GameEventType.EntityKilled:
+          HandleEntityKilled((EntityKilledEventArgs)ev);
+          return;
+        case GameEventType.EntityVisibilityChanged:
+          HandleEntityVisibilityChanged((EntityVisibilityChangedEventArgs)ev);
+          return;
+        case GameEventType.GameError:
+          HandleGameErrorEvent((GameErroredEventArgs)ev);
+          return;
+        case GameEventType.MainCharacterChanged:
+          HandleMainCharacterChangedEvent((MainCharacterChangedEventArgs)ev);
+          return;
+        case GameEventType.Configure:
+          HandleGameConfiguredEvent((GameConfiguredEventArgs)ev);
           return;
         default:
           Debug.Log($"Unhandled GameEventType {ev.EventType}");
@@ -44,7 +38,7 @@ namespace URF.Client {
       }
     }
 
-    private void HandleEntityMoved(EntityMovedEvent ev) {
+    private void HandleEntityMoved(EntityMovedEventArgs ev) {
       Pawn pawn = _pawnsByID[ev.Entity.ID];
       int x = ev.Position.X;
       int y = ev.Position.Y;
@@ -59,7 +53,7 @@ namespace URF.Client {
       if(ev.Entity.ID == _mainCharacterId) { _mainCharacterPosition = (x, y); }
     }
 
-    private void HandleEntityCreated(EntityCreatedEvent ev) {
+    private void HandleEntityCreated(EntityCreatedEventArgs ev) {
       IEntity entity = ev.Entity;
       int id = entity.ID;
       EntityInfo info = entity.GetComponent<EntityInfo>();
@@ -73,7 +67,7 @@ namespace URF.Client {
       if(!entity.IsVisible && _usingFOV) { pawn.gameObject.SetActive(false); }
     }
 
-    private void HandleEntityKilled(EntityKilledEvent ev) {
+    private void HandleEntityKilled(EntityKilledEventArgs ev) {
       EntityInfo info = ev.Entity.GetComponent<EntityInfo>();
       Debug.Log($"Entity {info.Name} has been killed.");
       int id = ev.Entity.ID;
@@ -97,19 +91,19 @@ namespace URF.Client {
       _entitiesByPosition[x][y].Remove(ev.Entity);
     }
 
-    private void HandleEntityVisibilityChanged(EntityVisibilityChangedEvent ev) {
+    private void HandleEntityVisibilityChanged(EntityVisibilityChangedEventArgs ev) {
       int id = ev.Entity.ID;
       bool newVis = ev.NewVisibility;
       _pawnsByID[id].IsVisible = newVis;
       if(_usingFOV || newVis) { _pawnsByID[id].gameObject.SetActive(newVis); }
     }
 
-    private void HandleGameErrorEvent(GameErrorEvent ev) {
+    private void HandleGameErrorEvent(GameErroredEventArgs ev) {
       string message = ev.Message;
       Debug.LogError(message);
     }
 
-    private void HandleMainCharacterChangedEvent(MainCharacterChangedEvent ev) {
+    private void HandleMainCharacterChangedEvent(MainCharacterChangedEventArgs ev) {
       IEntity mainCharacter = ev.Entity;
       _mainCharacterId = ev.Entity.ID;
       _mainCharacterPosition = _entityPosition[_mainCharacterId];
@@ -120,7 +114,7 @@ namespace URF.Client {
       gui.HealthBar.UpdateHealthBar();
     }
 
-    private void HandleEntityAttacked(EntityAttackedEvent ev) {
+    private void HandleEntityAttacked(EntityAttackedEventArgs ev) {
       EntityInfo attackerInfo = ev.Attacker.GetComponent<EntityInfo>();
       EntityInfo defenderInfo = ev.Defender.GetComponent<EntityInfo>();
 
@@ -131,6 +125,12 @@ namespace URF.Client {
       if(ev.Defender.ID != _mainCharacterId || !ev.Success) return;
       gui.HealthBar.CurrentHealth -= ev.Damage;
       gui.HealthBar.UpdateHealthBar();
+    }
+
+    private void HandleGameConfiguredEvent(GameConfiguredEventArgs ev) {
+      ConfigureClientMap(ev.MapSize);
+      mainCamera.transform.position = new Vector3(ev.MapSize.X / (2 / GameClient.gridMultiple),
+        ev.MapSize.Y / (2 / GameClient.gridMultiple), -10);
     }
 
   }

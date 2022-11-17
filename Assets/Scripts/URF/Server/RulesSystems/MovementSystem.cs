@@ -15,21 +15,17 @@ namespace URF.Server.RulesSystems {
         typeof(Movement)
       };
 
-    [EventHandler(GameEventType.MoveCommand)]
-    public void HandleMoveCommand(IGameState gs, IGameEvent cm) {
-      MoveCommand mcm = (MoveCommand)cm;
+    [ActionHandler(GameEventType.MoveCommand)]
+    public void HandleMoveCommand(IGameState gs, IActionEventArgs cm) {
+      MoveActionEventArgs mcm = (MoveActionEventArgs)cm;
       int entityId = mcm.EntityId;
 
       IEntity entity = gs.GetEntityById(entityId);
-      Position newPos = entity.GetComponent<Movement>().EntityPosition + mcm.Direction;
+      Position position = entity.GetComponent<Movement>().EntityPosition + mcm.Direction;
 
-      gs.MoveEntity(entityId, newPos);
-      if(entityId == gs.GetMainCharacter().ID) {
-        // todo eventually move this to a turn control system
-        gs.GameUpdate();
-      }
-      // todo should probably be an EntityMoved event
-      gs.RecalculateFOV();
+      gs.MoveEntity(entityId, position);
+      OnGameEvent(new EntityMovedEventArgs(entity, position));
+      OnGameEvent(new TurnSpentEventArgs(entity));
     }
 
   }
