@@ -11,7 +11,7 @@ URF is currently aimed at two broad groups of developers:
 
 - Experienced roguelike developers who are looking to move to Unity
 - C#/Unity developers looking to build a roguelike without doing _all_ of the
-base work
+  base work
 - Anyone interested in wading through a new and evolving project
 
 In the future, we also aim to support designers with a highly plug-and-play
@@ -23,12 +23,12 @@ perfectly suitable for other types of turn/tile-based games (e.g. Tactics).
 ## Core features of URF
 
 - A strong client/rules server split. URF aims to serve both sides, but either
-should be replaceable
+  should be replaceable
 - Flexible visual representation. The client framework allows a designer to use
-2D sprites or 3D models as they choose
+  2D sprites or 3D models as they choose
 - ECS design. Adding new systems and types of components is a piece of cake.
 - Pluggability. If you don't like the way the engine works, it's easy enough to
-write a custom module and use that instead
+  write a custom module and use that instead
 
 ## Roadmap
 
