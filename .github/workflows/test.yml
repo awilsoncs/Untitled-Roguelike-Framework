@@ -27,7 +27,7 @@ jobs:
         run: mkdir CodeCoverage
         
       - name: Checking
-        run: ls ./CodeCoverage
+        run: echo $(ls ./CodeCoverage)
   
       - name: Run Automated Tests
         id: test
