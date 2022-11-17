@@ -22,12 +22,6 @@ jobs:
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-            
-      - name: Set up Coverage Directory
-        run: mkdir CodeCoverage
-        
-      - name: Checking
-        run: echo $(ls ./CodeCoverage)
   
       - name: Run Automated Tests
         id: test
