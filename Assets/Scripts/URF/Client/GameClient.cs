@@ -14,12 +14,10 @@ namespace URF.Client {
   /// GameClient client view
   /// </summary>
   [DisallowMultipleComponent]
-  public partial class GameClient : MonoBehaviour, IPlayerActionChannel {
+  public class GameClient : MonoBehaviour, IPlayerActionChannel {
 
     public event EventHandler<IActionEventArgs> PlayerAction;
 
-#pragma warning disable IDE0044
-    // Unity inspector fields can't be made readonly.
     [SerializeField] private GuiComponents gui;
 
     [SerializeField] private Camera mainCamera;
@@ -45,7 +43,6 @@ namespace URF.Client {
     [SerializeField] private KeyCode spawnKey = KeyCode.C;
 
     [SerializeField] private KeyCode mapKey = KeyCode.M;
-#pragma warning restore 	IDE0044
 
     private const float GridMultiple = 0.5f;
 
@@ -67,7 +64,6 @@ namespace URF.Client {
 
     private bool usingFOV = true;
 
-#pragma warning disable IDE0051
     // Unity message events appear unused to simple IDEs.
     private void Start() {
       this.gameEventChannel.GameEvent += this.EnqueueGameEvent;
@@ -81,7 +77,6 @@ namespace URF.Client {
       }
       this.HandleUserInput();
     }
-#pragma warning restore IDE0051
 
     private void EnqueueGameEvent(object sender, IGameEventArgs e) => this.gameEvents.Enqueue(e);
 
