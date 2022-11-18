@@ -24,8 +24,7 @@ namespace Tests.Server {
     [Test]
     public void EntityFactory_Should_InvokeBuilder() {
       bool wasInvoked = false;
-      void builder(IEntity entity) => wasInvoked = true;
-      this.entityFactory.RegisterBlueprint("testBlueprint", builder);
+      this.entityFactory.RegisterBlueprint("testBlueprint", _ => wasInvoked = true);
       _ = this.entityFactory.Get("testBlueprint");
       Assert.That(wasInvoked, "Entity factory should invoke the test builder.");
     }
@@ -34,10 +33,8 @@ namespace Tests.Server {
     public void EntityFactory_Should_OnlyInvokeCorrectBuilder() {
       bool firstInvoked = false;
       bool secondInvoked = false;
-      void first(IEntity entity) => firstInvoked = true;
-      this.entityFactory.RegisterBlueprint("first", first);
-      void second(IEntity entity) => secondInvoked = true;
-      this.entityFactory.RegisterBlueprint("second", second);
+      this.entityFactory.RegisterBlueprint("first", _ => firstInvoked = true);
+      this.entityFactory.RegisterBlueprint("second", _ => secondInvoked = true);
 
       _ = this.entityFactory.Get("first");
       Assert.That(
@@ -65,10 +62,8 @@ namespace Tests.Server {
     public void EntityFactory_ShouldNot_InvokeBuildersForBaseEntity() {
       bool firstInvoked = false;
       bool secondInvoked = false;
-      void first(IEntity entity) => firstInvoked = true;
-      this.entityFactory.RegisterBlueprint("first", first);
-      void second(IEntity entity) => secondInvoked = true;
-      this.entityFactory.RegisterBlueprint("second", second);
+      this.entityFactory.RegisterBlueprint("first", _ => firstInvoked = true);
+      this.entityFactory.RegisterBlueprint("second", _ => secondInvoked = true);
 
       _ = this.entityFactory.Get();
       Assert.That(
@@ -81,49 +76,49 @@ namespace Tests.Server {
       );
     }
 
-    private class ComponentA : BaseComponent {
-      public override void Load(GameDataReader reader) => throw new NotImplementedException();
-      public override void Save(GameDataWriter writer) => throw new NotImplementedException();
+    private sealed class ComponentA : BaseComponent {
+      public override void Load(GameDataReader reader) => throw new NotSupportedException();
+      public override void Save(GameDataWriter writer) => throw new NotSupportedException();
     }
 
-    private class ComponentB : BaseComponent {
-      public override void Load(GameDataReader reader) => throw new NotImplementedException();
-      public override void Save(GameDataWriter writer) => throw new NotImplementedException();
+    private sealed class ComponentB : BaseComponent {
+      public override void Load(GameDataReader reader) => throw new NotSupportedException();
+      public override void Save(GameDataWriter writer) => throw new NotSupportedException();
     }
 
-    private class ComponentC : BaseComponent {
-      public override void Load(GameDataReader reader) => throw new NotImplementedException();
-      public override void Save(GameDataWriter writer) => throw new NotImplementedException();
+    private sealed class ComponentC : BaseComponent {
+      public override void Load(GameDataReader reader) => throw new NotSupportedException();
+      public override void Save(GameDataWriter writer) => throw new NotSupportedException();
     }
 
-    private class FakeEntityType : IEntity {
+    private sealed class FakeEntityType : IEntity {
 
       public int ID {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
       }
       public bool BlocksSight {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
       }
       public bool IsVisible {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
+        get => throw new NotSupportedException();
+        set => throw new NotSupportedException();
       }
 
       public void AddComponent(BaseComponent component) => Components.Add(component);
 
       public TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent
       => throw new NotImplementedException();
-      public void Load(GameDataReader reader) => throw new NotImplementedException();
-      public void Save(GameDataWriter writer) => throw new NotImplementedException();
+      public void Load(GameDataReader reader) => throw new NotSupportedException();
+      public void Save(GameDataWriter writer) => throw new NotSupportedException();
     }
 
     [Test]
     public void EntityFactory_Should_AddTheSpecifiedComponents() {
       EntityFactory<FakeEntityType> factory = new();
       factory.UpdateEntitySpec(new List<Type> { typeof(ComponentA), typeof(ComponentB) });
-      IEntity entity = factory.Get();
+      _ = factory.Get();
       Assert.That(Components.Any(x => x is ComponentA));
       Assert.That(Components.Any(x => x is ComponentB));
       Assert.That(!Components.Any(x => x is ComponentC));

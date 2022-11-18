@@ -1,14 +1,14 @@
-using URF.Common.Persistence;
-
 namespace URF.Common.Entities {
+  using URF.Common.Persistence;
+
   public abstract class BaseComponent : IPersistableObject {
 
     public virtual void Load(GameDataReader reader) {
-      // Default no-op;
+      // the base component doesn't provide loading behavior
     }
 
     public virtual void Save(GameDataWriter writer) {
-      // Default no-op
+      // the base component doesn't provide loading behavior
     }
 
   }
