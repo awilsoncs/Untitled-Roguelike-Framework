@@ -42,7 +42,7 @@ namespace URF.Server {
         new RaycastingFov(),
         new UnityDebugLogging(),
         new DjikstraPathfinding(),
-        new EntityFactory(),
+        new EntityFactory.EntityFactory<Entity>(),
         this.persistentStorage
       );
 

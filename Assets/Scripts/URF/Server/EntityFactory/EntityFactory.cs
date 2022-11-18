@@ -1,22 +1,22 @@
-using System;
-using System.Collections.Generic;
-using URF.Common.Entities;
-using URF.Server.RulesSystems;
+namespace URF.Server.EntityFactory {
+  using System;
+  using System.Collections.Generic;
+  using System.Diagnostics;
+  using URF.Common.Entities;
+  using URF.Server.RulesSystems;
 
-namespace URF.Server {
-  public class EntityFactory : IEntityFactory {
+  public class EntityFactory<TEntity> : IEntityFactory<TEntity> where TEntity : IEntity, new() {
 
-    private int _idCounter;
+    private int idCounter;
 
-    private delegate void EntityBuilder(Entity entity);
 
-    private readonly Dictionary<string, EntityBuilder> _builders;
+    private readonly Dictionary<string, EntityBuilder> builders;
 
-    private readonly List<Type> _entitySpecComponents;
+    private readonly List<Type> entitySpecComponents;
 
     public EntityFactory() {
-      _entitySpecComponents = new List<Type>();
-      _builders = new Dictionary<string, EntityBuilder> {
+      this.entitySpecComponents = new List<Type>();
+      this.builders = new Dictionary<string, EntityBuilder> {
         { "player", BuildPlayer },
         { "crab", BuildCrab },
         { "wall", BuildWall },
@@ -28,9 +28,9 @@ namespace URF.Server {
     /// Get a bare entity.
     /// </summary>
     /// <returns></returns>
-    public Entity Get() {
-      Entity entity = new();
-      foreach(Type t in _entitySpecComponents) {
+    public IEntity Get() {
+      var entity = new TEntity();
+      foreach (Type t in this.entitySpecComponents) {
         entity.AddComponent((BaseComponent)Activator.CreateInstance(t));
       }
 
@@ -42,23 +42,31 @@ namespace URF.Server {
     /// </summary>
     /// <param name="bluePrint">The string name of the entity's blueprint.</param>
     /// <returns>An entity conforming to the given blueprint.</returns>
-    public Entity Get(string bluePrint) {
-      Entity entity = Get();
-      _builders[bluePrint](entity);
-      entity.ID = _idCounter++;
+    public IEntity Get(string bluePrint) {
+      IEntity entity = this.Get();
+      this.builders[bluePrint](entity);
+      entity.ID = this.idCounter++;
       return entity;
     }
 
     public void UpdateEntitySpec(List<Type> componentTypes) {
-      foreach(Type slot in componentTypes) { _entitySpecComponents.Add(slot); }
+      foreach (Type slot in componentTypes) {
+        this.entitySpecComponents.Add(slot);
+      }
     }
 
-    public void Reclaim(Entity entity) {
+    public void Reclaim(TEntity entity) {
       // Haven't yet implemented this, but need to know where it should be called, so we leave it.
     }
 
+    public void RegisterBlueprint(string bluePrintName, EntityBuilder builder) {
+      Debug.Assert(!this.builders.ContainsKey(bluePrintName));
+      this.builders[bluePrintName] = builder;
+    }
+
     // short term hardcoded delegates
-    private static void BuildPlayer(Entity entity) {
+
+    private static void BuildPlayer(IEntity entity) {
       EntityInfo info = entity.GetComponent<EntityInfo>();
       info.Name = "Player";
       info.Appearance = "player";
@@ -76,7 +84,7 @@ namespace URF.Server {
       entity.IsVisible = true;
     }
 
-    private static void BuildCrab(Entity entity) {
+    private static void BuildCrab(IEntity entity) {
       EntityInfo info = entity.GetComponent<EntityInfo>();
       info.Name = "Crab";
       info.Appearance = "crab";
@@ -94,7 +102,7 @@ namespace URF.Server {
       entity.IsVisible = true;
     }
 
-    private static void BuildWall(Entity entity) {
+    private static void BuildWall(IEntity entity) {
       EntityInfo info = entity.GetComponent<EntityInfo>();
       info.Name = "Wall";
       info.Appearance = "wall";
@@ -109,7 +117,7 @@ namespace URF.Server {
       entity.IsVisible = true;
     }
 
-    private static void BuildHealthPotion(Entity entity) {
+    private static void BuildHealthPotion(IEntity entity) {
       EntityInfo info = entity.GetComponent<EntityInfo>();
       info.Name = "Health Potion";
       info.Appearance = "healthPotion";

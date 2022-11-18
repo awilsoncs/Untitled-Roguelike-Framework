@@ -3,6 +3,7 @@ using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
 using URF.Common.Persistence;
+using URF.Server.EntityFactory;
 using URF.Server.GameState;
 using URF.Server.RandomGeneration;
 
@@ -13,7 +14,7 @@ namespace URF.Server.RulesSystems {
 
     private PersistentStorage _persistentStorage;
 
-    private IEntityFactory _entityFactory;
+    private IEntityFactory<Entity> _entityFactory;
 
     private IEntity _mainCharacter;
 
@@ -50,7 +51,7 @@ namespace URF.Server.RulesSystems {
       ReadOnlyCollection<IEntity> entities = _gameState.GetEntities();
       writer.Write(entities.Count);
       writer.Write(_mainCharacter.ID);
-      foreach(IEntity entity in entities) {
+      foreach (IEntity entity in entities) {
         writer.Write(entity.ID);
         entity.Save(writer);
       }
@@ -62,19 +63,19 @@ namespace URF.Server.RulesSystems {
       OnGameEvent(new GameConfiguredEventArgs(mapSize));
       int count = reader.ReadInt();
       int mainCharacterId = reader.ReadInt();
-      for(int i = 0; i < count; i++) {
+      for (int i = 0; i < count; i++) {
         int entityID = reader.ReadInt();
-        Entity entity = _entityFactory.Get();
+        IEntity entity = _entityFactory.Get();
         entity.ID = entityID;
         entity.Load(reader);
         Position position = entity.GetComponent<Movement>().EntityPosition;
         _gameState.CreateEntityAtPosition(entity, position);
         OnGameEvent(new EntityCreatedEventArgs(entity));
         OnGameEvent(new EntityMovedEventArgs(entity, position));
-        if(entityID == mainCharacterId) {
+        if (entityID == mainCharacterId) {
           OnGameEvent(new MainCharacterChangedEventArgs(entity));
         }
-        
+
       }
     }
 

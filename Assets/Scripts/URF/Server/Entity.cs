@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using URF.Common.Entities;
 using URF.Common.Persistence;
-using URF.Server.GameState;
+using URF.Server.EntityFactory;
 using URF.Server.RulesSystems;
 
 namespace URF.Server {
@@ -11,11 +11,17 @@ namespace URF.Server {
   /// </summary>
   public class Entity : IEntity {
 
-    public int ID { get; set; }
+    public int ID {
+      get; set;
+    }
 
-    public bool BlocksSight { get; set; }
+    public bool BlocksSight {
+      get; set;
+    }
 
-    public bool IsVisible { get; set; }
+    public bool IsVisible {
+      get; set;
+    }
 
     private readonly List<BaseComponent> _components = new();
 
@@ -31,19 +37,22 @@ namespace URF.Server {
       writer.Write(BlocksSight);
       writer.Write(IsVisible);
       writer.Write(_components.Count);
-      foreach(BaseComponent component in _components) { component.Save(writer); }
+      foreach (BaseComponent component in _components) {
+        component.Save(writer);
+      }
     }
 
     public void Load(GameDataReader reader) {
       BlocksSight = reader.ReadBool();
       IsVisible = reader.ReadBool();
       int componentCount = reader.ReadInt();
-      for(int i = 0; i < componentCount; i++) { _components[i].Load(reader); }
+      for (int i = 0; i < componentCount; i++) {
+        _components[i].Load(reader);
+      }
     }
 
-    public void Recycle(IEntityFactory entityFactory) {
+    public void Recycle(IEntityFactory<Entity> entityFactory) {
       _components.Clear();
-      entityFactory.Reclaim(this);
     }
 
     public override string ToString() {

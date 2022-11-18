@@ -3,9 +3,13 @@ using URF.Common.Persistence;
 namespace URF.Common.Entities {
   public abstract class BaseComponent : IPersistableObject {
 
-    public abstract void Load(GameDataReader reader);
+    public virtual void Load(GameDataReader reader) {
+      // Default no-op;
+    }
 
-    public abstract void Save(GameDataWriter writer);
+    public virtual void Save(GameDataWriter writer) {
+      // Default no-op
+    }
 
   }
 }
