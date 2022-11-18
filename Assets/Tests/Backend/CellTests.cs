@@ -16,9 +16,11 @@ namespace Tests.Backend {
     [Test]
     public void CellsCanGainContents() {
       this.cell.PutContents(new Entity());
-      Assert.That(this.cell.Contents, Has.Count.EqualTo(1));
+      int expectedCount = 1;
+      Assert.That(this.cell.Contents, Has.Count.EqualTo(expectedCount));
       this.cell.PutContents(new Entity());
-      Assert.That(this.cell.Contents, Has.Count.EqualTo(2));
+      int newExpectedCount = 2;
+      Assert.That(this.cell.Contents, Has.Count.EqualTo(newExpectedCount));
     }
 
     [Test]
@@ -37,7 +39,8 @@ namespace Tests.Backend {
       this.cell.PutContents(entity2);
 
       this.cell.RemoveEntity(entity1);
-      Assert.That(this.cell.Contents, Has.Count.EqualTo(1));
+      int expectedCount = 1;
+      Assert.That(this.cell.Contents, Has.Count.EqualTo(expectedCount));
       Assert.That(this.cell.Contents, Does.Contain(entity2));
     }
 
@@ -46,7 +49,8 @@ namespace Tests.Backend {
       var entity = new Entity();
       this.cell.PutContents(entity);
       this.cell.PutContents(entity);
-      Assert.That(this.cell.Contents, Has.Count.EqualTo(1));
+      int expectedCount = 1;
+      Assert.That(this.cell.Contents, Has.Count.EqualTo(expectedCount));
     }
 
     [Test]
