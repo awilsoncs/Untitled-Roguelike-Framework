@@ -77,18 +77,15 @@ namespace Tests.Server {
     }
 
     private sealed class ComponentA : BaseComponent {
-      public override void Load(GameDataReader reader) => throw new NotSupportedException();
-      public override void Save(GameDataWriter writer) => throw new NotSupportedException();
+      // stub test class
     }
 
     private sealed class ComponentB : BaseComponent {
-      public override void Load(GameDataReader reader) => throw new NotSupportedException();
-      public override void Save(GameDataWriter writer) => throw new NotSupportedException();
+      // stub test class
     }
 
     private sealed class ComponentC : BaseComponent {
-      public override void Load(GameDataReader reader) => throw new NotSupportedException();
-      public override void Save(GameDataWriter writer) => throw new NotSupportedException();
+      // stub test class
     }
 
     private sealed class FakeEntityType : IEntity {
