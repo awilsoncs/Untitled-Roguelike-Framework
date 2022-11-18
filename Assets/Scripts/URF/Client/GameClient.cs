@@ -18,7 +18,6 @@ namespace URF.Client {
 
     public event EventHandler<IActionEventArgs> PlayerAction;
 
-    // Unity inspector fields can't be made readonly.
     [SerializeField] private GuiComponents gui;
 
     [SerializeField] private Camera mainCamera;
