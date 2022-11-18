@@ -1,11 +1,15 @@
-using URF.Common.Persistence;
-
 namespace URF.Common.Entities {
+  using URF.Common.Persistence;
+
   public abstract class BaseComponent : IPersistableObject {
 
-    public abstract void Load(GameDataReader reader);
+    public virtual void Load(GameDataReader reader) {
+      // the base component doesn't provide loading behavior
+    }
 
-    public abstract void Save(GameDataWriter writer);
+    public virtual void Save(GameDataWriter writer) {
+      // the base component doesn't provide loading behavior
+    }
 
   }
 }

@@ -1,6 +1,7 @@
 using URF.Common;
 using URF.Common.Entities;
 using URF.Common.GameEvents;
+using URF.Server.EntityFactory;
 using URF.Server.GameState;
 using URF.Server.RandomGeneration;
 
@@ -9,7 +10,7 @@ namespace URF.Server.RulesSystems {
 
     private IRandomGenerator _random;
 
-    private IEntityFactory _entityFactory;
+    private IEntityFactory<Entity> _entityFactory;
 
     public override void ApplyPlugins(PluginBundle pluginBundle) {
       _random = pluginBundle.Random;
@@ -19,7 +20,7 @@ namespace URF.Server.RulesSystems {
     [ActionHandler(GameEventType.DebugCommand)]
     public void HandleDebugAction(IGameState gs, IActionEventArgs cm) {
       DebugActionEventArgs ev = (DebugActionEventArgs)cm;
-      switch(ev.Method) {
+      switch (ev.Method) {
         case DebugActionEventArgs.DebugMethod.SpawnCrab:
           IEntity crab = _entityFactory.Get("crab");
           Position position = (_random.GetInt(1, gs.MapWidth - 2),
