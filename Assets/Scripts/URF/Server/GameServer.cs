@@ -1,20 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using UnityEngine;
-using URF.Common.Entities;
-using URF.Common.GameEvents;
-using URF.Common.Logging;
-using URF.Common.Persistence;
-using URF.Server.FieldOfView;
-using URF.Server.GameState;
-using URF.Server.Pathfinding;
-using URF.Server.RandomGeneration;
-using URF.Server.RulesSystems;
-using EventHandler = URF.Server.RulesSystems.EventHandler;
-
 namespace URF.Server {
+  using System;
+  using System.Collections.Generic;
+  using System.Linq;
+  using System.Reflection;
+  using UnityEngine;
+  using URF.Common.GameEvents;
+  using URF.Common.Logging;
+  using URF.Common.Persistence;
+  using URF.Server.FieldOfView;
+  using URF.Server.GameState;
+  using URF.Server.Pathfinding;
+  using URF.Server.RandomGeneration;
+  using URF.Server.RulesSystems;
+  using EventHandler = RulesSystems.EventHandler;
+
   public class GameServer : BaseGameEventChannel {
 
     [SerializeField] private int mapWidth = 40;
@@ -23,76 +22,76 @@ namespace URF.Server {
 
     [SerializeField] private PersistentStorage persistentStorage;
 
-    private IGameState _gameState;
+    private IGameState gameState;
 
-    private readonly Dictionary<GameEventType, List<EventHandler>> _eventHandlers = new();
+    private readonly Dictionary<GameEventType, List<EventHandler>> eventHandlers = new();
 
-    private readonly Dictionary<GameEventType, List<ActionHandler>> _actionHandlers = new();
+    private readonly Dictionary<GameEventType, List<ActionHandler>> actionHandlers = new();
 
-    private bool _isFieldOfViewDirty;
-
-    private bool _inGameUpdateLoop;
-
-    private List<IEntity> _killList;
-
-    private PluginBundle _pluginBundle;
+    private PluginBundle pluginBundle;
 
     private void Start() {
-      _gameState = new GameState.GameState(mapWidth, mapHeight);
-      foreach(GameEventType value in Enum.GetValues(typeof(GameEventType))) {
-        _eventHandlers[value] = new List<EventHandler>();
-        _actionHandlers[value] = new List<ActionHandler>();
+      this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
+      foreach (GameEventType value in Enum.GetValues(typeof(GameEventType))) {
+        this.eventHandlers[value] = new List<EventHandler>();
+        this.actionHandlers[value] = new List<ActionHandler>();
       }
 
-      _pluginBundle = new PluginBundle(new UnityRandom(), new RaycastingFov(),
-        new UnityDebugLogging(), new DjikstraPathfinding(), new EntityFactory(), persistentStorage);
+      this.pluginBundle = new PluginBundle(
+        new UnityRandom(),
+        new RaycastingFov(),
+        new UnityDebugLogging(),
+        new DjikstraPathfinding(),
+        new EntityFactory(),
+        this.persistentStorage
+      );
 
-      RegisterSystem(new GameStartSystem());
-      RegisterSystem(new DebugSystem());
-      RegisterSystem(new EntityInfoSystem());
-      RegisterSystem(new MovementSystem());
-      RegisterSystem(new CombatSystem());
-      RegisterSystem(new IntelligenceSystem());
-      RegisterSystem(new FieldOfViewSystem());
-      RegisterSystem(new SerializationSystem());
+      this.RegisterSystem(new GameStartSystem());
+      this.RegisterSystem(new DebugSystem());
+      this.RegisterSystem(new EntityInfoSystem());
+      this.RegisterSystem(new MovementSystem());
+      this.RegisterSystem(new CombatSystem());
+      this.RegisterSystem(new IntelligenceSystem());
+      this.RegisterSystem(new FieldOfViewSystem());
+      this.RegisterSystem(new SerializationSystem());
     }
 
-    private void StartGame() {
-      _pluginBundle.Random.Rotate();
-    }
+    private void StartGame() => this.pluginBundle.Random.Rotate();
 
     protected override void HandleAction(object sender, IActionEventArgs ev) {
-      switch(ev.EventType) {
+      switch (ev.EventType) {
         case GameEventType.Configure:
-          _gameState = new GameState.GameState(mapWidth, mapHeight);
-          StartGame();
+          this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
+          this.StartGame();
           break;
         case GameEventType.Load:
-          _gameState = new GameState.GameState(mapWidth, mapHeight);
+          this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
+          break;
+        default:
           break;
       }
 
-      foreach(ActionHandler actionHandler in _actionHandlers[ev.EventType]) {
-        actionHandler(_gameState, ev);
+      foreach (ActionHandler actionHandler in this.actionHandlers[ev.EventType]) {
+        actionHandler(this.gameState, ev);
       }
     }
 
     private void HandleEvent(object sender, IGameEventArgs e) {
-      foreach(EventHandler eventHandler in _eventHandlers[e.EventType]) {
-        eventHandler(_gameState, e);
+      foreach (EventHandler eventHandler in this.eventHandlers[e.EventType]) {
+        eventHandler(this.gameState, e);
       }
       // Forward to outside listeners
-      OnGameEvent(e);
+      this.OnGameEvent(e);
     }
 
     private void RegisterSystem(IRulesSystem system) {
       // Gather up listener methods
-      RegisterRulesSystemListeners(system);
+      this.RegisterRulesSystemListeners(system);
       // grant references to the plugins
-      system.ApplyPlugins(_pluginBundle);
-      _pluginBundle.EntityFactory.UpdateEntitySpec(system.Components);
-      system.GameEvent += HandleEvent;
-      system.GameAction += HandleAction;
+      system.ApplyPlugins(this.pluginBundle);
+      this.pluginBundle.EntityFactory.UpdateEntitySpec(system.Components);
+      system.GameEvent += this.HandleEvent;
+      system.GameAction += this.HandleAction;
     }
 
     private void RegisterRulesSystemListeners(IRulesSystem system) {
@@ -102,26 +101,24 @@ namespace URF.Server {
       IEnumerable<MethodInfo> eventHandlerMethods = system.GetType().GetMethods().Where(x =>
         Attribute.GetCustomAttributes(x, typeof(EventHandlerAttribute)).Length > 0);
 
-      foreach(MethodInfo method in eventHandlerMethods) {
+      foreach (MethodInfo method in eventHandlerMethods) {
         object[] eventHandlers = method.GetCustomAttributes(typeof(EventHandlerAttribute), false);
-        foreach(object attribute in eventHandlers) {
-          EventHandlerAttribute eha = (EventHandlerAttribute)attribute;
-          _eventHandlers[eha.EventType].Add((gs, ev) => {
-            method.Invoke(system, new object[] { gs, ev });
-          });
+        foreach (object attribute in eventHandlers) {
+          var eha = (EventHandlerAttribute)attribute;
+          this.eventHandlers[eha.EventType].Add(
+            (gs, ev) => method.Invoke(system, new object[] { gs, ev }));
         }
       }
 
       IEnumerable<MethodInfo> actionHandlerMethods = system.GetType().GetMethods().Where(x =>
         Attribute.GetCustomAttributes(x, typeof(ActionHandlerAttribute)).Length > 0);
 
-      foreach(MethodInfo method in actionHandlerMethods) {
+      foreach (MethodInfo method in actionHandlerMethods) {
         object[] actionHandlers = method.GetCustomAttributes(typeof(ActionHandlerAttribute), false);
-        foreach(object attribute in actionHandlers) {
-          ActionHandlerAttribute eha = (ActionHandlerAttribute)attribute;
-          _actionHandlers[eha.EventType].Add((gs, ev) => {
-            method.Invoke(system, new object[] { gs, ev });
-          });
+        foreach (object attribute in actionHandlers) {
+          var eha = (ActionHandlerAttribute)attribute;
+          this.actionHandlers[eha.EventType].Add(
+            (gs, ev) => method.Invoke(system, new object[] { gs, ev }));
         }
       }
     }
