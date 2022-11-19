@@ -7,7 +7,7 @@ URF is a flexible framework for building turn-based, tile-based games in Unity.
 
 ## Who URF is for
 
-URF is currently aimed at two broad groups of developers:
+URF is currently aimed at three broad groups of developers:
 
 - Experienced roguelike developers who are looking to move to Unity
 - C#/Unity developers looking to build a roguelike without doing _all_ of the
