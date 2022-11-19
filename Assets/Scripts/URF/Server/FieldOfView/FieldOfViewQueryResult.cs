@@ -1,18 +1,14 @@
-using System.Collections.Generic;
-using URF.Common;
-
 namespace URF.Server.FieldOfView {
-  public class FieldOfViewQueryResult : IFieldOfViewQueryResult {
+  using System.Collections.Generic;
+  using URF.Common;
 
-    private readonly Dictionary<Position, bool> _results;
+  public sealed class FieldOfViewQueryResult : IFieldOfViewQueryResult {
 
-    public FieldOfViewQueryResult(in Dictionary<Position, bool> results) {
-      _results = results;
-    }
+    private readonly Dictionary<Position, bool> results;
 
-    public bool IsVisible(Position p) {
-      return _results.GetValueOrDefault(p);
-    }
+    public FieldOfViewQueryResult(in Dictionary<Position, bool> results) => this.results = results;
+
+    public bool IsVisible(Position p) => this.results.GetValueOrDefault(p);
 
   }
 }
