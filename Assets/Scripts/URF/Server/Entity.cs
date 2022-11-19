@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using URF.Common.Entities;
-using URF.Common.Persistence;
-using URF.Server.EntityFactory;
-using URF.Server.RulesSystems;
-
 namespace URF.Server {
+  using System.Collections.Generic;
+  using System.Linq;
+  using URF.Common.Entities;
+  using URF.Common.Persistence;
+  using URF.Server.RulesSystems;
+
   /// <summary>
   /// Backing implementation for the IEntity. Only EntityFactory should have access to this.
   /// </summary>
@@ -23,45 +22,41 @@ namespace URF.Server {
       get; set;
     }
 
-    private readonly List<BaseComponent> _components = new();
+    private readonly List<BaseComponent> components = new();
 
     public T GetComponent<T>() where T : BaseComponent {
-      return (T)_components.FirstOrDefault(c => c is T);
+      return (T)this.components.FirstOrDefault(c => c is T);
     }
 
     public void AddComponent(BaseComponent component) {
-      _components.Add(component);
+      this.components.Add(component);
     }
 
     public void Save(GameDataWriter writer) {
-      writer.Write(BlocksSight);
-      writer.Write(IsVisible);
-      writer.Write(_components.Count);
-      foreach (BaseComponent component in _components) {
+      writer.Write(this.BlocksSight);
+      writer.Write(this.IsVisible);
+      writer.Write(this.components.Count);
+      foreach (BaseComponent component in this.components) {
         component.Save(writer);
       }
     }
 
     public void Load(GameDataReader reader) {
-      BlocksSight = reader.ReadBool();
-      IsVisible = reader.ReadBool();
+      this.BlocksSight = reader.ReadBool();
+      this.IsVisible = reader.ReadBool();
       int componentCount = reader.ReadInt();
       for (int i = 0; i < componentCount; i++) {
-        _components[i].Load(reader);
+        this.components[i].Load(reader);
       }
     }
 
-    public void Recycle(IEntityFactory<Entity> entityFactory) {
-      _components.Clear();
-    }
-
     public override string ToString() {
-      Movement movement = GetComponent<Movement>();
-      EntityInfo entityInfo = GetComponent<EntityInfo>();
+      Movement movement = this.GetComponent<Movement>();
+      EntityInfo entityInfo = this.GetComponent<EntityInfo>();
 
       return movement == null
-        ? $"{entityInfo.Name}::{ID}"
-        : $"{entityInfo.Name}::{ID}::{movement.EntityPosition})";
+        ? $"{entityInfo.Name}::{this.ID}"
+        : $"{entityInfo.Name}::{this.ID}::{movement.EntityPosition})";
     }
 
   }
