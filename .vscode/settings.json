@@ -52,6 +52,7 @@
         "temp/":true,
         "Temp/":true
     },
+    "editor.rulers": [100],
     "cSpell.words": [
         "attackable",
         "Bresenham",
