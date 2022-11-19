@@ -5,10 +5,12 @@ namespace Tests.Server {
   using URF.Server.FieldOfView;
 
   public class FieldOfViewQueryResultTests {
+    private readonly Position cell = (5, 8);
+
     [Test]
     public void FieldOfViewQueryResult_Should_ShowVisiblePositionIsVisible() {
       var results = new Dictionary<Position, bool> {
-        [(5, 8)] = true
+        [this.cell] = true
       };
 
       var query = new FieldOfViewQueryResult(results);
