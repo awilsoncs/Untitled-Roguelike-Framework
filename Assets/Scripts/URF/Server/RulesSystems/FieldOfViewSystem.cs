@@ -13,8 +13,9 @@ namespace URF.Server.RulesSystems {
     private IEntity mainCharacter;
 
     public override void ApplyPlugins(PluginBundle pluginBundle) {
-      Debug.Assert(pluginBundle != null);
-      Debug.Assert(pluginBundle.FieldOfView != null);
+      if (pluginBundle == null) {
+        return;
+      }
       this.fov = pluginBundle.FieldOfView;
     }
 

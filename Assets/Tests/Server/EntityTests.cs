@@ -13,7 +13,7 @@ namespace Tests.Server {
 
     [Test]
     public void Entity_Should_HaveGivenId() {
-      int givenId = 57;
+      const int givenId = 57;
       this.testEntity.ID = givenId;
       Assert.That(this.testEntity.ID, Is.EqualTo(givenId));
     }

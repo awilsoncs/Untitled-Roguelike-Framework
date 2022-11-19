@@ -1,5 +1,6 @@
 namespace URF.Server {
   using System.Collections.Generic;
+  using System.Diagnostics.CodeAnalysis;
   using System.Linq;
   using URF.Common.Entities;
   using URF.Common.Persistence;
@@ -33,6 +34,9 @@ namespace URF.Server {
     }
 
     public void Save(GameDataWriter writer) {
+      if (writer == null) {
+        return;
+      }
       writer.Write(this.BlocksSight);
       writer.Write(this.IsVisible);
       writer.Write(this.components.Count);
@@ -42,6 +46,9 @@ namespace URF.Server {
     }
 
     public void Load(GameDataReader reader) {
+      if (reader == null) {
+        return;
+      }
       this.BlocksSight = reader.ReadBool();
       this.IsVisible = reader.ReadBool();
       int componentCount = reader.ReadInt();
