@@ -41,8 +41,12 @@ namespace Tests.Server {
 
     // mock component
     private sealed class ComponentA : BaseComponent {
-      public IGameDataReader SavedReader;
-      public IGameDataWriter SavedWriter;
+      public IGameDataReader SavedReader {
+        get; private set;
+      }
+      public IGameDataWriter SavedWriter {
+        get; private set;
+      }
 
       public override void Load(IGameDataReader reader) {
         this.SavedReader = reader;
