@@ -144,7 +144,7 @@ namespace Tests.Server {
       var mockReader = new MockGameDataReader();
 
       this.testEntity.Load(mockReader);
-      Assert.That(component.SavedWriter, Is.EqualTo(mockReader));
+      Assert.That(component.SavedReader, Is.EqualTo(mockReader));
     }
 
     [Test]
