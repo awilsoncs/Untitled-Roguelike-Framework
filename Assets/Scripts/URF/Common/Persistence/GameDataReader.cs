@@ -2,9 +2,12 @@ using System.IO;
 using UnityEngine;
 
 namespace URF.Common.Persistence {
-  public class GameDataReader {
 
-    public int Version { get; }
+  public class GameDataReader : IGameDataReader {
+
+    public int Version {
+      get;
+    }
 
     private readonly BinaryReader _reader;
 

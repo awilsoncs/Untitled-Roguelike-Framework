@@ -36,12 +36,12 @@ namespace URF.Server.RulesSystems {
 
     public Position EntityPosition { get; set; }
 
-    public override void Load(GameDataReader reader) {
+    public override void Load(IGameDataReader reader) {
       BlocksMove = reader.ReadBool();
       EntityPosition = (reader.ReadInt(), reader.ReadInt());
     }
 
-    public override void Save(GameDataWriter writer) {
+    public override void Save(IGameDataWriter writer) {
       writer.Write(BlocksMove);
       writer.Write(EntityPosition.X);
       writer.Write(EntityPosition.Y);

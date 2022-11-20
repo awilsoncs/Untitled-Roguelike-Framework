@@ -2,7 +2,8 @@ using System.IO;
 using UnityEngine;
 
 namespace URF.Common.Persistence {
-  public class GameDataWriter {
+
+  public class GameDataWriter : IGameDataWriter {
 
     private readonly BinaryWriter _writer;
 

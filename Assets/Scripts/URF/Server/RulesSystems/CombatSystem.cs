@@ -52,14 +52,14 @@ namespace URF.Server.RulesSystems {
 
     public int Damage { get; set; }
 
-    public override void Load(GameDataReader reader) {
+    public override void Load(IGameDataReader reader) {
       CanFight = reader.ReadBool();
       MaxHealth = reader.ReadInt();
       CurrentHealth = reader.ReadInt();
       Damage = reader.ReadInt();
     }
 
-    public override void Save(GameDataWriter writer) {
+    public override void Save(IGameDataWriter writer) {
       writer.Write(CanFight);
       writer.Write(MaxHealth);
       writer.Write(CurrentHealth);

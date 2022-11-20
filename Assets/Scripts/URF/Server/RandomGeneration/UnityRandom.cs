@@ -21,11 +21,11 @@ namespace URF.Server.RandomGeneration {
       Random.InitState(seed);
     }
 
-    public void Save(GameDataWriter writer) {
+    public void Save(IGameDataWriter writer) {
       writer.Write(JsonUtility.ToJson(Random.state));
     }
 
-    public void Load(GameDataReader reader) {
+    public void Load(IGameDataReader reader) {
       Random.state = JsonUtility.FromJson<Random.State>(reader.ReadString());
     }
 

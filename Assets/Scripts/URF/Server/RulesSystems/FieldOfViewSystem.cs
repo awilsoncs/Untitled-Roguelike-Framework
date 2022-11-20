@@ -1,51 +1,56 @@
-using URF.Common;
-using URF.Common.Entities;
-using URF.Common.GameEvents;
-using URF.Server.FieldOfView;
-using URF.Server.GameState;
-
 namespace URF.Server.RulesSystems {
+  using URF.Common;
+  using URF.Common.Entities;
+  using URF.Common.GameEvents;
+  using URF.Server.FieldOfView;
+  using URF.Server.GameState;
+
   public class FieldOfViewSystem : BaseRulesSystem {
 
-    private IFieldOfView _fov;
+    private IFieldOfView fov;
 
-    private IEntity _mainCharacter;
+    private IEntity mainCharacter;
 
     public override void ApplyPlugins(PluginBundle pluginBundle) {
-      _fov = pluginBundle.FieldOfView;
+      if (pluginBundle == null) {
+        return;
+      }
+      this.fov = pluginBundle.FieldOfView;
     }
 
     [EventHandler(GameEventType.MainCharacterChanged)]
-    public void HandleMainCharacterChanged(IGameState gs, IGameEventArgs ev) {
+    public void HandleMainCharacterChanged(IGameState _, IGameEventArgs ev) {
       // Track the main character so we know where to update the FOV from
-      MainCharacterChangedEventArgs mcc = (MainCharacterChangedEventArgs)ev;
-      _mainCharacter = mcc.Entity;
+      var mcc = (MainCharacterChangedEventArgs)ev;
+      this.mainCharacter = mcc.Entity;
     }
 
     [EventHandler(GameEventType.Start)]
-    public void HandleGameStart(IGameState gs, IGameEventArgs cm) {
-      RecalculateFOV(gs);
+    public void HandleGameStart(IGameState gs, IGameEventArgs _) {
+      this.RecalculateFov(gs);
     }
 
     [ActionHandler(GameEventType.MoveCommand)]
-    public void HandleDebugAction(IGameState gs, IActionEventArgs cm) {
-      MoveActionEventArgs ev = (MoveActionEventArgs)cm;
+    public void HandleMoveAction(IGameState gs, IActionEventArgs cm) {
+      var ev = (MoveActionEventArgs)cm;
 
       // If it's not the MC, we don't care.
-      if(ev.EntityId != _mainCharacter.ID) { return; }
-      RecalculateFOV(gs);
+      if (ev.EntityId != this.mainCharacter.ID) {
+        return;
+      }
+      this.RecalculateFov(gs);
     }
 
-    private void RecalculateFOV(IGameState gs) {
-      Position position = _mainCharacter.GetComponent<Movement>().EntityPosition;
-      IFieldOfViewQueryResult result = _fov.CalculateFOV(gs, position);
-      for(int x = 0; x < gs.MapWidth; x++) {
-        for(int y = 0; y < gs.MapHeight; y++) {
+    private void RecalculateFov(IGameState gs) {
+      Position position = this.mainCharacter.GetComponent<Movement>().EntityPosition;
+      IFieldOfViewQueryResult result = this.fov.CalculateFOV(gs, position);
+      for (int x = 0; x < gs.MapWidth; x++) {
+        for (int y = 0; y < gs.MapHeight; y++) {
           bool isVisible = result.IsVisible((x, y));
           Cell cell = gs.GetCell((x, y));
-          foreach(IEntity entity in cell.Contents) {
+          foreach (IEntity entity in cell.Contents) {
             entity.IsVisible = isVisible;
-            OnGameEvent(new EntityVisibilityChangedEventArgs(entity, isVisible));
+            this.OnGameEvent(new EntityVisibilityChangedEventArgs(entity, isVisible));
           }
         }
       }

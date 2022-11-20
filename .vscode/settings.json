@@ -52,6 +52,7 @@
         "temp/":true,
         "Temp/":true
     },
+    "editor.rulers": [100],
     "cSpell.words": [
         "attackable",
         "Bresenham",
@@ -68,6 +69,7 @@
         "Pluggability",
         "pluggable",
         "Raycasting",
+        "Repr",
         "Roadmap",
         "Roguelike",
         "roguelikes",

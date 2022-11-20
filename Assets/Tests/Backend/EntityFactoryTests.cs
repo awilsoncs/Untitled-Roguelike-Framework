@@ -11,9 +11,8 @@ namespace Tests.Server {
   public class EntityFactoryTests {
 
     private EntityFactory<Entity> entityFactory;
+
     private static readonly List<BaseComponent> Components = new();
-
-
 
     [SetUp]
     public void Setup() {
@@ -103,12 +102,21 @@ namespace Tests.Server {
         set => throw new NotSupportedException();
       }
 
-      public void AddComponent(BaseComponent component) => Components.Add(component);
+      public void AddComponent(BaseComponent component) {
+        Components.Add(component);
+      }
 
-      public TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent
-      => throw new NotImplementedException();
-      public void Load(GameDataReader reader) => throw new NotSupportedException();
-      public void Save(GameDataWriter writer) => throw new NotSupportedException();
+      public TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent {
+        throw new NotSupportedException();
+      }
+
+      public void Load(IGameDataReader _) {
+        // no op
+      }
+
+      public void Save(IGameDataWriter _) {
+        // no op
+      }
     }
 
     [Test]

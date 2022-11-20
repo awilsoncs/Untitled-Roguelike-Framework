@@ -24,13 +24,13 @@ namespace URF.Server.RulesSystems {
 
     public string Description { get; set; }
 
-    public override void Load(GameDataReader reader) {
+    public override void Load(IGameDataReader reader) {
       Name = reader.ReadString();
       Appearance = reader.ReadString();
       Description = reader.ReadString();
     }
 
-    public override void Save(GameDataWriter writer) {
+    public override void Save(IGameDataWriter writer) {
       writer.Write(Name);
       writer.Write(Appearance);
       writer.Write(Description);
