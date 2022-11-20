@@ -41,24 +41,15 @@ namespace Tests.Server {
 
     // mock component
     private sealed class ComponentA : BaseComponent {
-      public bool WasAskedToSave {
-        get; set;
-      }
-      public bool WasAskedToLoad {
-        get; set;
+      public IGameDataReader SavedReader;
+      public IGameDataWriter SavedWriter;
+
+      public override void Load(IGameDataReader reader) {
+        this.SavedReader = reader;
       }
 
-      public ComponentA() {
-        this.WasAskedToLoad = false;
-        this.WasAskedToSave = false;
-      }
-
-      public override void Load(IGameDataReader _) {
-        this.WasAskedToLoad = true;
-      }
-
-      public override void Save(IGameDataWriter _) {
-        this.WasAskedToSave = true;
+      public override void Save(IGameDataWriter writer) {
+        this.SavedWriter = writer;
       }
 
       public override string EntityString => "testString";
@@ -138,8 +129,10 @@ namespace Tests.Server {
       var component = new ComponentA();
 
       this.testEntity.AddComponent(component);
-      this.testEntity.Save(new MockGameDataWriter());
-      Assert.That(component.WasAskedToSave);
+      var mockWriter = new MockGameDataWriter();
+
+      this.testEntity.Save(mockWriter);
+      Assert.That(component.SavedWriter, Is.EqualTo(mockWriter));
     }
 
 
@@ -148,8 +141,10 @@ namespace Tests.Server {
       var component = new ComponentA();
 
       this.testEntity.AddComponent(component);
-      this.testEntity.Load(new MockGameDataReader());
-      Assert.That(component.WasAskedToLoad);
+      var mockReader = new MockGameDataReader();
+
+      this.testEntity.Load(mockReader);
+      Assert.That(component.SavedWriter, Is.EqualTo(mockReader));
     }
 
     [Test]

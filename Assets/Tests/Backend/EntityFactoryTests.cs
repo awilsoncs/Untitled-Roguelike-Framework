@@ -111,11 +111,11 @@ namespace Tests.Server {
       }
 
       public void Load(IGameDataReader _) {
-        throw new NotSupportedException();
+        // no op
       }
 
       public void Save(IGameDataWriter _) {
-        throw new NotSupportedException();
+        // no op
       }
     }
 
