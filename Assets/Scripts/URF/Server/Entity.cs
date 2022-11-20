@@ -1,6 +1,5 @@
 namespace URF.Server {
   using System.Collections.Generic;
-  using System.Diagnostics.CodeAnalysis;
   using System.Linq;
   using URF.Common.Entities;
   using URF.Common.Persistence;

@@ -1,5 +1,4 @@
 namespace URF.Server.RulesSystems {
-  using System.Diagnostics;
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
