@@ -135,7 +135,6 @@ namespace Tests.Server {
       Assert.That(component.SavedWriter, Is.EqualTo(mockWriter));
     }
 
-
     [Test]
     public void Entity_Should_AskComponentsToLoad() {
       var component = new ComponentA();
