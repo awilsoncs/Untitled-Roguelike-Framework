@@ -1,9 +1,9 @@
 namespace URF.Server {
   using System.Collections.Generic;
   using System.Linq;
+  using System.Text;
   using URF.Common.Entities;
   using URF.Common.Persistence;
-  using URF.Server.RulesSystems;
 
   /// <summary>
   /// Backing implementation for the IEntity. Only EntityFactory should have access to this.
@@ -32,37 +32,39 @@ namespace URF.Server {
       this.components.Add(component);
     }
 
-    public void Save(GameDataWriter writer) {
+    public void Save(IGameDataWriter writer) {
       if (writer == null) {
         return;
       }
       writer.Write(this.BlocksSight);
       writer.Write(this.IsVisible);
-      writer.Write(this.components.Count);
       foreach (BaseComponent component in this.components) {
         component.Save(writer);
       }
     }
 
-    public void Load(GameDataReader reader) {
+    public void Load(IGameDataReader reader) {
       if (reader == null) {
         return;
       }
       this.BlocksSight = reader.ReadBool();
       this.IsVisible = reader.ReadBool();
-      int componentCount = reader.ReadInt();
-      for (int i = 0; i < componentCount; i++) {
-        this.components[i].Load(reader);
+      foreach (BaseComponent component in this.components) {
+        component.Load(reader);
       }
     }
 
     public override string ToString() {
-      Movement movement = this.GetComponent<Movement>();
-      EntityInfo entityInfo = this.GetComponent<EntityInfo>();
+      var stringBuilder = new StringBuilder();
+      _ = stringBuilder.Append(this.ID);
+      foreach (BaseComponent component in this.components) {
+        string contribution = component.EntityString;
+        if (!contribution.Equals("")) {
+          _ = stringBuilder.Append($"::{contribution}");
+        }
+      }
 
-      return movement == null
-        ? $"{entityInfo.Name}::{this.ID}"
-        : $"{entityInfo.Name}::{this.ID}::{movement.EntityPosition})";
+      return stringBuilder.ToString();
     }
 
   }

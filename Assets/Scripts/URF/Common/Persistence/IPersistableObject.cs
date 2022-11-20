@@ -1,9 +1,9 @@
 namespace URF.Common.Persistence {
   public interface IPersistableObject {
 
-    void Save(GameDataWriter writer);
+    void Save(IGameDataWriter writer);
 
-    void Load(GameDataReader reader);
+    void Load(IGameDataReader reader);
 
   }
 }

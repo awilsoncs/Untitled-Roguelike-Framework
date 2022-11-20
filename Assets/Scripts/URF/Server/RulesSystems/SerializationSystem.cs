@@ -46,7 +46,7 @@ namespace URF.Server.RulesSystems {
       _persistentStorage.Load(this);
     }
 
-    public void Save(GameDataWriter writer) {
+    public void Save(IGameDataWriter writer) {
       _randomGenerator.Save(writer);
       ReadOnlyCollection<IEntity> entities = _gameState.GetEntities();
       writer.Write(entities.Count);
@@ -57,7 +57,7 @@ namespace URF.Server.RulesSystems {
       }
     }
 
-    public void Load(GameDataReader reader) {
+    public void Load(IGameDataReader reader) {
       _randomGenerator.Load(reader);
       Position mapSize = (_gameState.MapWidth, _gameState.MapHeight);
       OnGameEvent(new GameConfiguredEventArgs(mapSize));

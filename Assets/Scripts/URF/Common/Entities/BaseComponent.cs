@@ -3,11 +3,14 @@ namespace URF.Common.Entities {
 
   public abstract class BaseComponent : IPersistableObject {
 
-    public virtual void Load(GameDataReader reader) {
+    // The component's contribution to the entity's ToString value.
+    public virtual string EntityString => "";
+
+    public virtual void Load(IGameDataReader reader) {
       // the base component doesn't provide loading behavior
     }
 
-    public virtual void Save(GameDataWriter writer) {
+    public virtual void Save(IGameDataWriter writer) {
       // the base component doesn't provide loading behavior
     }
 

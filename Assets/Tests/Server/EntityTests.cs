@@ -1,6 +1,8 @@
 namespace Tests.Server {
   using NUnit.Framework;
+  using UnityEngine;
   using URF.Common.Entities;
+  using URF.Common.Persistence;
   using URF.Server;
 
   public class EntityTests {
@@ -37,8 +39,29 @@ namespace Tests.Server {
     }
 
 
+    // mock component
     private sealed class ComponentA : BaseComponent {
-      // stub test class
+      public bool WasAskedToSave {
+        get; set;
+      }
+      public bool WasAskedToLoad {
+        get; set;
+      }
+
+      public ComponentA() {
+        this.WasAskedToLoad = false;
+        this.WasAskedToSave = false;
+      }
+
+      public override void Load(IGameDataReader reader) {
+        this.WasAskedToLoad = true;
+      }
+
+      public override void Save(IGameDataWriter writer) {
+        this.WasAskedToSave = true;
+      }
+
+      public override string EntityString => "testString";
     }
 
 
@@ -64,6 +87,90 @@ namespace Tests.Server {
       Assert.That(foundComponent, Is.Null);
     }
 
+    private sealed class MockGameDataWriter : IGameDataWriter {
+      public void Write(float value) {
+        // no op
+      }
+
+      public void Write(bool value) {
+        // no op
+      }
+
+      public void Write(int value) {
+        // no op
+      }
+
+      public void Write(string value) {
+        // no op
+      }
+
+      public void Write(Vector3 value) {
+        // no op
+      }
+    }
+
+    private sealed class MockGameDataReader : IGameDataReader {
+      public int Version => 0;
+
+      public bool ReadBool() {
+        return true;
+      }
+
+      public float ReadFloat() {
+        return 0.0f;
+      }
+
+      public int ReadInt() {
+        return 1;
+      }
+
+      public string ReadString() {
+        return "test string";
+      }
+
+      public Vector3 ReadVector3() {
+        return Vector3.zero;
+      }
+    }
+
+    [Test]
+    public void Entity_Should_AskComponentsToSave() {
+      var component = new ComponentA();
+
+      this.testEntity.AddComponent(component);
+      this.testEntity.Save(new MockGameDataWriter());
+      Assert.That(component.WasAskedToSave);
+    }
+
+
+    [Test]
+    public void Entity_Should_AskComponentsToLoad() {
+      var component = new ComponentA();
+
+      this.testEntity.AddComponent(component);
+      this.testEntity.Load(new MockGameDataReader());
+      Assert.That(component.WasAskedToLoad);
+    }
+
+    [Test]
+    public void Entity_Should_QueryComponentsForToStringDetails() {
+      var component = new ComponentA();
+      this.testEntity.ID = 1;
+
+      this.testEntity.AddComponent(component);
+      string entityRepr = this.testEntity.ToString();
+      Assert.That(entityRepr, Is.EqualTo("1::testString"));
+    }
+
+    [Test]
+    public void Entity_Should_NotCrashWithNullWriter() {
+      this.testEntity.Save(null);
+    }
+
+    [Test]
+    public void Entity_Should_NotCrashWithNullReader() {
+      this.testEntity.Load(null);
+    }
 
   }
 }
