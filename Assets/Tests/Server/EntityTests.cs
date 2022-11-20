@@ -53,11 +53,11 @@ namespace Tests.Server {
         this.WasAskedToSave = false;
       }
 
-      public override void Load(IGameDataReader reader) {
+      public override void Load(IGameDataReader _) {
         this.WasAskedToLoad = true;
       }
 
-      public override void Save(IGameDataWriter writer) {
+      public override void Save(IGameDataWriter _) {
         this.WasAskedToSave = true;
       }
 

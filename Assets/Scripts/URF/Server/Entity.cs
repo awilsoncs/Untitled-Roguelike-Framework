@@ -59,7 +59,7 @@ namespace URF.Server {
       _ = stringBuilder.Append(this.ID);
       foreach (BaseComponent component in this.components) {
         string contribution = component.EntityString;
-        if (!contribution.Equals("")) {
+        if (!string.IsNullOrEmpty(contribution)) {
           _ = stringBuilder.Append($"::{contribution}");
         }
       }

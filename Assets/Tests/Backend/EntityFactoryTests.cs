@@ -107,14 +107,14 @@ namespace Tests.Server {
       }
 
       public TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent {
-        throw new NotImplementedException();
-      }
-
-      public void Load(IGameDataReader reader) {
         throw new NotSupportedException();
       }
 
-      public void Save(IGameDataWriter writer) {
+      public void Load(IGameDataReader _) {
+        throw new NotSupportedException();
+      }
+
+      public void Save(IGameDataWriter _) {
         throw new NotSupportedException();
       }
     }
