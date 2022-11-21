@@ -13,10 +13,12 @@ namespace URF.Server.GameState {
 
     bool IsTraversable(Position position);
 
+    bool IsTransparent(Position position);
+
     void MoveEntity(int id, Position position);
 
     ReadOnlyCollection<IEntity> GetEntities();
-    
+
     void CreateEntityAtPosition(IEntity entity, Position position);
 
     int MapWidth { get; }

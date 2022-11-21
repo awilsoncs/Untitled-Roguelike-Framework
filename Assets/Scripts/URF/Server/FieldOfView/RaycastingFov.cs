@@ -1,50 +1,58 @@
-using System.Collections.Generic;
-using URF.Common;
-using URF.Server.GameState;
-
 namespace URF.Server.FieldOfView {
+  using System.Collections.Generic;
+  using URF.Common;
+
   /// <summary>
-  /// Performs FOV calculation by raycasting to edge tiles.
+  /// Field of view implementation using the strategy of raycasting from a given point to the edge
+  /// of the map to mark visible cells.
   /// </summary>
   public class RaycastingFov : IFieldOfView {
 
+    // Marks results true or false based on game state position transparency.
     private static Algorithms.PlotFunction GetPlotter(
-      IGameState gameState,
+      bool[,] transparency,
       IDictionary<Position, bool> results
     ) {
+      if (transparency == null) {
+        return p => false;
+      }
       return p => {
         results[p] = true;
-        return gameState.GetCell(p).IsTransparent;
+        return transparency[p.X, p.Y];
       };
     }
 
-    public IFieldOfViewQueryResult CalculateFOV(IGameState gameState, Position pos) {
+    /// <inheritdoc />
+    public IFieldOfViewQueryResult CalculateFov(bool[,] transparency, Position pos) {
       var results = new Dictionary<Position, bool>();
-      Algorithms.PlotFunction pf = GetPlotter(gameState, results);
-      // for each point on the boundary top and bottom
-      for(int column = 0; column < gameState.MapWidth; column++) {
-        Algorithms.Line(pos, (column, gameState.MapHeight - 1), pf);
+      if (transparency == null) {
+        return new FieldOfViewQueryResult(results);
+      }
+
+      Algorithms.PlotFunction pf = GetPlotter(transparency, results);
+      int width = transparency.GetLength(0);
+      int height = transparency.GetLength(1);
+
+      for (int column = 0; column < width; column++) {
+        Algorithms.Line(pos, (column, height - 1), pf);
         Algorithms.Line(pos, (column, 0), pf);
       }
 
-      for(int row = 0; row < gameState.MapHeight; row++) {
+      for (int row = 1; row < height - 1; row++) {
         Algorithms.Line(pos, (0, row), pf);
-        Algorithms.Line(pos, (gameState.MapWidth - 1, row), pf);
+        Algorithms.Line(pos, (width - 1, row), pf);
       }
-      // stop when you find something that blocks sight
-      // update the query result
 
       return new FieldOfViewQueryResult(results);
     }
 
-    public bool IsVisible(IGameState gameState, Position start, Position end) {
+    /// <inheritdoc />
+    public bool IsVisible(bool[,] transparency, Position start, Position end) {
       var results = new Dictionary<Position, bool>();
-      Algorithms.PlotFunction pf = GetPlotter(gameState, results);
+      Algorithms.PlotFunction pf = GetPlotter(transparency, results);
       Algorithms.Line(start, end, pf);
-      return ExtensionMethods.GetValueOrDefault(results, end, false);
+      return results.GetValueOrDefault(end);
     }
-
-    // todo calculate line of sight
 
   }
 }

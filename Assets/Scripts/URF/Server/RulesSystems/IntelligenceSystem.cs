@@ -71,7 +71,13 @@ namespace URF.Server.RulesSystems {
 
       Movement entityMovement = entity.GetComponent<Movement>();
       Position entityPosition = entityMovement.EntityPosition;
-      if(!_fov.IsVisible(gameState, entityPosition, mainPosition)) {
+      bool[,] transparency = new bool[gameState.MapWidth, gameState.MapHeight];
+      for (int x = 0; x < gameState.MapWidth; x++) {
+        for (int y = 0; y < gameState.MapHeight; y++) {
+          transparency[x, y] = gameState.IsTransparent((x, y));
+        }
+      }
+      if(!_fov.IsVisible(transparency, entityPosition, mainPosition)) {
         // entity can't see the player, just dawdle.
         return;
       }
