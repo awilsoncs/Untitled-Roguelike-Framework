@@ -10,7 +10,7 @@ namespace Tests.Server {
     private void RunLosTestCase(bool[,] transparency, Position start, Position end, bool expected) {
       // the FOV system provides two ways of determining visibility- a batch FOV system and a single
       // point LOS system. The results should always be the same.
-      IFieldOfViewQueryResult fovResult = this.fov.CalculateFOV(transparency, start);
+      IFieldOfViewQueryResult fovResult = this.fov.CalculateFov(transparency, start);
       Assert.That(fovResult.IsVisible(end), Is.EqualTo(expected));
 
       bool losResult = this.fov.IsVisible(transparency, start, end);

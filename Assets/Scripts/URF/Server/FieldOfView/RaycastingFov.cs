@@ -13,6 +13,9 @@ namespace URF.Server.FieldOfView {
       bool[,] transparency,
       IDictionary<Position, bool> results
     ) {
+      if (transparency == null) {
+        return p => false;
+      }
       return p => {
         results[p] = true;
         return transparency[p.X, p.Y];
@@ -20,8 +23,12 @@ namespace URF.Server.FieldOfView {
     }
 
     /// <inheritdoc />
-    public IFieldOfViewQueryResult CalculateFOV(bool[,] transparency, Position pos) {
+    public IFieldOfViewQueryResult CalculateFov(bool[,] transparency, Position pos) {
       var results = new Dictionary<Position, bool>();
+      if (transparency == null) {
+        return new FieldOfViewQueryResult(results);
+      }
+
       Algorithms.PlotFunction pf = GetPlotter(transparency, results);
       int width = transparency.GetLength(0);
       int height = transparency.GetLength(1);

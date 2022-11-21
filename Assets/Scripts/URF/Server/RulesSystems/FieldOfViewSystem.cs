@@ -49,7 +49,7 @@ namespace URF.Server.RulesSystems {
           transparency[x, y] = gs.IsTransparent((x, y));
         }
       }
-      IFieldOfViewQueryResult result = this.fov.CalculateFOV(transparency, position);
+      IFieldOfViewQueryResult result = this.fov.CalculateFov(transparency, position);
       for (int x = 0; x < gs.MapWidth; x++) {
         for (int y = 0; y < gs.MapHeight; y++) {
           bool isVisible = result.IsVisible((x, y));

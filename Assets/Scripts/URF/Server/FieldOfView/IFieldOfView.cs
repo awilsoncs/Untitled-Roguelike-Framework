@@ -14,7 +14,7 @@ namespace URF.Server.FieldOfView {
     /// and false equals opaque.</param>
     /// <param name="position">the position to calculate field of view from</param>
     /// <returns></returns>
-    IFieldOfViewQueryResult CalculateFOV(bool[,] costs, Position position);
+    IFieldOfViewQueryResult CalculateFov(bool[,] costs, Position position);
 
     /// <summary>
     /// Calculate whether an end point is visible to a start point, i.e. check line of sight.
