@@ -11,7 +11,7 @@ namespace URF.Server.GameState {
     public int MapWidth { get; }
 
     public int MapHeight { get; }
-    
+
     private readonly Cell[][] _map;
 
     private readonly List<IEntity> _entities;
@@ -90,6 +90,10 @@ namespace URF.Server.GameState {
 
     public bool IsTraversable(Position position) {
       return GetCell(position).IsPassable;
+    }
+
+    public bool IsTransparent(Position position) {
+      return GetCell(position).IsTransparent;
     }
 
     public void CreateEntityAtPosition(IEntity entity, Position position) {
