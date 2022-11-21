@@ -47,9 +47,11 @@ namespace Tests.Server {
 
     [Test]
     public void RaycastingFov_ShouldNot_SeeThroughBlockingNeighbor() {
+      Position start = (0, 0);
+      Position end = (0, 2);
       this.RunLosTestCase(
         new bool[,] { { true, false, true } },
-        (0, 0), (0, 2),
+        start, end,
         false
       );
     }
