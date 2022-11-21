@@ -20,7 +20,7 @@ namespace Tests.Server {
     [Test]
     public void RaycastingFov_Should_SeeSameTile() {
       this.RunLosTestCase(
-        new bool[1, 1] { { true } },
+        new bool[,] { { true } },
         (0, 0), (0, 0),
         true
       );
@@ -29,7 +29,7 @@ namespace Tests.Server {
     [Test]
     public void RaycastingFov_Should_SeeNeighbor() {
       this.RunLosTestCase(
-        new bool[1, 2] { { true, true } },
+        new bool[,] { { true, true } },
         (0, 0), (0, 1),
         true
       );
@@ -38,7 +38,7 @@ namespace Tests.Server {
     [Test]
     public void RaycastingFov_Should_SeeBlockingNeighbor() {
       this.RunLosTestCase(
-        new bool[1, 2] { { true, false } },
+        new bool[,] { { true, false } },
         (0, 0), (0, 1),
         true
       );
@@ -48,7 +48,7 @@ namespace Tests.Server {
     [Test]
     public void RaycastingFov_ShouldNot_SeeThroughBlockingNeighbor() {
       this.RunLosTestCase(
-        new bool[1, 3] { { true, false, true } },
+        new bool[,] { { true, false, true } },
         (0, 0), (0, 2),
         false
       );
@@ -57,7 +57,7 @@ namespace Tests.Server {
     [Test]
     public void RayCastingFov_Should_SeeAroundSimpleCorner() {
       this.RunLosTestCase(
-        new bool[2, 2] {
+        new bool[,] {
           { true, false },
           { true, true }
         },
@@ -71,7 +71,7 @@ namespace Tests.Server {
       // debatable whether this is correct functionality, but it's how it works for now so I'll
       // keep it. -AW
       this.RunLosTestCase(
-        new bool[2, 2] {
+        new bool[,] {
           { true, false },
           { false, true }
         },
