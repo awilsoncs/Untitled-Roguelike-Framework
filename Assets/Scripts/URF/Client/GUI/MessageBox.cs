@@ -1,30 +1,72 @@
-using System.Collections.Generic;
-using System.Text;
-using TMPro;
-using UnityEngine;
-
 namespace URF.Client.GUI {
+  using System.Collections.Generic;
+  using System.Text;
+  using TMPro;
+  using UnityEngine;
+
+  /// <summary>
+  /// GUI Component that displays a fixed number of messages. This component renders messages top
+  /// down by oldest first.
+  /// </summary>
   public class MessageBox : MonoBehaviour {
 
-    private Queue<string> _messages;
+    [SerializeField]
+    private int messageLimit = 30;
 
-    private TMP_Text _messageText;
+    private Queue<string> messages;
 
-    public void Start() {
-      _messages = new Queue<string>(30);
-      _messageText = GetComponent<TMP_Text>();
+    private TMP_Text messageText;
+
+    public int MessageLimit {
+      get => this.messageLimit;
+      set {
+        if (value < 0) {
+          value = 0;
+        }
+        this.messageLimit = value;
+        this.PruneMessages();
+      }
     }
 
-    public void AddMessage(string message) {
-      while(_messages.Count >= 30) { _messages.Dequeue(); }
+    private void PruneMessages() {
+      if (this.messages.Count <= this.MessageLimit) {
+        return;
+      }
+      while (this.messages.Count > this.MessageLimit) {
+        _ = this.messages.Dequeue();
+      }
 
-      _messages.Enqueue(message);
-
-      _messageText.text = "";
       StringBuilder sb = new();
-      foreach(string messageToWrite in _messages) { sb.Append(messageToWrite + "\n"); }
-      _messageText.text = sb.ToString();
+      foreach (string messageToWrite in this.messages) {
+        _ = sb.Append(messageToWrite + "\n");
+      }
+      this.messageText.text = sb.ToString();
+
     }
 
+    public void Awake() {
+      this.messages = new Queue<string>(this.MessageLimit);
+      this.messageText = this.gameObject.GetComponent<TMP_Text>();
+      this.messageText.text = "";
+    }
+
+    /// <summary>
+    /// Add a message to the message box.
+    /// </summary>
+    /// <param name="message">the message to add</param>
+    public void AddMessage(string message) {
+      while (this.messages.Count >= this.MessageLimit) {
+        _ = this.messages.Dequeue();
+      }
+
+      this.messages.Enqueue(message);
+
+      this.messageText.text = "";
+      StringBuilder sb = new();
+      foreach (string messageToWrite in this.messages) {
+        _ = sb.Append(messageToWrite + "\n");
+      }
+      this.messageText.text = sb.ToString();
+    }
   }
 }
