@@ -8,10 +8,14 @@ namespace Tests.Backend {
     private Cell cell;
 
     [SetUp]
-    public void Setup() => this.cell = new Cell();
+    public void Setup() {
+      this.cell = new Cell();
+    }
 
     [Test]
-    public void CellsBeginEmpty() => Assert.That(this.cell.Contents, Is.Empty);
+    public void CellsBeginEmpty() {
+      Assert.That(this.cell.Contents, Is.Empty);
+    }
 
     [Test]
     public void CellsCanGainContents() {
@@ -54,7 +58,9 @@ namespace Tests.Backend {
     }
 
     [Test]
-    public void EmptyCellShouldBeTransparent() => Assert.That(this.cell.IsTransparent);
+    public void EmptyCellShouldBeTransparent() {
+      Assert.That(this.cell.IsTransparent);
+    }
 
     [Test]
     public void CellWithTransparentEntityShouldBeTransparent() {
@@ -80,7 +86,9 @@ namespace Tests.Backend {
     }
 
     [Test]
-    public void EmptyCellShouldByPassable() => Assert.That(this.cell.IsPassable);
+    public void EmptyCellShouldByPassable() {
+      Assert.That(this.cell.IsPassable);
+    }
 
     [Test]
     public void CellWithOnlyPassableEntityShouldBePassable() {

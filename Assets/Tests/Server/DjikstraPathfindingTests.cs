@@ -1,22 +1,22 @@
-using System.Collections.Generic;
-using NUnit.Framework;
-using URF.Common;
-using URF.Server.Pathfinding;
-
 namespace Tests.Common {
+  using System.Collections.Generic;
+  using NUnit.Framework;
+  using URF.Common;
+  using URF.Server.Pathfinding;
+
   public class DjikstraPathfindingTests {
 
-    private DjikstraPathfinding _pf;
+    private DjikstraPathfinding pf;
 
     [SetUp]
     public void Setup() {
-      _pf = new DjikstraPathfinding();
+      this.pf = new DjikstraPathfinding();
     }
 
     [Test]
     public void DjikstraPathfinderSolvesNullCase() {
       float[][] costs = { new[] { 0f, 0f }, new[] { 0f, 0f } };
-      List<Position> path = _pf.GetPath(costs, (0, 0), (0, 0));
+      List<Position> path = this.pf.GetPath(costs, (0, 0), (0, 0));
       Assert.That(path.Contains((0, 0)), "Path should include the start node.");
       Assert.That(path.Count, Is.EqualTo(1), "Path should only include the start node.");
     }
@@ -24,7 +24,7 @@ namespace Tests.Common {
     [Test]
     public void DjikstraPathfinderSolvesTrivialCase() {
       float[][] costs = { new float[] { 0.1f, 0.1f }, new float[] { 0.1f, 0.1f } };
-      List<Position> path = _pf.GetPath(costs, (0, 0), (1, 1));
+      List<Position> path = this.pf.GetPath(costs, (0, 0), (1, 1));
 
       Assert.That(path.Count, Is.EqualTo(3), "Path should be three steps.");
       Assert.That(path[0], Is.EqualTo(new Position(0, 0)), "Path should include the start.");
@@ -61,8 +61,8 @@ namespace Tests.Common {
         (0, 3),
         (0, 4)
       };
-      List<Position> actualPath = _pf.GetPath(costs, (4, 0), (0, 4));
-      for(int i = 0; i < expectedPath.Count; i++) {
+      List<Position> actualPath = this.pf.GetPath(costs, (4, 0), (0, 4));
+      for (int i = 0; i < expectedPath.Count; i++) {
         Assert.That((Position)expectedPath[i], Is.EqualTo(actualPath[i]),
           "Pathfinder should stay on the expected path.");
       }
