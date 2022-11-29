@@ -18,27 +18,21 @@ namespace URF.Server.RulesSystems {
       this.fov = pluginBundle.FieldOfView;
     }
 
-    [EventHandler(GameEventType.MainCharacterChanged)]
-    public void HandleMainCharacterChanged(IGameState _, IGameEventArgs ev) {
+    public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       // Track the main character so we know where to update the FOV from
-      var mcc = (MainCharacterChangedEventArgs)ev;
-      this.mainCharacter = mcc.Entity;
+      this.mainCharacter = ev.Entity;
     }
 
-    [EventHandler(GameEventType.Start)]
-    public void HandleGameStart(IGameState gs, IGameEventArgs _) {
-      this.RecalculateFov(gs);
+    public override void HandleGameStarted(GameStarted _) {
+      this.RecalculateFov(this.GameState);
     }
 
-    [ActionHandler(GameEventType.MoveCommand)]
-    public void HandleMoveAction(IGameState gs, IActionEventArgs cm) {
-      var ev = (MoveActionEventArgs)cm;
-
+    public override void HandleMoveAction(MoveAction ev) {
       // If it's not the MC, we don't care.
       if (ev.EntityId != this.mainCharacter.ID) {
         return;
       }
-      this.RecalculateFov(gs);
+      this.RecalculateFov(this.GameState);
     }
 
     private void RecalculateFov(IGameState gs) {
@@ -56,7 +50,7 @@ namespace URF.Server.RulesSystems {
           Cell cell = gs.GetCell((x, y));
           foreach (IEntity entity in cell.Contents) {
             entity.IsVisible = isVisible;
-            this.OnGameEvent(new EntityVisibilityChangedEventArgs(entity, isVisible));
+            this.OnGameEvent(new EntityVisibilityChanged(entity, isVisible));
           }
         }
       }

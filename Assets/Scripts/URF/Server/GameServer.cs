@@ -1,8 +1,6 @@
 namespace URF.Server {
-  using System;
   using System.Collections.Generic;
   using System.Linq;
-  using System.Reflection;
   using UnityEngine;
   using URF.Common.GameEvents;
   using URF.Common.Logging;
@@ -12,9 +10,8 @@ namespace URF.Server {
   using URF.Server.Pathfinding;
   using URF.Server.RandomGeneration;
   using URF.Server.RulesSystems;
-  using EventHandler = RulesSystems.EventHandler;
 
-  public class GameServer : BaseGameEventChannel {
+  public class GameServer : MonobehaviourBaseGameEventChannel {
 
     [SerializeField] private int mapWidth = 40;
 
@@ -24,18 +21,13 @@ namespace URF.Server {
 
     private IGameState gameState;
 
-    private readonly Dictionary<GameEventType, List<EventHandler>> eventHandlers = new();
-
-    private readonly Dictionary<GameEventType, List<ActionHandler>> actionHandlers = new();
+    private readonly List<IRulesSystem> rulesSystems = new();
 
     private PluginBundle pluginBundle;
 
+    private readonly Queue<IGameEvent> gameEvents = new();
+
     private void Start() {
-      this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
-      foreach (GameEventType value in Enum.GetValues(typeof(GameEventType))) {
-        this.eventHandlers[value] = new List<EventHandler>();
-        this.actionHandlers[value] = new List<ActionHandler>();
-      }
 
       this.pluginBundle = new PluginBundle(
         new UnityRandom(),
@@ -54,73 +46,49 @@ namespace URF.Server {
       this.RegisterSystem(new IntelligenceSystem());
       this.RegisterSystem(new FieldOfViewSystem());
       this.RegisterSystem(new SerializationSystem());
+
+      this.SetUpGame();
     }
 
-    private void StartGame() => this.pluginBundle.Random.Rotate();
-
-    protected override void HandleAction(object sender, IActionEventArgs ev) {
-      switch (ev.EventType) {
-        case GameEventType.Configure:
-          this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
-          this.StartGame();
-          break;
-        case GameEventType.Load:
-          this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
-          break;
-        default:
-          break;
-      }
-
-      foreach (ActionHandler actionHandler in this.actionHandlers[ev.EventType]) {
-        actionHandler(this.gameState, ev);
+    public override void HandleEvent(object _, IGameEvent e) {
+      this.gameEvents.Enqueue(e);
+      if (this.gameEvents.Count > 1) {
+      } else {
+        while (this.gameEvents.Any()) {
+          IGameEvent nextEvent = this.gameEvents.Dequeue();
+          base.HandleEvent(this, nextEvent);
+        }
       }
     }
 
-    private void HandleEvent(object sender, IGameEventArgs e) {
-      foreach (EventHandler eventHandler in this.eventHandlers[e.EventType]) {
-        eventHandler(this.gameState, e);
+    public override void HandleAll(IGameEvent ev) {
+      this.OnGameEvent(ev);
+    }
+
+    private void SetUpGame() {
+      this.gameState = new GameState.GameState(this.mapWidth, this.mapHeight);
+      foreach (IRulesSystem system in this.rulesSystems) {
+        system.GameState = this.gameState;
       }
-      // Forward to outside listeners
-      this.OnGameEvent(e);
+    }
+
+    public override void HandleConfigure(ConfigureAction configureEvent) {
+      this.SetUpGame();
+      this.pluginBundle.Random.Rotate();
+    }
+
+    public override void HandleLoad(LoadAction loadAction) {
+      this.SetUpGame();
     }
 
     private void RegisterSystem(IRulesSystem system) {
-      // Gather up listener methods
-      this.RegisterRulesSystemListeners(system);
       // grant references to the plugins
       system.ApplyPlugins(this.pluginBundle);
       this.pluginBundle.EntityFactory.UpdateEntitySpec(system.Components);
-      system.GameEvent += this.HandleEvent;
-      system.GameAction += this.HandleAction;
-    }
 
-    private void RegisterRulesSystemListeners(IRulesSystem system) {
-      // https://stackoverflow.com/questions/3467765/find-methods-that-have-custom-attribute-using-reflection
-      // Dig up methods in a rules system with EventHandler and ActionHandler attribute,
-      // then store those in the server's event handler registry.
-      IEnumerable<MethodInfo> eventHandlerMethods = system.GetType().GetMethods().Where(x =>
-        Attribute.GetCustomAttributes(x, typeof(EventHandlerAttribute)).Length > 0);
-
-      foreach (MethodInfo method in eventHandlerMethods) {
-        object[] eventHandlers = method.GetCustomAttributes(typeof(EventHandlerAttribute), false);
-        foreach (object attribute in eventHandlers) {
-          var eha = (EventHandlerAttribute)attribute;
-          this.eventHandlers[eha.EventType].Add(
-            (gs, ev) => method.Invoke(system, new object[] { gs, ev }));
-        }
-      }
-
-      IEnumerable<MethodInfo> actionHandlerMethods = system.GetType().GetMethods().Where(x =>
-        Attribute.GetCustomAttributes(x, typeof(ActionHandlerAttribute)).Length > 0);
-
-      foreach (MethodInfo method in actionHandlerMethods) {
-        object[] actionHandlers = method.GetCustomAttributes(typeof(ActionHandlerAttribute), false);
-        foreach (object attribute in actionHandlers) {
-          var eha = (ActionHandlerAttribute)attribute;
-          this.actionHandlers[eha.EventType].Add(
-            (gs, ev) => method.Invoke(system, new object[] { gs, ev }));
-        }
-      }
+      // want to queue incoming events rather than directly execute them
+      this.Connect(system);
+      this.rulesSystems.Add(system);
     }
 
   }

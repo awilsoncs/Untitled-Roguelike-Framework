@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using URF.Common.Entities;
-using URF.Common.Persistence;
-
 namespace URF.Server.RulesSystems {
+  using System;
+  using System.Collections.Generic;
+  using URF.Common.Entities;
+  using URF.Common.Persistence;
+
   /// <summary>
   /// Defines basic meta information about entities.
   /// </summary>
@@ -18,22 +18,28 @@ namespace URF.Server.RulesSystems {
 
   public class EntityInfo : BaseComponent {
 
-    public string Name { get; set; }
+    public string Name {
+      get; set;
+    }
 
-    public string Appearance { get; set; }
+    public string Appearance {
+      get; set;
+    }
 
-    public string Description { get; set; }
+    public string Description {
+      get; set;
+    }
 
     public override void Load(IGameDataReader reader) {
-      Name = reader.ReadString();
-      Appearance = reader.ReadString();
-      Description = reader.ReadString();
+      this.Name = reader.ReadString();
+      this.Appearance = reader.ReadString();
+      this.Description = reader.ReadString();
     }
 
     public override void Save(IGameDataWriter writer) {
-      writer.Write(Name);
-      writer.Write(Appearance);
-      writer.Write(Description);
+      writer.Write(this.Name);
+      writer.Write(this.Appearance);
+      writer.Write(this.Description);
     }
 
   }

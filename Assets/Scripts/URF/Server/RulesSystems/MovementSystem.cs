@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using URF.Common;
-using URF.Common.Entities;
-using URF.Common.GameEvents;
-using URF.Common.Persistence;
-using URF.Server.GameState;
-
 namespace URF.Server.RulesSystems {
+  using System;
+  using System.Collections.Generic;
+  using URF.Common;
+  using URF.Common.Entities;
+  using URF.Common.GameEvents;
+  using URF.Common.Persistence;
+
   public class MovementSystem : BaseRulesSystem {
 
     public override List<Type> Components =>
@@ -15,36 +14,38 @@ namespace URF.Server.RulesSystems {
         typeof(Movement)
       };
 
-    [ActionHandler(GameEventType.MoveCommand)]
-    public void HandleMoveCommand(IGameState gs, IActionEventArgs cm) {
-      MoveActionEventArgs mcm = (MoveActionEventArgs)cm;
-      int entityId = mcm.EntityId;
+    public override void HandleMoveAction(MoveAction ev) {
+      int entityId = ev.EntityId;
 
-      IEntity entity = gs.GetEntityById(entityId);
-      Position position = entity.GetComponent<Movement>().EntityPosition + mcm.Direction;
+      IEntity entity = this.GameState.GetEntityById(entityId);
+      Position position = entity.GetComponent<Movement>().EntityPosition + ev.Direction;
 
-      gs.MoveEntity(entityId, position);
-      OnGameEvent(new EntityMovedEventArgs(entity, position));
-      OnGameEvent(new TurnSpentEventArgs(entity));
+      this.GameState.MoveEntity(entityId, position);
+      this.OnGameEvent(new EntityMoved(entity, position));
+      this.OnGameEvent(new TurnSpent(entity));
     }
 
   }
 
   public class Movement : BaseComponent {
 
-    public bool BlocksMove { get; set; }
+    public bool BlocksMove {
+      get; set;
+    }
 
-    public Position EntityPosition { get; set; }
+    public Position EntityPosition {
+      get; set;
+    }
 
     public override void Load(IGameDataReader reader) {
-      BlocksMove = reader.ReadBool();
-      EntityPosition = (reader.ReadInt(), reader.ReadInt());
+      this.BlocksMove = reader.ReadBool();
+      this.EntityPosition = (reader.ReadInt(), reader.ReadInt());
     }
 
     public override void Save(IGameDataWriter writer) {
-      writer.Write(BlocksMove);
-      writer.Write(EntityPosition.X);
-      writer.Write(EntityPosition.Y);
+      writer.Write(this.BlocksMove);
+      writer.Write(this.EntityPosition.X);
+      writer.Write(this.EntityPosition.Y);
     }
 
   }

@@ -375,6 +375,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b63f8d0b332adc84ab14293d71e7942e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  messageLimit: 30
 --- !u!1 &368540832
 GameObject:
   m_ObjectHideFlags: 0
@@ -770,6 +771,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 374962d7d38badf4aa9c9c4f2ffb3470, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gui:
+    healthBar: {fileID: 902917744}
+    messageBox: {fileID: 153659311}
+  mainCamera: {fileID: 519420031}
+  gameEventChannel: {fileID: 528273205}
+  pawnFactory: {fileID: 11400000, guid: 238ac37a55e7faf47b514bc96b04b66d, type: 2}
   newGameKey: 110
   saveKey: 115
   loadKey: 108
@@ -779,13 +786,6 @@ MonoBehaviour:
   rightKey: 275
   spawnKey: 99
   mapKey: 109
-  gui:
-    healthBar: {fileID: 902917744}
-    messageBox: {fileID: 153659311}
-  mainCamera: {fileID: 519420031}
-  storage: {fileID: 1839148938}
-  gameEventChannel: {fileID: 528273205}
-  pawnFactory: {fileID: 11400000, guid: 238ac37a55e7faf47b514bc96b04b66d, type: 2}
 --- !u!4 &1768340208
 Transform:
   m_ObjectHideFlags: 0

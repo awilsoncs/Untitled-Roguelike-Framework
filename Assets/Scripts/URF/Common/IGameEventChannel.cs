@@ -1,13 +1,17 @@
-using System;
-using URF.Common.GameEvents;
-
 namespace URF.Common {
-  public interface IGameEventChannel {
+  using System;
+  using URF.Common.GameEvents;
+
+  public interface IGameEventChannel : IEventHandler {
 
     /// <summary>
     /// Message containing declarative game events.
     /// </summary>
-    public event EventHandler<IGameEventArgs> GameEvent;
+    event EventHandler<IGameEvent> GameEvent;
+
+    void Connect(IGameEventChannel eventChannel);
+
+    void HandleEvent(object sender, IGameEvent ev);
 
   }
 }

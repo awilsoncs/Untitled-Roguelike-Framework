@@ -1,5 +1,4 @@
 namespace URF.Client {
-  using System;
   using System.Linq;
   using System.Collections.Generic;
   using UnityEngine;
@@ -14,15 +13,12 @@ namespace URF.Client {
   /// GameClient client view
   /// </summary>
   [DisallowMultipleComponent]
-  public class GameClient : MonoBehaviour, IPlayerActionChannel {
-
-    public event EventHandler<IActionEventArgs> PlayerAction;
-
+  public class GameClient : MonobehaviourBaseGameEventChannel {
     [SerializeField] private GuiComponents gui;
 
     [SerializeField] private Camera mainCamera;
 
-    [SerializeField] private BaseGameEventChannel gameEventChannel;
+    [SerializeField] private MonobehaviourBaseGameEventChannel gameEventChannel;
 
     [SerializeField] private PawnFactory pawnFactory;
 
@@ -54,7 +50,7 @@ namespace URF.Client {
 
     private (int, int) mainCharacterPosition;
 
-    private readonly Queue<IGameEventArgs> gameEvents = new();
+    private readonly Queue<IGameEvent> gameEvents = new();
 
     // track attackable enemies so that we can attack instead of attempt to move
     private readonly Dictionary<int, (int, int)> entityPosition = new();
@@ -66,23 +62,25 @@ namespace URF.Client {
 
     // Unity message events appear unused to simple IDEs.
     private void Start() {
-      this.gameEventChannel.GameEvent += this.EnqueueGameEvent;
       this.gameEventChannel.Connect(this);
       this.BeginNewGame();
     }
 
     private void Update() {
       while (this.gameEvents.Count > 0) {
-        this.HandleGameEvent(this.gameEvents.Dequeue());
+        IGameEvent ev = this.gameEvents.Dequeue();
+        base.HandleEvent(this, ev);
       }
       this.HandleUserInput();
     }
 
-    private void EnqueueGameEvent(object sender, IGameEventArgs e) => this.gameEvents.Enqueue(e);
+    public override void HandleEvent(object _, IGameEvent ev) {
+      this.gameEvents.Enqueue(ev);
+    }
 
     private void BeginNewGame() {
       this.ResetEverything();
-      this.OnPlayerAction(new ConfigureActionArgs());
+      this.OnGameEvent(new ConfigureAction());
       if (this.gameEvents.Count <= 0) {
         Debug.LogError("Client received 0 events from server start.");
       }
@@ -117,54 +115,7 @@ namespace URF.Client {
       this.pawnsByID.Clear();
     }
 
-
-    private void HandleGameEvent(IGameEventArgs ev) {
-      switch (ev.EventType) {
-        case GameEventType.EntityMoved:
-          this.HandleEntityMoved((EntityMovedEventArgs)ev);
-          return;
-        case GameEventType.EntityCreated:
-          this.HandleEntityCreated((EntityCreatedEventArgs)ev);
-          return;
-        case GameEventType.EntityAttacked:
-          this.HandleEntityAttacked((EntityAttackedEventArgs)ev);
-          return;
-        case GameEventType.EntityKilled:
-          this.HandleEntityKilled((EntityKilledEventArgs)ev);
-          return;
-        case GameEventType.EntityVisibilityChanged:
-          this.HandleEntityVisibilityChanged((EntityVisibilityChangedEventArgs)ev);
-          return;
-        case GameEventType.GameError:
-          this.HandleGameErrorEvent((GameErroredEventArgs)ev);
-          return;
-        case GameEventType.MainCharacterChanged:
-          this.HandleMainCharacterChangedEvent((MainCharacterChangedEventArgs)ev);
-          return;
-        case GameEventType.Configure:
-          this.HandleGameConfiguredEvent((GameConfiguredEventArgs)ev);
-          return;
-        case GameEventType.AttackCommand:
-          break;
-        case GameEventType.MoveCommand:
-          break;
-        case GameEventType.DebugCommand:
-          break;
-        case GameEventType.Save:
-          break;
-        case GameEventType.Load:
-          break;
-        case GameEventType.SpentTurn:
-          break;
-        case GameEventType.Start:
-          break;
-        default:
-          Debug.Log($"Unhandled GameEventType {ev.EventType}");
-          return;
-      }
-    }
-
-    private void HandleEntityMoved(EntityMovedEventArgs ev) {
+    public override void HandleEntityMoved(EntityMoved ev) {
       Pawn pawn = this.pawnsByID[ev.Entity.ID];
       int x = ev.Position.X;
       int y = ev.Position.Y;
@@ -181,7 +132,7 @@ namespace URF.Client {
       }
     }
 
-    private void HandleEntityCreated(EntityCreatedEventArgs ev) {
+    public override void HandleEntityCreated(EntityCreated ev) {
       IEntity entity = ev.Entity;
       int id = entity.ID;
       EntityInfo info = entity.GetComponent<EntityInfo>();
@@ -197,7 +148,7 @@ namespace URF.Client {
       }
     }
 
-    private void HandleEntityKilled(EntityKilledEventArgs ev) {
+    public override void HandleEntityKilled(EntityKilled ev) {
       EntityInfo info = ev.Entity.GetComponent<EntityInfo>();
       Debug.Log($"Entity {info.Name} has been killed.");
       int id = ev.Entity.ID;
@@ -223,7 +174,7 @@ namespace URF.Client {
       _ = this.entitiesByPosition[x][y].Remove(ev.Entity);
     }
 
-    private void HandleEntityVisibilityChanged(EntityVisibilityChangedEventArgs ev) {
+    public override void HandleEntityVisibilityChanged(EntityVisibilityChanged ev) {
       int id = ev.Entity.ID;
       bool newVis = ev.NewVisibility;
       this.pawnsByID[id].IsVisible = newVis;
@@ -232,12 +183,12 @@ namespace URF.Client {
       }
     }
 
-    private void HandleGameErrorEvent(GameErroredEventArgs ev) {
+    public override void HandleGameErrored(GameErrored ev) {
       string message = ev.Message;
       Debug.LogError(message);
     }
 
-    private void HandleMainCharacterChangedEvent(MainCharacterChangedEventArgs ev) {
+    public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       IEntity mainCharacter = ev.Entity;
       this.mainCharacterId = ev.Entity.ID;
       this.mainCharacterPosition = this.entityPosition[this.mainCharacterId];
@@ -248,7 +199,7 @@ namespace URF.Client {
       this.gui.HealthBar.UpdateHealthBar();
     }
 
-    private void HandleEntityAttacked(EntityAttackedEventArgs ev) {
+    public override void HandleEntityAttacked(EntityAttacked ev) {
       EntityInfo attackerInfo = ev.Attacker.GetComponent<EntityInfo>();
       EntityInfo defenderInfo = ev.Defender.GetComponent<EntityInfo>();
 
@@ -263,7 +214,7 @@ namespace URF.Client {
       this.gui.HealthBar.UpdateHealthBar();
     }
 
-    private void HandleGameConfiguredEvent(GameConfiguredEventArgs ev) {
+    public override void HandleGameConfigured(GameConfigured ev) {
       this.ConfigureClientMap(ev.MapSize);
       this.mainCamera.transform.position = new Vector3(
         ev.MapSize.X / (2 / GridMultiple),
@@ -271,8 +222,6 @@ namespace URF.Client {
         -10
       );
     }
-
-    protected virtual void OnPlayerAction(IActionEventArgs ev) => PlayerAction?.Invoke(this, ev);
 
     private void HandleUserInput() {
       if (Input.GetMouseButtonDown(0)) {
@@ -290,10 +239,10 @@ namespace URF.Client {
       } else if (Input.GetKeyDown(this.mapKey)) {
         this.ToggleFieldOfView();
       } else if (Input.GetKeyDown(this.saveKey)) {
-        this.OnPlayerAction(new SaveActionEventArgs());
+        this.OnGameEvent(new SaveAction());
       } else if (Input.GetKeyDown(this.loadKey)) {
         this.ResetEverything();
-        this.OnPlayerAction(new LoadActionEventArgs());
+        this.OnGameEvent(new LoadAction());
       } else if (Input.GetKeyDown(this.newGameKey)) {
         this.BeginNewGame();
       } else {
@@ -336,15 +285,17 @@ namespace URF.Client {
       }
 
       if (fighters.Any()) {
-        this.OnPlayerAction(new AttackActionEventArgs(this.mainCharacterId, fighters.First().ID));
+        this.OnGameEvent(new AttackAction(this.mainCharacterId, fighters.First().ID));
       } else if (blockers.Any()) {
         Debug.Log("Bonk!");
       } else {
-        this.OnPlayerAction(new MoveActionEventArgs(this.mainCharacterId, (mx, my)));
+        this.OnGameEvent(new MoveAction(this.mainCharacterId, (mx, my)));
       }
     }
 
-    private void SpawnCrab() => this.OnPlayerAction(DebugActionEventArgs.SpawnCrab());
+    private void SpawnCrab() {
+      this.OnGameEvent(DebugAction.SpawnCrab());
+    }
 
     private void ToggleFieldOfView() {
       this.usingFOV = !this.usingFOV;
@@ -353,6 +304,5 @@ namespace URF.Client {
         t.gameObject.SetActive(t.IsVisible || !this.usingFOV);
       }
     }
-
   }
 }

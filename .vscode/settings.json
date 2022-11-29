@@ -70,6 +70,7 @@
         "gameplay",
         "GameUpdate",
         "inheritdoc",
+        "Monobehaviour",
         "Pathfinding",
         "Persistable",
         "Pluggability",

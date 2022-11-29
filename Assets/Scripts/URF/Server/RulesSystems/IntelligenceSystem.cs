@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using URF.Common;
-using URF.Common.Entities;
-using URF.Common.GameEvents;
-using URF.Common.Persistence;
-using URF.Server.FieldOfView;
-using URF.Server.GameState;
-using URF.Server.Pathfinding;
-
 namespace URF.Server.RulesSystems {
+  using System;
+  using System.Collections.Generic;
+  using URF.Common;
+  using URF.Common.Entities;
+  using URF.Common.GameEvents;
+  using URF.Common.Persistence;
+  using URF.Server.FieldOfView;
+  using URF.Server.GameState;
+  using URF.Server.Pathfinding;
+
   public enum IntelligenceControlMode {
 
     // NOTE: player is controlled externally, use control mode None.
@@ -21,11 +21,11 @@ namespace URF.Server.RulesSystems {
   // todo need to make this require movement and combat systems
   public class IntelligenceSystem : BaseRulesSystem {
 
-    private IFieldOfView _fov;
+    private IFieldOfView fov;
 
-    private IPathfinding _pathfinding;
+    private IPathfinding pathfinding;
 
-    private IEntity _mainCharacter;
+    private IEntity mainCharacter;
 
     // todo see notes below
     // After implementing the turn controller, convert this system
@@ -33,76 +33,76 @@ namespace URF.Server.RulesSystems {
     public override List<Type> Components => new() { typeof(Brain) };
 
     public override void ApplyPlugins(PluginBundle pluginBundle) {
-      _fov = pluginBundle.FieldOfView;
-      _pathfinding = pluginBundle.Pathfinding;
+      this.fov = pluginBundle.FieldOfView;
+      this.pathfinding = pluginBundle.Pathfinding;
     }
 
-    [EventHandler(GameEventType.MainCharacterChanged)]
-    public void HandleMainCharacterChanged(IGameState gameState, IGameEventArgs ev) {
-      MainCharacterChangedEventArgs mcc = (MainCharacterChangedEventArgs)ev;
-      _mainCharacter = mcc.Entity;
+    public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
+      this.mainCharacter = ev.Entity;
     }
 
-    [EventHandler(GameEventType.SpentTurn)]
-    public void RunAI(IGameState gameState, IGameEventArgs ev) {
-      TurnSpentEventArgs turnSpent = (TurnSpentEventArgs)ev;
-      if(turnSpent.Entity != _mainCharacter) { return; }
+    public override void HandleTurnSpent(TurnSpent turnSpent) {
+      if (turnSpent.Entity != this.mainCharacter) {
+        return;
+      }
 
-      foreach(IEntity entity in gameState.GetEntities()) {
+      foreach (IEntity entity in this.GameState.GetEntities()) {
         IntelligenceControlMode mode = entity.GetComponent<Brain>().ControlMode;
-        switch(mode) {
+        switch (mode) {
           case IntelligenceControlMode.Monster:
-            UpdateEntity(gameState, entity);
+            this.UpdateEntity(entity);
             break;
           case IntelligenceControlMode.None:
             break;
           default:
-            OnGameEvent(new GameErroredEventArgs($"Forgot to support intelligence mode {mode}"));
+            this.OnGameEvent(new GameErrored($"Forgot to support intelligence mode {mode}"));
             break;
         }
       }
     }
 
-    private void UpdateEntity(IGameState gameState, IEntity entity) {
+    private void UpdateEntity(IEntity entity) {
       // todo handle can't move
       // todo handle can't reach target
-      Movement mainMovement = _mainCharacter.GetComponent<Movement>();
+      Movement mainMovement = this.mainCharacter.GetComponent<Movement>();
       Position mainPosition = mainMovement.EntityPosition;
 
       Movement entityMovement = entity.GetComponent<Movement>();
       Position entityPosition = entityMovement.EntityPosition;
-      bool[,] transparency = new bool[gameState.MapWidth, gameState.MapHeight];
-      for (int x = 0; x < gameState.MapWidth; x++) {
-        for (int y = 0; y < gameState.MapHeight; y++) {
-          transparency[x, y] = gameState.IsTransparent((x, y));
+      bool[,] transparency = new bool[this.GameState.MapWidth, this.GameState.MapHeight];
+      for (int x = 0; x < this.GameState.MapWidth; x++) {
+        for (int y = 0; y < this.GameState.MapHeight; y++) {
+          transparency[x, y] = this.GameState.IsTransparent((x, y));
         }
       }
-      if(!_fov.IsVisible(transparency, entityPosition, mainPosition)) {
+      if (!this.fov.IsVisible(transparency, entityPosition, mainPosition)) {
         // entity can't see the player, just dawdle.
         return;
       }
 
-      float[][] costs = GetMovementCosts(gameState);
+      float[][] costs = GetMovementCosts(this.GameState);
       // take a step along the path
-      List<Position> path = _pathfinding.GetPath(costs, entityPosition, mainPosition);
-      if(path.Count == 2) {
+      List<Position> path = this.pathfinding.GetPath(costs, entityPosition, mainPosition);
+      if (path.Count == 2) {
         // just the start and end means adjacent
-        OnGameAction(new AttackActionEventArgs(entity.ID, _mainCharacter.ID));
+        this.OnGameEvent(new AttackAction(entity.ID, this.mainCharacter.ID));
         return;
       }
 
       // calculate the direction to step
       Position nextStep = path[1];
       (int, int) mp = (nextStep.X - entityPosition.X, nextStep.Y - entityPosition.Y);
-      OnGameAction(new MoveActionEventArgs(entity.ID, mp));
+      this.OnGameEvent(new MoveAction(entity.ID, mp));
     }
 
     private static float[][] GetMovementCosts(IGameState gs) {
       (int width, int height) = gs.GetMapSize();
       float[][] costs = new float[width][];
-      for(int x = 0; x < width; x++) {
+      for (int x = 0; x < width; x++) {
         costs[x] = new float[height];
-        for(int y = 0; y < height; y++) { costs[x][y] = gs.IsTraversable((x, y)) ? 0.1f : 10000f; }
+        for (int y = 0; y < height; y++) {
+          costs[x][y] = gs.IsTraversable((x, y)) ? 0.1f : 10000f;
+        }
       }
       return costs;
     }
@@ -111,14 +111,16 @@ namespace URF.Server.RulesSystems {
 
   public class Brain : BaseComponent {
 
-    public IntelligenceControlMode ControlMode { get; set; }
+    public IntelligenceControlMode ControlMode {
+      get; set;
+    }
 
     public override void Load(IGameDataReader reader) {
-      ControlMode = (IntelligenceControlMode)reader.ReadInt();
+      this.ControlMode = (IntelligenceControlMode)reader.ReadInt();
     }
 
     public override void Save(IGameDataWriter writer) {
-      writer.Write((int)ControlMode);
+      writer.Write((int)this.ControlMode);
     }
 
   }

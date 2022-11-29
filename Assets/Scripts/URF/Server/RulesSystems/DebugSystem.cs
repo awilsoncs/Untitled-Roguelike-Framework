@@ -1,36 +1,33 @@
-using URF.Common;
-using URF.Common.Entities;
-using URF.Common.GameEvents;
-using URF.Server.EntityFactory;
-using URF.Server.GameState;
-using URF.Server.RandomGeneration;
-
 namespace URF.Server.RulesSystems {
+  using URF.Common;
+  using URF.Common.Entities;
+  using URF.Common.GameEvents;
+  using URF.Server.EntityFactory;
+  using URF.Server.RandomGeneration;
+
   public class DebugSystem : BaseRulesSystem {
 
-    private IRandomGenerator _random;
+    private IRandomGenerator random;
 
-    private IEntityFactory<Entity> _entityFactory;
+    private IEntityFactory<Entity> entityFactory;
 
     public override void ApplyPlugins(PluginBundle pluginBundle) {
-      _random = pluginBundle.Random;
-      _entityFactory = pluginBundle.EntityFactory;
+      this.random = pluginBundle.Random;
+      this.entityFactory = pluginBundle.EntityFactory;
     }
 
-    [ActionHandler(GameEventType.DebugCommand)]
-    public void HandleDebugAction(IGameState gs, IActionEventArgs cm) {
-      DebugActionEventArgs ev = (DebugActionEventArgs)cm;
+    public override void HandleDebug(DebugAction ev) {
       switch (ev.Method) {
-        case DebugActionEventArgs.DebugMethod.SpawnCrab:
-          IEntity crab = _entityFactory.Get("crab");
-          Position position = (_random.GetInt(1, gs.MapWidth - 2),
-            _random.GetInt(1, gs.MapHeight - 2));
-          gs.CreateEntityAtPosition(crab, position);
-          OnGameEvent(new EntityCreatedEventArgs(crab));
-          OnGameEvent(new EntityMovedEventArgs(crab, position));
+        case DebugAction.DebugMethod.SpawnCrab:
+          IEntity crab = this.entityFactory.Get("crab");
+          Position position = (this.random.GetInt(1, this.GameState.MapWidth - 2),
+            this.random.GetInt(1, this.GameState.MapHeight - 2));
+          this.GameState.CreateEntityAtPosition(crab, position);
+          this.OnGameEvent(new EntityCreated(crab));
+          this.OnGameEvent(new EntityMoved(crab, position));
           return;
         default:
-          OnGameEvent(new GameErroredEventArgs($"Unknown debug method {ev.Method}"));
+          this.OnGameEvent(new GameErrored($"Unknown debug method {ev.Method}"));
           return;
       }
     }
