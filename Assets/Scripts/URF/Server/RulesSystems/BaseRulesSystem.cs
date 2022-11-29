@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using URF.Common.GameEvents;
-using URF.Server.GameState;
-
 namespace URF.Server.RulesSystems {
+  using System;
+  using System.Collections.Generic;
+  using URF.Common.GameEvents;
+
   public class BaseRulesSystem : IRulesSystem {
 
     public virtual void ApplyPlugins(PluginBundle pluginBundle) {
       // assume rules systems don't care about plugins
     }
-
-    public virtual void GameUpdate(IGameState gameState) {}
 
     public virtual List<Type> Components => new();
 
