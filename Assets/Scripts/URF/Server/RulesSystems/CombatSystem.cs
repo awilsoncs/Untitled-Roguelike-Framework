@@ -42,37 +42,4 @@ namespace URF.Server.RulesSystems {
 
   }
 
-  public class CombatComponent : BaseComponent {
-
-    public bool CanFight {
-      get; set;
-    }
-
-    public int MaxHealth {
-      get; set;
-    }
-
-    public int CurrentHealth {
-      get; set;
-    }
-
-    public int Damage {
-      get; set;
-    }
-
-    public override void Load(IGameDataReader reader) {
-      this.CanFight = reader.ReadBool();
-      this.MaxHealth = reader.ReadInt();
-      this.CurrentHealth = reader.ReadInt();
-      this.Damage = reader.ReadInt();
-    }
-
-    public override void Save(IGameDataWriter writer) {
-      writer.Write(this.CanFight);
-      writer.Write(this.MaxHealth);
-      writer.Write(this.CurrentHealth);
-      writer.Write(this.Damage);
-    }
-
-  }
 }
