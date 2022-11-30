@@ -1,18 +1,18 @@
 namespace URF.Common.Entities {
   using URF.Common.Persistence;
-  
+
   /// <summary>
   /// Represent combat information about an entity.
   /// </summary>
   public class CombatComponent : BaseComponent {
-    
+
     /// <summary>
     /// True if this entity can attack and be attacked. False otherwise.
     /// </summary>
     public bool CanFight {
       get; set;
     }
-    
+
     /// <summary>
     /// This entity's maximum health.
     /// </summary>
@@ -41,7 +41,7 @@ namespace URF.Common.Entities {
       this.CurrentHealth = reader.ReadInt();
       this.Damage = reader.ReadInt();
     }
-    
+
     /// <inheritdoc>
     public override void Save(IGameDataWriter writer) {
       writer.Write(this.CanFight);
