@@ -95,5 +95,8 @@
             "scheme": "file"
         }
     ],
-    "explorerExclude.backup": {}
+    "explorerExclude.backup": {},
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "main"
+    ]
 }

@@ -1,5 +1,6 @@
 namespace URF.Common.GameEvents {
   using System;
+  using URF.Common.Entities;
 
   /// <summary>
   /// Indicate that the player intends to attack another entity.
@@ -7,16 +8,16 @@ namespace URF.Common.GameEvents {
   public class AttackAction : EventArgs, IGameEvent {
 
     /// <summary>The defender's entity ID</summary>
-    public int Attacker {
+    public IEntity Attacker {
       get;
     }
 
     /// <summary>The defender's entity ID</summary>
-    public int Defender {
+    public IEntity Defender {
       get;
     }
 
-    public AttackAction(int attacker, int defender) {
+    public AttackAction(IEntity attacker, IEntity defender) {
       this.Attacker = attacker;
       this.Defender = defender;
     }

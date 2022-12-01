@@ -1,10 +1,11 @@
 namespace URF.Common.GameEvents {
   using System;
+  using URF.Common.Entities;
   using PositionDelta = Position;
 
   public class MoveAction : EventArgs, IGameEvent {
 
-    public int EntityId {
+    public IEntity Entity {
       get;
     }
 
@@ -14,8 +15,8 @@ namespace URF.Common.GameEvents {
 
     public bool IsCommand => true;
 
-    public MoveAction(int id, PositionDelta delta) {
-      this.EntityId = id;
+    public MoveAction(IEntity entity, PositionDelta delta) {
+      this.Entity = entity;
       this.Direction = delta;
     }
 

@@ -29,7 +29,7 @@ namespace URF.Server.RulesSystems {
 
     public override void HandleMoveAction(MoveAction ev) {
       // If it's not the MC, we don't care.
-      if (ev.EntityId != this.mainCharacter.ID) {
+      if (ev.Entity != this.mainCharacter) {
         return;
       }
       this.RecalculateFov(this.GameState);

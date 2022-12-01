@@ -10,17 +10,15 @@ namespace URF.Server.RulesSystems {
 
     public override List<Type> Components =>
       new() {
-        // todo could create an annotation to register these
         typeof(Movement)
       };
 
     public override void HandleMoveAction(MoveAction ev) {
-      int entityId = ev.EntityId;
+      IEntity entity = ev.Entity;
 
-      IEntity entity = this.GameState.GetEntityById(entityId);
       Position position = entity.GetComponent<Movement>().EntityPosition + ev.Direction;
 
-      this.GameState.MoveEntity(entityId, position);
+      this.GameState.MoveEntity(entity.ID, position);
       this.OnGameEvent(new EntityMoved(entity, position));
       this.OnGameEvent(new TurnSpent(entity));
     }

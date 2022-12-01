@@ -2,7 +2,6 @@ namespace URF.Common.GameEvents {
   using System;
   using UnityEngine;
   using URF.Common;
-  using URF.Common.GameEvents;
 
   public abstract class MonobehaviourBaseGameEventChannel : MonoBehaviour, IGameEventChannel {
 

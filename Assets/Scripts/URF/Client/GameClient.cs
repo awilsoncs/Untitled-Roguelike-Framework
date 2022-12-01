@@ -6,7 +6,6 @@ namespace URF.Client {
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
-  using URF.Server;
   using URF.Server.RulesSystems;
 
   /// <summary>
@@ -46,14 +45,14 @@ namespace URF.Client {
 
     private readonly Dictionary<int, Pawn> pawnsByID = new();
 
-    private int mainCharacterId;
+    private IEntity mainCharacter;
 
     private (int, int) mainCharacterPosition;
 
     private readonly Queue<IGameEvent> gameEvents = new();
 
     // track attackable enemies so that we can attack instead of attempt to move
-    private readonly Dictionary<int, (int, int)> entityPosition = new();
+    private readonly Dictionary<IEntity, (int, int)> entityPosition = new();
 
     // todo add a convenience type here to simplify initialization
     private List<IEntity>[][] entitiesByPosition;
@@ -120,14 +119,14 @@ namespace URF.Client {
       int x = ev.Position.X;
       int y = ev.Position.Y;
       pawn.transform.position = new Vector3(x * GridMultiple, y * GridMultiple, 0f);
-      if (this.entityPosition.ContainsKey(ev.Entity.ID)) {
-        (int x0, int y0) = this.entityPosition[ev.Entity.ID];
+      if (this.entityPosition.ContainsKey(ev.Entity)) {
+        (int x0, int y0) = this.entityPosition[ev.Entity];
         _ = this.entitiesByPosition[x0][y0].Remove(ev.Entity);
       }
-      this.entityPosition[ev.Entity.ID] = (x, y);
+      this.entityPosition[ev.Entity] = (x, y);
       this.entitiesByPosition[x][y].Add(ev.Entity);
 
-      if (ev.Entity.ID == this.mainCharacterId) {
+      if (ev.Entity == this.mainCharacter) {
         this.mainCharacterPosition = (x, y);
       }
     }
@@ -149,14 +148,14 @@ namespace URF.Client {
     }
 
     public override void HandleEntityKilled(EntityKilled ev) {
-      EntityInfo info = ev.Entity.GetComponent<EntityInfo>();
-      Debug.Log($"Entity {info.Name} has been killed.");
-      int id = ev.Entity.ID;
-      if (id == this.mainCharacterId) {
+      Debug.Log($"Entity {ev.Entity} has been killed.");
+      if (ev.Entity == this.mainCharacter) {
         Debug.Log("Player died, reloading...");
         this.ClearGame();
         this.BeginNewGame();
       }
+
+      int id = ev.Entity.ID;
 
       Pawn pawn = this.pawnsByID[id];
       // todo consider tracking save index
@@ -169,8 +168,8 @@ namespace URF.Client {
       _ = this.pawnsByID.Remove(id);
       pawn.Recycle(this.pawnFactory);
 
-      (int x, int y) = this.entityPosition[id];
-      _ = this.entityPosition.Remove(id);
+      (int x, int y) = this.entityPosition[ev.Entity];
+      _ = this.entityPosition.Remove(ev.Entity);
       _ = this.entitiesByPosition[x][y].Remove(ev.Entity);
     }
 
@@ -189,10 +188,9 @@ namespace URF.Client {
     }
 
     public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
-      IEntity mainCharacter = ev.Entity;
-      this.mainCharacterId = ev.Entity.ID;
-      this.mainCharacterPosition = this.entityPosition[this.mainCharacterId];
-      CombatComponent stats = mainCharacter.GetComponent<CombatComponent>();
+      this.mainCharacter = ev.Entity;
+      this.mainCharacterPosition = this.entityPosition[this.mainCharacter];
+      CombatComponent stats = this.mainCharacter.GetComponent<CombatComponent>();
       this.gui.HealthBar.CurrentHealth = stats.CurrentHealth;
       this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
       // todo should link updates to properties
@@ -207,7 +205,7 @@ namespace URF.Client {
       string defenderName = defenderInfo.Name;
 
       this.gui.MessageBox.AddMessage($"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
-      if (ev.Defender.ID != this.mainCharacterId || !ev.Success) {
+      if (ev.Defender != this.mainCharacter || !ev.Success) {
         return;
       }
       this.gui.HealthBar.CurrentHealth -= ev.Damage;
@@ -285,11 +283,11 @@ namespace URF.Client {
       }
 
       if (fighters.Any()) {
-        this.OnGameEvent(new AttackAction(this.mainCharacterId, fighters.First().ID));
+        this.OnGameEvent(new AttackAction(this.mainCharacter, fighters.First()));
       } else if (blockers.Any()) {
         Debug.Log("Bonk!");
       } else {
-        this.OnGameEvent(new MoveAction(this.mainCharacterId, (mx, my)));
+        this.OnGameEvent(new MoveAction(this.mainCharacter, (mx, my)));
       }
     }
 

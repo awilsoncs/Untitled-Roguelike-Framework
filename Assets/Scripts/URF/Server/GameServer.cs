@@ -53,10 +53,11 @@ namespace URF.Server {
     public override void HandleEvent(object _, IGameEvent e) {
       this.gameEvents.Enqueue(e);
       if (this.gameEvents.Count > 1) {
+
       } else {
         while (this.gameEvents.Any()) {
-          IGameEvent nextEvent = this.gameEvents.Dequeue();
-          base.HandleEvent(this, nextEvent);
+          base.HandleEvent(this, this.gameEvents.Peek());
+          _ = this.gameEvents.Dequeue();
         }
       }
     }
