@@ -116,18 +116,22 @@ namespace URF.Client {
     }
 
     public override void HandleEntityMoved(EntityMoved ev) {
-      Pawn pawn = this.pawnsByID[ev.Entity.ID];
       int x = ev.Position.X;
       int y = ev.Position.Y;
-      pawn.transform.position = new Vector3(x * GridMultiple, y * GridMultiple, 0f);
-      if (this.entityPosition.ContainsKey(ev.Entity)) {
-        (int x0, int y0) = this.entityPosition[ev.Entity];
-        _ = this.entitiesByPosition[x0][y0].Remove(ev.Entity);
-      }
-      this.entityPosition[ev.Entity] = (x, y);
-      this.entitiesByPosition[x][y].Add(ev.Entity);
+      this.DoMove(ev.Entity, x, y);
+    }
 
-      if (ev.Entity == this.mainCharacter) {
+    private void DoMove(IEntity entity, int x, int y) {
+      Pawn pawn = this.pawnsByID[entity.ID];
+      pawn.transform.position = new Vector3(x * GridMultiple, y * GridMultiple, 0f);
+      if (this.entityPosition.ContainsKey(entity)) {
+        (int x0, int y0) = this.entityPosition[entity];
+        _ = this.entitiesByPosition[x0][y0].Remove(entity);
+      }
+      this.entityPosition[entity] = (x, y);
+      this.entitiesByPosition[x][y].Add(entity);
+
+      if (entity == this.mainCharacter) {
         this.mainCharacterPosition = (x, y);
       }
     }
@@ -146,8 +150,9 @@ namespace URF.Client {
       if (!entity.IsVisible && this.usingFOV) {
         pawn.gameObject.SetActive(false);
       }
-    }
 
+      this.DoMove(ev.Entity, ev.Position.X, ev.Position.Y);
+    }
     public override void HandleEntityDeleted(EntityDeleted ev) {
       Debug.Log($"Entity {ev.Entity} has been killed.");
       if (ev.Entity == this.mainCharacter) {

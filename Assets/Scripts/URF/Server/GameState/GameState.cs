@@ -9,39 +9,52 @@ namespace URF.Server.GameState {
 
   public class GameState : BaseGameEventChannel, IGameState {
 
-    public int MapWidth { get; }
+    public int MapWidth {
+      get;
+    }
 
-    public int MapHeight { get; }
+    public int MapHeight {
+      get;
+    }
 
-    private readonly Cell[][] _map;
+    private readonly Cell[][] map;
 
-    private readonly List<IEntity> _entities;
+    private readonly List<IEntity> entities;
 
-    private readonly Dictionary<int, IEntity> _entitiesById;
+    private readonly Dictionary<int, IEntity> entitiesById;
 
     public GameState(int mapWidth, int mapHeight) {
-      MapWidth = mapWidth;
-      MapHeight = mapHeight;
+      this.MapWidth = mapWidth;
+      this.MapHeight = mapHeight;
 
-      _entities = new List<IEntity>();
-      _entitiesById = new Dictionary<int, IEntity>();
+      this.entities = new List<IEntity>();
+      this.entitiesById = new Dictionary<int, IEntity>();
 
-      _map = new Cell[MapWidth][];
-      for(int i = 0; i < MapWidth; i++) {
-        _map[i] = new Cell[MapHeight];
-        for(int j = 0; j < MapHeight; j++) { _map[i][j] = new Cell(); }
+      this.map = new Cell[this.MapWidth][];
+      for (int i = 0; i < this.MapWidth; i++) {
+        this.map[i] = new Cell[this.MapHeight];
+        for (int j = 0; j < this.MapHeight; j++) {
+          this.map[i][j] = new Cell();
+        }
       }
     }
 
+    public void CreateEntityAtPosition(IEntity entity, Position position) {
+      this.entities.Add(entity);
+      this.entitiesById.Add(entity.ID, entity);
+      this.PlaceEntity(entity.ID, position);
+      this.OnGameEvent(new EntityCreated(entity, position));
+    }
+
     public void Delete(IEntity entity) {
-      int index = this._entities.FindIndex(x => x == entity);
-      int lastIndex = this._entities.Count - 1;
+      int index = this.entities.FindIndex(x => x == entity);
+      int lastIndex = this.entities.Count - 1;
       if (index < lastIndex) {
-        this._entities[index] = this._entities[lastIndex];
+        this.entities[index] = this.entities[lastIndex];
       }
 
-      this._entities.RemoveAt(lastIndex);
-      _ = this._entitiesById.Remove(entity.ID);
+      this.entities.RemoveAt(lastIndex);
+      _ = this.entitiesById.Remove(entity.ID);
       Position pos = entity.GetComponent<Movement>().EntityPosition;
       Cell possibleLocation = this.GetCell(pos);
       if (possibleLocation.Contents.Contains(entity)) {
@@ -52,60 +65,56 @@ namespace URF.Server.GameState {
 
     public Cell GetCell(Position p) {
       (int x, int y) = p;
-      return _map[x][y];
+      return this.map[x][y];
     }
 
     private bool IsLegalMove(Position position) {
-      return IsInBounds(position) && GetCell(position).IsPassable;
+      return this.IsInBounds(position) && this.GetCell(position).IsPassable;
     }
 
     private bool IsInBounds(Position p) {
-      return (0 <= p.X && p.X < MapWidth && 0 <= p.Y && p.Y < MapHeight);
+      return 0 <= p.X && p.X < this.MapWidth && 0 <= p.Y && p.Y < this.MapHeight;
     }
 
     private void PlaceEntity(int id, Position p) {
-      IEntity entity = _entitiesById[id];
-      Cell destination = GetCell(p);
+      IEntity entity = this.entitiesById[id];
+      Cell destination = this.GetCell(p);
       entity.GetComponent<Movement>().EntityPosition = p;
       destination.PutContents(entity);
     }
 
     public void MoveEntity(int id, Position position) {
-      if(!IsLegalMove(position)) { return; }
+      if (!this.IsLegalMove(position)) {
+        return;
+      }
 
-      IEntity entity = _entitiesById[id];
+      IEntity entity = this.entitiesById[id];
       Movement movement = entity.GetComponent<Movement>();
       Position oldPos = movement.EntityPosition;
-      Cell origin = GetCell(oldPos);
+      Cell origin = this.GetCell(oldPos);
 
       origin.RemoveEntity(entity);
-      PlaceEntity(id, position);
+      this.PlaceEntity(id, position);
     }
 
     public IEntity GetEntityById(int id) {
-      return _entitiesById[id];
+      return this.entitiesById[id];
     }
 
     public ReadOnlyCollection<IEntity> GetEntities() {
-      return _entities.ToList().AsReadOnly();
+      return this.entities.ToList().AsReadOnly();
     }
 
     public (int, int) GetMapSize() {
-      return (MapWidth, MapHeight);
+      return (this.MapWidth, this.MapHeight);
     }
 
     public bool IsTraversable(Position position) {
-      return GetCell(position).IsPassable;
+      return this.GetCell(position).IsPassable;
     }
 
     public bool IsTransparent(Position position) {
-      return GetCell(position).IsTransparent;
-    }
-
-    public void CreateEntityAtPosition(IEntity entity, Position position) {
-      _entities.Add(entity);
-      _entitiesById.Add(entity.ID, entity);
-      PlaceEntity(entity.ID, position);
+      return this.GetCell(position).IsTransparent;
     }
 
   }

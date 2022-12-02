@@ -23,8 +23,6 @@ namespace URF.Server.RulesSystems {
           Position position = (this.random.GetInt(1, this.GameState.MapWidth - 2),
             this.random.GetInt(1, this.GameState.MapHeight - 2));
           this.GameState.CreateEntityAtPosition(crab, position);
-          this.OnGameEvent(new EntityCreated(crab));
-          this.OnGameEvent(new EntityMoved(crab, position));
           return;
         default:
           this.OnGameEvent(new GameErrored($"Unknown debug method {ev.Method}"));

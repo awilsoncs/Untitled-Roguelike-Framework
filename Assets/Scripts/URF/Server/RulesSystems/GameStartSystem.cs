@@ -58,8 +58,6 @@ namespace URF.Server.RulesSystems {
     private IEntity PutEntity(IGameState gs, string bluePrint, Position position) {
       IEntity entity = this.entityFactory.Get(bluePrint);
       gs.CreateEntityAtPosition(entity, position);
-      this.OnGameEvent(new EntityCreated(entity));
-      this.OnGameEvent(new EntityMoved(entity, position));
       return entity;
     }
 

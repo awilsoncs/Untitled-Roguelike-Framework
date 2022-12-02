@@ -8,8 +8,13 @@ namespace URF.Common.GameEvents {
       get;
     }
 
-    public EntityCreated(IEntity entity) {
+    public Position Position {
+      get;
+    }
+
+    public EntityCreated(IEntity entity, Position position) {
       this.Entity = entity;
+      this.Position = position;
     }
 
     public void Visit(IEventHandler eventHandler) {

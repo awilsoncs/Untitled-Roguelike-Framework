@@ -61,8 +61,6 @@ namespace URF.Server.RulesSystems {
         entity.Load(reader);
         Position position = entity.GetComponent<Movement>().EntityPosition;
         this.GameState.CreateEntityAtPosition(entity, position);
-        this.OnGameEvent(new EntityCreated(entity));
-        this.OnGameEvent(new EntityMoved(entity, position));
         if (entityID == mainCharacterId) {
           this.OnGameEvent(new MainCharacterChanged(entity));
         }
