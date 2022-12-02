@@ -74,6 +74,7 @@ namespace URF.Client {
     }
 
     public override void HandleEvent(object _, IGameEvent ev) {
+      Debug.Log(ev);
       this.gameEvents.Enqueue(ev);
     }
 
@@ -147,7 +148,7 @@ namespace URF.Client {
       }
     }
 
-    public override void HandleEntityKilled(EntityKilled ev) {
+    public override void HandleEntityDeleted(EntityDeleted ev) {
       Debug.Log($"Entity {ev.Entity} has been killed.");
       if (ev.Entity == this.mainCharacter) {
         Debug.Log("Player died, reloading...");

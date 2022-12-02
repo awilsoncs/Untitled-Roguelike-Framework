@@ -32,8 +32,7 @@ namespace URF.Server.RulesSystems {
       if (defenderCombat.CurrentHealth > 0) {
         return;
       }
-      this.GameState.Kill(defender);
-      this.OnGameEvent(new EntityKilled(defender));
+      this.GameState.Delete(defender);
     }
 
   }

@@ -21,6 +21,10 @@ namespace URF.Common.GameEvents {
       this.GameEvent += eventChannel.HandleEvent;
     }
 
+    public void Listen(IGameEventChannel eventChannel) {
+      eventChannel.GameEvent += this.HandleEvent;
+    }
+
     public virtual void HandleEntityAttacked(EntityAttacked entityAttacked) {
       // no-op
     }
@@ -41,7 +45,7 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleEntityKilled(EntityKilled entityKilled) {
+    public virtual void HandleEntityDeleted(EntityDeleted entityKilled) {
       // default no-op
     }
 

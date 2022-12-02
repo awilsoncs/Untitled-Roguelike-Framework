@@ -2,12 +2,13 @@ namespace URF.Common.GameEvents {
   public interface IEventHandler {
     void HandleAll(IGameEvent gameEvent);
     void Ignore(IGameEvent gameEvent);
+    void HandleEntityDeleted(EntityDeleted entityKilled);
+
     void HandleAttackAction(AttackAction attackAction);
     void HandleConfigure(ConfigureAction configureEvent);
     void HandleDebug(DebugAction debugEvent);
     void HandleEntityAttacked(EntityAttacked entityAttack);
     void HandleEntityCreated(EntityCreated entityCreated);
-    void HandleEntityKilled(EntityKilled entityKilled);
     void HandleEntityMoved(EntityMoved entityMoved);
     void HandleEntityVisibilityChanged(EntityVisibilityChanged visibilityChanged);
     void HandleGameConfigured(GameConfigured gameConfigured);

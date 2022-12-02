@@ -6,7 +6,7 @@ namespace URF.Common.GameEvents {
   /// <summary>
   /// Notify listeners that an entity has been removed from the game.
   /// </summary>
-  public class EntityKilled : EventArgs, IGameEvent {
+  public class EntityDeleted : EventArgs, IGameEvent {
 
     /// <summary>
     /// The entity that was removed.
@@ -15,12 +15,12 @@ namespace URF.Common.GameEvents {
       get;
     }
 
-    public EntityKilled(IEntity entity) {
+    public EntityDeleted(IEntity entity) {
       this.Entity = entity;
     }
 
     public void Visit(IEventHandler eventHandler) {
-      eventHandler.HandleEntityKilled(this);
+      eventHandler.HandleEntityDeleted(this);
     }
   }
 }

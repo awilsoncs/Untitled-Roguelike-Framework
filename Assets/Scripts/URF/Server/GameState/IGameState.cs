@@ -5,7 +5,7 @@ using URF.Common.Entities;
 namespace URF.Server.GameState {
   public interface IGameState {
 
-    void Kill(IEntity entity);
+    void Delete(IEntity entity);
 
     (int, int) GetMapSize();
 

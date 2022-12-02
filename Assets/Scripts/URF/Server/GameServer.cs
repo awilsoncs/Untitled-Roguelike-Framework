@@ -19,7 +19,7 @@ namespace URF.Server {
 
     [SerializeField] private PersistentStorage persistentStorage;
 
-    private IGameState gameState;
+    private GameState.GameState gameState;
 
     private readonly List<IRulesSystem> rulesSystems = new();
 
@@ -47,6 +47,7 @@ namespace URF.Server {
       this.RegisterSystem(new FieldOfViewSystem());
       this.RegisterSystem(new SerializationSystem());
 
+
       this.SetUpGame();
     }
 
@@ -71,6 +72,7 @@ namespace URF.Server {
       foreach (IRulesSystem system in this.rulesSystems) {
         system.GameState = this.gameState;
       }
+      this.Listen(this.gameState);
     }
 
     public override void HandleConfigure(ConfigureAction configureEvent) {

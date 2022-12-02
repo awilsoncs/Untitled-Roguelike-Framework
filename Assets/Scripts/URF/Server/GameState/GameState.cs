@@ -1,12 +1,13 @@
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using URF.Common;
-using URF.Common.Entities;
-using URF.Server.RulesSystems;
-
 namespace URF.Server.GameState {
-  public class GameState : IGameState {
+  using System.Collections.Generic;
+  using System.Collections.ObjectModel;
+  using System.Linq;
+  using URF.Common;
+  using URF.Common.Entities;
+  using URF.Common.GameEvents;
+  using URF.Server.RulesSystems;
+
+  public class GameState : BaseGameEventChannel, IGameState {
 
     public int MapWidth { get; }
 
@@ -32,16 +33,21 @@ namespace URF.Server.GameState {
       }
     }
 
-    public void Kill(IEntity entity) {
-      int index = _entities.FindIndex(x => x == entity);
-      int lastIndex = _entities.Count - 1;
-      if(index < lastIndex) { _entities[index] = _entities[lastIndex]; }
+    public void Delete(IEntity entity) {
+      int index = this._entities.FindIndex(x => x == entity);
+      int lastIndex = this._entities.Count - 1;
+      if (index < lastIndex) {
+        this._entities[index] = this._entities[lastIndex];
+      }
 
-      _entities.RemoveAt(lastIndex);
-      _entitiesById.Remove(entity.ID);
+      this._entities.RemoveAt(lastIndex);
+      _ = this._entitiesById.Remove(entity.ID);
       Position pos = entity.GetComponent<Movement>().EntityPosition;
-      Cell possibleLocation = GetCell(pos);
-      if(possibleLocation.Contents.Contains(entity)) { possibleLocation.RemoveEntity(entity); }
+      Cell possibleLocation = this.GetCell(pos);
+      if (possibleLocation.Contents.Contains(entity)) {
+        possibleLocation.RemoveEntity(entity);
+      }
+      this.OnGameEvent(new EntityDeleted(entity));
     }
 
     public Cell GetCell(Position p) {
