@@ -7,6 +7,7 @@ namespace URF.Client {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.RulesSystems;
+  using System;
 
   /// <summary>
   /// GameClient client view
@@ -36,6 +37,8 @@ namespace URF.Client {
     [SerializeField] private KeyCode rightKey = KeyCode.RightArrow;
 
     [SerializeField] private KeyCode spawnKey = KeyCode.C;
+
+    [SerializeField] private KeyCode getKey = KeyCode.G;
 
     [SerializeField] private KeyCode mapKey = KeyCode.M;
 
@@ -242,6 +245,8 @@ namespace URF.Client {
         this.SpawnCrab();
       } else if (Input.GetKeyDown(this.mapKey)) {
         this.ToggleFieldOfView();
+      } else if (Input.GetKeyDown(this.getKey)) {
+        this.GetItem();
       } else if (Input.GetKeyDown(this.saveKey)) {
         this.OnGameEvent(new SaveAction());
       } else if (Input.GetKeyDown(this.loadKey)) {
@@ -251,6 +256,18 @@ namespace URF.Client {
         this.BeginNewGame();
       } else {
         // The player didn't send any known input.
+      }
+    }
+
+    private void GetItem() {
+      int x = this.mainCharacterPosition.Item1;
+      int y = this.mainCharacterPosition.Item2;
+      List<IEntity> entities = this.entitiesByPosition[x][y];
+      IEntity itemToGet = entities.FirstOrDefault(x => x != this.mainCharacter);
+      if (itemToGet != null) {
+        this.OnGameEvent(new GetAction(this.mainCharacter, itemToGet));
+      } else {
+        this.gui.MessageBox.AddMessage("There's nothing here.");
       }
     }
 

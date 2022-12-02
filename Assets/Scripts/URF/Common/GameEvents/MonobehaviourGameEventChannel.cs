@@ -98,5 +98,9 @@ namespace URF.Common.GameEvents {
     public virtual void Ignore(IGameEvent gameEvent) {
       // default no-op;
     }
+
+    public virtual void HandleGetAction(GetAction getAction) {
+      // default no-op
+    }
   }
 }

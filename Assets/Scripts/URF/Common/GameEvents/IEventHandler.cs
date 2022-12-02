@@ -19,5 +19,7 @@ namespace URF.Common.GameEvents {
     void HandleMoveAction(MoveAction moveAction);
     void HandleSaveAction(SaveAction saveAction);
     void HandleTurnSpent(TurnSpent turnSpent);
+    void HandleGetAction(GetAction getAction);
+
   }
 }
