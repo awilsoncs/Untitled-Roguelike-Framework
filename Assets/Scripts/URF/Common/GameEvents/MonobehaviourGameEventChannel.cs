@@ -102,5 +102,9 @@ namespace URF.Common.GameEvents {
     public virtual void HandleGetAction(GetAction getAction) {
       // default no-op
     }
+
+    public virtual void HandleInventoryChanged(InventoryChanged inventoryChanged) {
+      // default no-op
+    }
   }
 }

@@ -230,6 +230,21 @@ namespace URF.Client {
       );
     }
 
+    public override void HandleInventoryChanged(InventoryChanged inventoryChanged) {
+      switch (inventoryChanged.Action) {
+        case InventoryChanged.InventoryAction.PickedUp:
+          string agent = "";
+          if (inventoryChanged.Entity == this.mainCharacter) {
+            agent = "You";
+          } else {
+            agent = inventoryChanged.Entity.GetComponent<EntityInfo>().Name;
+          }
+          string targetName = inventoryChanged.Item.GetComponent<EntityInfo>().Name;
+          this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
+          break;
+      }
+    }
+
     private void HandleUserInput() {
       if (Input.GetMouseButtonDown(0)) {
         this.MouseClicked(Input.mousePosition);
