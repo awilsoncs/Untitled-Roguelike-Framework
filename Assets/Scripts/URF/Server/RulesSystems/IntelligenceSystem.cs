@@ -102,7 +102,8 @@ namespace URF.Server.RulesSystems {
       for (int x = 0; x < width; x++) {
         costs[x] = new float[height];
         for (int y = 0; y < height; y++) {
-          costs[x][y] = gs.IsTraversable((x, y)) ? 0.1f : 10000f;
+          Cell cell = gs.GetCell((x, y));
+          costs[x][y] = cell.IsTraversable ? 0.1f : 10000f;
         }
       }
       return costs;

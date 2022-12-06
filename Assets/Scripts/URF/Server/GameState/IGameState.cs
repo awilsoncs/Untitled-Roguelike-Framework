@@ -11,8 +11,6 @@ namespace URF.Server.GameState {
 
     IEntity GetEntityById(int id);
 
-    bool IsTraversable(Position position);
-
     void MoveEntity(int id, Position position);
 
     ReadOnlyCollection<IEntity> GetEntities();

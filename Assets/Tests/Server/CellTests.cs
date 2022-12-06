@@ -87,7 +87,7 @@ namespace Tests.Backend {
 
     [Test]
     public void EmptyCellShouldByPassable() {
-      Assert.That(this.cell.IsPassable);
+      Assert.That(this.cell.IsTraversable);
     }
 
     [Test]
@@ -95,7 +95,7 @@ namespace Tests.Backend {
       var entity = new Entity();
       entity.AddComponent(new Movement { BlocksMove = false });
       this.cell.PutContents(entity);
-      Assert.That(this.cell.IsPassable);
+      Assert.That(this.cell.IsTraversable);
     }
 
     [Test]
@@ -103,7 +103,7 @@ namespace Tests.Backend {
       var entity = new Entity();
       entity.AddComponent(new Movement { BlocksMove = true });
       this.cell.PutContents(entity);
-      Assert.That(!this.cell.IsPassable);
+      Assert.That(!this.cell.IsTraversable);
     }
 
     [Test]
@@ -115,7 +115,7 @@ namespace Tests.Backend {
       var entity2 = new Entity();
       entity2.AddComponent(new Movement { BlocksMove = true });
       this.cell.PutContents(entity2);
-      Assert.That(!this.cell.IsPassable);
+      Assert.That(!this.cell.IsTraversable);
     }
   }
 }

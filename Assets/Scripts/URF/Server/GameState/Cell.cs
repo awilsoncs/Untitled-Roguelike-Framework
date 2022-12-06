@@ -14,7 +14,7 @@ namespace URF.Server.GameState {
       get;
     }
 
-    public bool IsPassable => this.Contents.Count == 0 ||
+    public bool IsTraversable => this.Contents.Count == 0 ||
           this.Contents.Select(x => x.GetComponent<Movement>()).All(x => !x.BlocksMove);
 
 

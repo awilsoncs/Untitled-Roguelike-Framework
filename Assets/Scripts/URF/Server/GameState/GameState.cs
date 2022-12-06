@@ -68,7 +68,7 @@ namespace URF.Server.GameState {
     }
 
     private bool IsLegalMove(Position position) {
-      return this.IsInBounds(position) && this.GetCell(position).IsPassable;
+      return this.IsInBounds(position) && this.GetCell(position).IsTraversable;
     }
 
     private bool IsInBounds(Position p) {
@@ -106,10 +106,6 @@ namespace URF.Server.GameState {
 
     public (int, int) GetMapSize() {
       return (this.MapWidth, this.MapHeight);
-    }
-
-    public bool IsTraversable(Position position) {
-      return this.GetCell(position).IsPassable;
     }
 
   }
