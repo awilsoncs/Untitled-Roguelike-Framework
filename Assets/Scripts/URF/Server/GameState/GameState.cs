@@ -1,4 +1,5 @@
 namespace URF.Server.GameState {
+  using System;
   using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using System.Linq;
@@ -9,30 +10,25 @@ namespace URF.Server.GameState {
 
   public class GameState : BaseGameEventChannel, IGameState {
 
-    public int MapWidth {
-      get;
-    }
-
-    public int MapHeight {
-      get;
-    }
-
     private readonly Cell[,] map;
+
+    public Position MapSize {
+      get;
+    }
 
     private readonly List<IEntity> entities;
 
     private readonly Dictionary<int, IEntity> entitiesById;
 
     public GameState(int mapWidth, int mapHeight) {
-      this.MapWidth = mapWidth;
-      this.MapHeight = mapHeight;
+      this.MapSize = (mapWidth, mapHeight);
 
       this.entities = new List<IEntity>();
       this.entitiesById = new Dictionary<int, IEntity>();
 
-      this.map = new Cell[this.MapWidth, this.MapHeight];
-      for (int i = 0; i < this.MapWidth; i++) {
-        for (int j = 0; j < this.MapHeight; j++) {
+      this.map = new Cell[this.MapSize.X, this.MapSize.Y];
+      for (int i = 0; i < this.MapSize.X; i++) {
+        for (int j = 0; j < this.MapSize.Y; j++) {
           this.map[i, j] = new Cell();
         }
       }
@@ -63,7 +59,13 @@ namespace URF.Server.GameState {
     }
 
     public Cell GetCell(Position p) {
+      if (!this.IsInBounds(p)) {
+        throw new ArgumentException($"Cannot get out-of bounds cell: {p} not in {this.MapSize}");
+      }
       (int x, int y) = p;
+      if (this.map[x, y] == null) {
+        throw new ArgumentException($"Cell at {p} has not been assigned.");
+      }
       return this.map[x, y];
     }
 
@@ -72,7 +74,7 @@ namespace URF.Server.GameState {
     }
 
     private bool IsInBounds(Position p) {
-      return 0 <= p.X && p.X < this.MapWidth && 0 <= p.Y && p.Y < this.MapHeight;
+      return 0 <= p.X && p.X < this.MapSize.X && 0 <= p.Y && p.Y < this.MapSize.Y;
     }
 
     private void PlaceEntity(int id, Position p) {
@@ -102,10 +104,6 @@ namespace URF.Server.GameState {
 
     public ReadOnlyCollection<IEntity> GetEntities() {
       return this.entities.ToList().AsReadOnly();
-    }
-
-    public (int, int) GetMapSize() {
-      return (this.MapWidth, this.MapHeight);
     }
 
   }

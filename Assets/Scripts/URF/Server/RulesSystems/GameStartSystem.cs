@@ -3,7 +3,6 @@ namespace URF.Server.RulesSystems {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.EntityFactory;
-  using URF.Server.GameState;
   using URF.Server.RandomGeneration;
 
   public class GameStartSystem : BaseRulesSystem {
@@ -11,53 +10,57 @@ namespace URF.Server.RulesSystems {
     private IRandomGenerator random;
     private IEntityFactory<Entity> entityFactory;
 
+    private int MapWidth => this.GameState.MapSize.X;
+    private int MapHeight => this.GameState.MapSize.Y;
+    private Position MapCenter => (this.MapWidth / 2, this.MapHeight / 2);
+
     public override void ApplyPlugins(PluginBundle pluginBundle) {
       this.random = pluginBundle.Random;
       this.entityFactory = pluginBundle.EntityFactory;
     }
 
     public override void HandleConfigure(ConfigureAction _) {
-      this.OnGameEvent(new GameConfigured((this.GameState.MapWidth, this.GameState.MapHeight)));
-      this.BuildDungeon(this.GameState, this.random);
+      this.OnGameEvent(new GameConfigured((this.MapWidth, this.MapHeight)));
+      this.BuildDungeon();
       this.OnGameEvent(new GameStarted());
     }
 
-    private void BuildDungeon(IGameState gs, IRandomGenerator rng) {
-      for (int i = 0; i < gs.MapWidth; i++) {
-        _ = this.PutEntity(gs, "wall", (i, 0));
-        _ = this.PutEntity(gs, "wall", (i, gs.MapHeight - 1));
+    private void BuildDungeon() {
+      for (int i = 0; i < this.MapWidth; i++) {
+        _ = this.PutEntity("wall", (i, 0));
+        _ = this.PutEntity("wall", (i, this.MapHeight - 1));
       }
 
-      for (int i = 1; i < gs.MapHeight - 1; i++) {
-        _ = this.PutEntity(gs, "wall", (0, i));
-        _ = this.PutEntity(gs, "wall", (gs.MapWidth - 1, i));
+      for (int i = 1; i < this.MapHeight - 1; i++) {
+        _ = this.PutEntity("wall", (0, i));
+        _ = this.PutEntity("wall", (this.MapWidth - 1, i));
       }
 
-      IEntity player = this.PutEntity(gs, "player", (gs.MapWidth / 2, gs.MapHeight / 2));
+      IEntity player = this.PutEntity("player", this.MapCenter);
       this.OnGameEvent(new MainCharacterChanged(player));
 
       for (int i = 0; i < 4; i++) {
-        int x = rng.GetInt(1, gs.MapWidth - 2);
-        int y = rng.GetInt(1, gs.MapHeight - 2);
-        _ = this.PutEntity(gs, "crab", (x, y));
+        int x = this.random.GetInt(1, this.MapWidth - 2);
+        int y = this.random.GetInt(1, this.MapHeight - 2);
+        _ = this.PutEntity("crab", (x, y));
       }
 
       for (int i = 0; i < 4; i++) {
-        int x = rng.GetInt(1, gs.MapWidth - 2);
-        int y = rng.GetInt(1, gs.MapHeight - 2);
-        _ = this.PutEntity(gs, "wall", (x, y));
+        int x = this.random.GetInt(1, this.MapWidth - 2);
+        int y = this.random.GetInt(1, this.MapHeight - 2);
+        _ = this.PutEntity("wall", (x, y));
       }
 
       for (int i = 0; i < 2; i++) {
-        int x = rng.GetInt(1, gs.MapWidth - 2);
-        int y = rng.GetInt(1, gs.MapHeight - 2);
-        _ = this.PutEntity(gs, "healthPotion", (x, y));
+        int x = this.random.GetInt(1, this.MapWidth - 2);
+        int y = this.random.GetInt(1, this.MapHeight - 2);
+        _ = this.PutEntity("healthPotion", (x, y));
       }
     }
 
-    private IEntity PutEntity(IGameState gs, string bluePrint, Position position) {
+    private IEntity PutEntity(string bluePrint, Position position) {
       IEntity entity = this.entityFactory.Get(bluePrint);
-      gs.CreateEntityAtPosition(entity, position);
+      this.GameState.CreateEntityAtPosition(entity, position);
       return entity;
     }
 

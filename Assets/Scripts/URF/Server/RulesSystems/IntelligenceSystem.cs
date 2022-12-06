@@ -69,13 +69,11 @@ namespace URF.Server.RulesSystems {
 
       Movement entityMovement = entity.GetComponent<Movement>();
       Position entityPosition = entityMovement.EntityPosition;
-      bool[,] transparency = new bool[this.GameState.MapWidth, this.GameState.MapHeight];
-      for (int x = 0; x < this.GameState.MapWidth; x++) {
-        for (int y = 0; y < this.GameState.MapHeight; y++) {
-          Cell cell = this.GameState.GetCell((x, y));
-          transparency[x, y] = cell.IsTransparent;
-        }
-      }
+      bool[,] transparency = new bool[
+        this.GameState.MapSize.X,
+        this.GameState.MapSize.Y
+      ];
+      transparency.Populate((x, y) => this.GameState.GetCell((x, y)).IsTransparent);
       if (!this.fov.IsVisible(transparency, entityPosition, mainPosition)) {
         // entity can't see the player, just dawdle.
         return;
@@ -97,7 +95,7 @@ namespace URF.Server.RulesSystems {
     }
 
     private static float[][] GetMovementCosts(IGameState gs) {
-      (int width, int height) = gs.GetMapSize();
+      (int width, int height) = gs.MapSize;
       float[][] costs = new float[width][];
       for (int x = 0; x < width; x++) {
         costs[x] = new float[height];

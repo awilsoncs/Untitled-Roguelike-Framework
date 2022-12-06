@@ -4,10 +4,11 @@ namespace URF.Server.GameState {
   using URF.Common.Entities;
 
   public interface IGameState {
+    Position MapSize {
+      get;
+    }
 
     void Delete(IEntity entity);
-
-    (int, int) GetMapSize();
 
     IEntity GetEntityById(int id);
 
@@ -16,14 +17,6 @@ namespace URF.Server.GameState {
     ReadOnlyCollection<IEntity> GetEntities();
 
     void CreateEntityAtPosition(IEntity entity, Position position);
-
-    int MapWidth {
-      get;
-    }
-
-    int MapHeight {
-      get;
-    }
 
     Cell GetCell(Position p);
 

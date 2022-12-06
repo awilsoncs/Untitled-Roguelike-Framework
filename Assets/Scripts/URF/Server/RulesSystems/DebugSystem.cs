@@ -20,8 +20,8 @@ namespace URF.Server.RulesSystems {
       switch (ev.Method) {
         case DebugAction.DebugMethod.SpawnCrab:
           IEntity crab = this.entityFactory.Get("crab");
-          Position position = (this.random.GetInt(1, this.GameState.MapWidth - 2),
-            this.random.GetInt(1, this.GameState.MapHeight - 2));
+          Position position = (this.random.GetInt(1, this.GameState.MapSize.X - 2),
+            this.random.GetInt(1, this.GameState.MapSize.Y - 2));
           this.GameState.CreateEntityAtPosition(crab, position);
           return;
         default:
