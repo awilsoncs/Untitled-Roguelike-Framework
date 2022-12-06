@@ -1,8 +1,8 @@
-using System.Collections.ObjectModel;
-using URF.Common;
-using URF.Common.Entities;
-
 namespace URF.Server.GameState {
+  using System.Collections.ObjectModel;
+  using URF.Common;
+  using URF.Common.Entities;
+
   public interface IGameState {
 
     void Delete(IEntity entity);
@@ -13,17 +13,19 @@ namespace URF.Server.GameState {
 
     bool IsTraversable(Position position);
 
-    bool IsTransparent(Position position);
-
     void MoveEntity(int id, Position position);
 
     ReadOnlyCollection<IEntity> GetEntities();
 
     void CreateEntityAtPosition(IEntity entity, Position position);
 
-    int MapWidth { get; }
+    int MapWidth {
+      get;
+    }
 
-    int MapHeight { get; }
+    int MapHeight {
+      get;
+    }
 
     Cell GetCell(Position p);
 

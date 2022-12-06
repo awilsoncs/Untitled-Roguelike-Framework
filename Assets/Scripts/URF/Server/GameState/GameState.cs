@@ -112,9 +112,5 @@ namespace URF.Server.GameState {
       return this.GetCell(position).IsPassable;
     }
 
-    public bool IsTransparent(Position position) {
-      return this.GetCell(position).IsTransparent;
-    }
-
   }
 }

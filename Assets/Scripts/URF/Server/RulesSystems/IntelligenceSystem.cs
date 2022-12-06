@@ -72,7 +72,8 @@ namespace URF.Server.RulesSystems {
       bool[,] transparency = new bool[this.GameState.MapWidth, this.GameState.MapHeight];
       for (int x = 0; x < this.GameState.MapWidth; x++) {
         for (int y = 0; y < this.GameState.MapHeight; y++) {
-          transparency[x, y] = this.GameState.IsTransparent((x, y));
+          Cell cell = this.GameState.GetCell((x, y));
+          transparency[x, y] = cell.IsTransparent;
         }
       }
       if (!this.fov.IsVisible(transparency, entityPosition, mainPosition)) {

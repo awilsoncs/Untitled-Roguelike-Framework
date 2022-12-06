@@ -40,7 +40,8 @@ namespace URF.Server.RulesSystems {
       bool[,] transparency = new bool[gs.MapWidth, gs.MapHeight];
       for (int x = 0; x < gs.MapWidth; x++) {
         for (int y = 0; y < gs.MapHeight; y++) {
-          transparency[x, y] = gs.IsTransparent((x, y));
+          Cell cell = gs.GetCell((x, y));
+          transparency[x, y] = cell.IsTransparent;
         }
       }
       IFieldOfViewQueryResult result = this.fov.CalculateFov(transparency, position);
