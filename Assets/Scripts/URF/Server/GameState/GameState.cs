@@ -17,7 +17,7 @@ namespace URF.Server.GameState {
       get;
     }
 
-    private readonly Cell[][] map;
+    private readonly Cell[,] map;
 
     private readonly List<IEntity> entities;
 
@@ -30,11 +30,10 @@ namespace URF.Server.GameState {
       this.entities = new List<IEntity>();
       this.entitiesById = new Dictionary<int, IEntity>();
 
-      this.map = new Cell[this.MapWidth][];
+      this.map = new Cell[this.MapWidth, this.MapHeight];
       for (int i = 0; i < this.MapWidth; i++) {
-        this.map[i] = new Cell[this.MapHeight];
         for (int j = 0; j < this.MapHeight; j++) {
-          this.map[i][j] = new Cell();
+          this.map[i, j] = new Cell();
         }
       }
     }
@@ -65,7 +64,7 @@ namespace URF.Server.GameState {
 
     public Cell GetCell(Position p) {
       (int x, int y) = p;
-      return this.map[x][y];
+      return this.map[x, y];
     }
 
     private bool IsLegalMove(Position position) {
