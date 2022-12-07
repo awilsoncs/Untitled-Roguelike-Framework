@@ -1,6 +1,5 @@
 namespace URF.Server.RulesSystems {
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
@@ -45,6 +44,9 @@ namespace URF.Server.RulesSystems {
       writer.Write(this.mainCharacter.ID);
       foreach (IEntity entity in entities) {
         writer.Write(entity.ID);
+        Position entityPosition = this.GameState.LocateEntityOnMap(entity);
+        writer.Write(entityPosition.X);
+        writer.Write(entityPosition.Y);
         entity.Save(writer);
       }
     }
@@ -59,10 +61,12 @@ namespace URF.Server.RulesSystems {
         int entityID = reader.ReadInt();
         IEntity entity = this.entityFactory.Get();
         entity.ID = entityID;
+        var entityPosition = new Position(reader.ReadInt(), reader.ReadInt());
+
         entity.Load(reader);
         // todo save and load location
         this.GameState.CreateEntity(entity);
-        // this.GameState.PlaceEntityOnMap(entity, position);
+        this.GameState.PlaceEntityOnMap(entity, entityPosition);
         if (entityID == mainCharacterId) {
           this.OnGameEvent(new MainCharacterChanged(entity));
         }
