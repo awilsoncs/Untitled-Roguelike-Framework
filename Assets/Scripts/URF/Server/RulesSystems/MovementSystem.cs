@@ -15,11 +15,10 @@ namespace URF.Server.RulesSystems {
 
     public override void HandleMoveAction(MoveAction ev) {
       IEntity entity = ev.Entity;
+      Movement movement = entity.GetComponent<Movement>();
+      Position newPosition = movement.EntityPosition + ev.Direction;
 
-      Position position = entity.GetComponent<Movement>().EntityPosition + ev.Direction;
-
-      this.GameState.MoveEntity(entity.ID, position);
-      this.OnGameEvent(new EntityMoved(entity, position));
+      this.GameState.MoveEntity(entity, newPosition);
       this.OnGameEvent(new TurnSpent(entity));
     }
 

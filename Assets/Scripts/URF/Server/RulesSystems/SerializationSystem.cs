@@ -1,4 +1,5 @@
 namespace URF.Server.RulesSystems {
+  using System.Collections.Generic;
   using System.Collections.ObjectModel;
   using URF.Common;
   using URF.Common.Entities;
@@ -39,7 +40,7 @@ namespace URF.Server.RulesSystems {
 
     public void Save(IGameDataWriter writer) {
       this.randomGenerator.Save(writer);
-      ReadOnlyCollection<IEntity> entities = this.GameState.GetEntities();
+      IReadOnlyCollection<IEntity> entities = this.GameState.GetAllEntities();
       writer.Write(entities.Count);
       writer.Write(this.mainCharacter.ID);
       foreach (IEntity entity in entities) {
@@ -60,7 +61,8 @@ namespace URF.Server.RulesSystems {
         entity.ID = entityID;
         entity.Load(reader);
         Position position = entity.GetComponent<Movement>().EntityPosition;
-        this.GameState.CreateEntityAtPosition(entity, position);
+        this.GameState.CreateEntity(entity);
+        this.GameState.PlaceEntityOnMap(entity, position);
         if (entityID == mainCharacterId) {
           this.OnGameEvent(new MainCharacterChanged(entity));
         }

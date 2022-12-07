@@ -7,7 +7,6 @@ namespace URF.Client {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.RulesSystems;
-  using System;
 
   /// <summary>
   /// GameClient client view
@@ -69,6 +68,9 @@ namespace URF.Client {
     }
 
     private void Update() {
+      if (this.gameEvents.Count > 0) {
+        Debug.Log("Beginning client update...");
+      }
       while (this.gameEvents.Count > 0) {
         IGameEvent ev = this.gameEvents.Dequeue();
         base.HandleEvent(this, ev);
@@ -77,7 +79,6 @@ namespace URF.Client {
     }
 
     public override void HandleEvent(object _, IGameEvent ev) {
-      Debug.Log(ev);
       this.gameEvents.Enqueue(ev);
     }
 
@@ -118,10 +119,16 @@ namespace URF.Client {
       this.pawnsByID.Clear();
     }
 
-    public override void HandleEntityMoved(EntityMoved ev) {
-      int x = ev.Position.X;
-      int y = ev.Position.Y;
-      this.DoMove(ev.Entity, x, y);
+    public override void HandleEntityLocationChanged(EntityLocationChanged ev) {
+      if (ev.SubType is EntityLocationChanged.EventSubType.Moved) {
+        int x = ev.NewPosition.X;
+        int y = ev.NewPosition.Y;
+        this.DoMove(ev.Entity, x, y);
+      } else if (ev.SubType is EntityLocationChanged.EventSubType.Removed) {
+        this.DeletePawn(ev.Entity);
+      } else if (ev.SubType is EntityLocationChanged.EventSubType.Placed) {
+        this.CreatePawn(ev.Entity, ev.NewPosition);
+      }
     }
 
     private void DoMove(IEntity entity, int x, int y) {
@@ -139,8 +146,7 @@ namespace URF.Client {
       }
     }
 
-    public override void HandleEntityCreated(EntityCreated ev) {
-      IEntity entity = ev.Entity;
+    private void CreatePawn(IEntity entity, Position position) {
       int id = entity.ID;
       EntityInfo info = entity.GetComponent<EntityInfo>();
       string appearance = info.Appearance;
@@ -154,17 +160,24 @@ namespace URF.Client {
         pawn.gameObject.SetActive(false);
       }
 
-      this.DoMove(ev.Entity, ev.Position.X, ev.Position.Y);
+      this.DoMove(entity, position.X, position.Y);
     }
+
     public override void HandleEntityDeleted(EntityDeleted ev) {
-      Debug.Log($"Entity {ev.Entity} has been killed.");
       if (ev.Entity == this.mainCharacter) {
         Debug.Log("Player died, reloading...");
         this.ClearGame();
         this.BeginNewGame();
       }
 
-      int id = ev.Entity.ID;
+      if (this.pawnsByID.ContainsKey(ev.Entity.ID)) {
+        // If the server forgot to send a EntityLocationChanged first.
+        this.DeletePawn(ev.Entity);
+      }
+    }
+
+    public void DeletePawn(IEntity entity) {
+      int id = entity.ID;
 
       Pawn pawn = this.pawnsByID[id];
       // todo consider tracking save index
@@ -177,14 +190,15 @@ namespace URF.Client {
       _ = this.pawnsByID.Remove(id);
       pawn.Recycle(this.pawnFactory);
 
-      (int x, int y) = this.entityPosition[ev.Entity];
-      _ = this.entityPosition.Remove(ev.Entity);
-      _ = this.entitiesByPosition[x][y].Remove(ev.Entity);
+      (int x, int y) = this.entityPosition[entity];
+      _ = this.entityPosition.Remove(entity);
+      _ = this.entitiesByPosition[x][y].Remove(entity);
     }
 
     public override void HandleEntityVisibilityChanged(EntityVisibilityChanged ev) {
       int id = ev.Entity.ID;
       bool newVis = ev.NewVisibility;
+      Debug.Log($"Testing: {ev}");
       this.pawnsByID[id].IsVisible = newVis;
       if (this.usingFOV || newVis) {
         this.pawnsByID[id].gameObject.SetActive(newVis);

@@ -34,5 +34,9 @@ namespace URF.Server.GameState {
         _ = this.Contents.Remove(entity);
       }
     }
+
+    public override string ToString() {
+      return $"Cell({this.Contents.Count()})";
+    }
   }
 }

@@ -51,7 +51,7 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleEntityMoved(EntityMoved entityMoved) {
+    public virtual void HandleEntityLocationChanged(EntityLocationChanged entityMoved) {
       // default no-op
     }
 

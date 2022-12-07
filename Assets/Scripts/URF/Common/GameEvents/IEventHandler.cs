@@ -9,7 +9,7 @@ namespace URF.Common.GameEvents {
     void HandleConfigure(ConfigureAction configureEvent);
     void HandleDebug(DebugAction debugEvent);
     void HandleEntityAttacked(EntityAttacked entityAttack);
-    void HandleEntityMoved(EntityMoved entityMoved);
+    void HandleEntityLocationChanged(EntityLocationChanged entityLocationChanged);
     void HandleEntityVisibilityChanged(EntityVisibilityChanged visibilityChanged);
     void HandleGameConfigured(GameConfigured gameConfigured);
     void HandleGameErrored(GameErrored gameErrored);

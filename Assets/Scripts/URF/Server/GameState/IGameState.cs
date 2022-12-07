@@ -1,24 +1,73 @@
 namespace URF.Server.GameState {
-  using System.Collections.ObjectModel;
+  using System.Collections.Generic;
   using URF.Common;
   using URF.Common.Entities;
 
+  /// <summary>
+  /// Provide a repository interface for storing entities. Handles entities and their place within
+  /// the game world. Beyond position, the IGameState does not have any awareness of entities'
+  /// information.
+  /// </summary>
   public interface IGameState {
+
+    /// <summary>
+    /// Get a Position representing the dimensions of the map
+    /// </summary>
+    /// <value>A Position representing the int x int dimensions of the map.</value>
     Position MapSize {
       get;
     }
 
-    void Delete(IEntity entity);
+    /// <summary>
+    /// Persist an entity in the game state. This method should be called when client code has
+    /// created a new entity, so that other systems can access that entity.
+    /// </summary>
+    /// <param name="entity">The entity to be persisted.</param>
+    void CreateEntity(IEntity entity);
 
-    IEntity GetEntityById(int id);
+    /// <summary>
+    /// Get a collection of all Entities in the game.
+    /// </summary>
+    /// <returns>
+    /// An IReadOnlyCollection<IEntity> containing all entities in the game state.
+    /// </returns>
+    IReadOnlyCollection<IEntity> GetAllEntities();
 
-    void MoveEntity(int id, Position position);
+    /// <summary>
+    /// Places an IEntity that does not currently appear on the map at the given position.
+    /// </summary>
+    /// <param name="entity">The IEntity to be placed</param>
+    /// <param name="position">The Position at which to place the IEntity</param>
+    void PlaceEntityOnMap(IEntity entity, Position position);
 
-    ReadOnlyCollection<IEntity> GetEntities();
+    /// <summary>
+    /// Remove an entity from the physical map, but leave it alive.
+    /// </summary>
+    /// <param name="entity">The IEntity to remove.</param>
+    void RemoveEntityFromMap(IEntity entity);
 
-    void CreateEntityAtPosition(IEntity entity, Position position);
+    /// <summary>
+    /// Move an entity from one position on a map to another position on the map.
+    /// </summary>
+    /// <param name="entity">The IEntity to move.</param>
+    /// <param name="from">The Position the IEntity is currently at.</param>
+    /// <param name="to">The Position the IEntity should be moved to.</param>
+    /// <raises>
+    void MoveEntity(IEntity entity, Position to);
 
-    Cell GetCell(Position p);
+    /// <summary>
+    /// Delete an entity from the GameState. Does not guarantee that references to the entity are
+    /// removed.
+    /// </summary>
+    /// <param name="entity">The IEntity to delete.</param>
+    void DeleteEntity(IEntity entity);
+
+    /// <summary>
+    /// Get a single map cell.
+    /// </summary>
+    /// <param name="position">The position of the cell to get.</param>
+    /// <returns>A Cell object</returns>
+    Cell GetCell(Position position);
 
   }
 }

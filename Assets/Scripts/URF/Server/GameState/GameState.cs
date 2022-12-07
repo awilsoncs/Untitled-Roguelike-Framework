@@ -1,109 +1,209 @@
 namespace URF.Server.GameState {
   using System;
   using System.Collections.Generic;
-  using System.Collections.ObjectModel;
   using System.Linq;
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.RulesSystems;
 
+  /// <summary>
+  /// Represent the state of the game at the level of entities and their locations.
+  /// </summary>
   public class GameState : BaseGameEventChannel, IGameState {
 
-    private readonly Cell[,] map;
-
+    /// <summary>
+    /// A position representing the boundary corner of the map.
+    /// </summary>
+    /// <value>A nonnegative position</value>
     public Position MapSize {
       get;
     }
 
-    private readonly List<IEntity> entities;
+    private readonly Cell[,] map;
 
-    private readonly Dictionary<int, IEntity> entitiesById;
+    // Keep track of all entities.
+    private readonly HashSet<IEntity> uniqueEntities = new();
 
+    // Maintain an index of where each mapped entity is so that we can find them easily. If an
+    // entity does not appear as a key in this dictionary, it is not on the map.
+    private readonly Dictionary<IEntity, Position> positionsByEntity = new();
+
+    /// <summary>
+    /// Create a GameState with map dimensions equal to the given parameters.
+    /// </summary>
+    /// <param name="mapWidth">The positive integer width of the map</param>
+    /// <param name="mapHeight">The positive integer height of the map</param>
+    /// <exception cref=ArgumentException>
+    /// Throws ArgumentException when either parameter is not positive.
+    /// </exception>
     public GameState(int mapWidth, int mapHeight) {
-      this.MapSize = (mapWidth, mapHeight);
+      if (mapWidth < 1 || mapHeight < 1) {
+        throw new ArgumentException(
+          $"Map dimensions must be positive, received ({mapWidth}, {mapHeight}).");
+      }
 
-      this.entities = new List<IEntity>();
-      this.entitiesById = new Dictionary<int, IEntity>();
-
+      this.MapSize = new Position(mapWidth, mapHeight);
       this.map = new Cell[this.MapSize.X, this.MapSize.Y];
-      for (int i = 0; i < this.MapSize.X; i++) {
-        for (int j = 0; j < this.MapSize.Y; j++) {
-          this.map[i, j] = new Cell();
-        }
-      }
+      this.map.Populate(() => new Cell());
     }
 
-    public void CreateEntityAtPosition(IEntity entity, Position position) {
-      this.entities.Add(entity);
-      this.entitiesById.Add(entity.ID, entity);
-      this.PlaceEntity(entity.ID, position);
-      this.OnGameEvent(new EntityCreated(entity, position));
+    /// <summary>
+    /// Creates a new IEntity and emits an EntityCreated event containing the entity.
+    /// </summary>
+    /// <exception cref=ArgumentNullException>
+    /// Throws ArgumentNullException when entity is null.
+    /// </exception>
+    /// <exception cref=ArgumentException>
+    /// Throws ArgumentException when the entity already exists in the game state.
+    /// </exception>
+    public void CreateEntity(IEntity entity) {
+      if (entity == null) {
+        throw new ArgumentNullException("Cannot create a null entity");
+      } else if (this.uniqueEntities.Contains(entity)) {
+        throw new ArgumentException("Cannot create an entity that already exists");
+      }
+
+      _ = this.uniqueEntities.Add(entity);
+      this.OnGameEvent(new EntityCreated(entity));
     }
 
-    public void Delete(IEntity entity) {
-      int index = this.entities.FindIndex(x => x == entity);
-      int lastIndex = this.entities.Count - 1;
-      if (index < lastIndex) {
-        this.entities[index] = this.entities[lastIndex];
+    /// <summary>
+    /// Get a readonly list of all entities in the game state, including those that are not on the
+    /// map. The order of the entities is not guaranteed.
+    /// </summary>
+    /// <returns>A read-only collection of entities</returns>
+    public IReadOnlyCollection<IEntity> GetAllEntities() {
+      return this.uniqueEntities.ToList().AsReadOnly();
+    }
+
+    /// <summary>
+    /// Places an entity on the map and emits an EntityLocationChanged.Placed event.
+    /// </summary>
+    /// <exception cref=ArgumentNullException>
+    /// Throws ArgumentNullException when entity is null.
+    /// </exception>
+    /// <exception cref=ArgumentException>
+    /// Throws ArgumentException when the position is outside of the map bounds, the entity is
+    /// already on the map.
+    /// </exception>
+    /// <exception cref=EntityDetachedException>
+    /// Thrown if entity has not been created.
+    /// </exception>
+    public void PlaceEntityOnMap(IEntity entity, Position position) {
+      if (entity == null) {
+        throw new ArgumentNullException("Cannot place a null entity");
+      } else if (!this.IsInBounds(position)) {
+        throw new ArgumentException($"Position must be in bounds: {position} vs {this.MapSize}");
+      } else if (this.positionsByEntity.ContainsKey(entity)) {
+        Position currentPosition = this.positionsByEntity[entity];
+        throw new ArgumentException(
+          $"Entity {entity} is on the map at position {currentPosition}. Use MoveEntity instead."
+        );
+      } else if (!this.uniqueEntities.Contains(entity)) {
+        throw new EntityDetachedException(
+          $"A detached entity cannot be placed on the map.");
       }
 
-      this.entities.RemoveAt(lastIndex);
-      _ = this.entitiesById.Remove(entity.ID);
-      Position pos = entity.GetComponent<Movement>().EntityPosition;
-      Cell possibleLocation = this.GetCell(pos);
-      if (possibleLocation.Contents.Contains(entity)) {
-        possibleLocation.RemoveEntity(entity);
+      this.positionsByEntity[entity] = position;
+      this.map[position.X, position.Y].PutContents(entity);
+      this.OnGameEvent(EntityLocationChanged.EntityPlaced(entity, position));
+    }
+
+    /// <summary>
+    /// Remove an entity from the map and emit an EntityLocationChanged.Removed event.
+    /// </summary>
+    /// <param name="entity">The entity to remove from the map</param>
+    /// <exception cref=ArgumentNullException>
+    /// Throws ArgumentNullException when entity is null.
+    /// </exception>
+    /// <exception cref=ArgumentException>
+    /// Throws ArgumentException when the entity does not appear on the map.
+    /// </exception>
+    public void RemoveEntityFromMap(IEntity entity) {
+      if (entity == null) {
+        throw new ArgumentNullException("Cannot remove a null entity from the map.");
+      } else if (!this.uniqueEntities.Contains(entity)) {
+        throw new EntityDetachedException("Entity must be created before it can be removed.");
+      } else if (!this.positionsByEntity.ContainsKey(entity)) {
+        throw new ArgumentException($"Entity {entity} is not on the map.");
       }
+
+      Position oldPosition = this.positionsByEntity[entity];
+      _ = this.positionsByEntity.Remove(entity);
+      this.map[oldPosition.X, oldPosition.Y].RemoveEntity(entity);
+      this.OnGameEvent(EntityLocationChanged.EntityRemoved(entity, oldPosition));
+    }
+
+    /// <summary>
+    /// Move an entity that's currently on the map from one position to a new one, emitting a
+    /// EntityLocationChanged.Moved event containing the entity and both old and new positions.
+    /// </summary>
+    /// <param name="entity">The IEntity to be moved</param>
+    /// <param name="to">The Position to move the entity to</param>
+    /// <exception cref=ArgumentNullException>When entity is null</exception>
+    /// <exception cref=ArgumentException>
+    /// When the entity is not on the map or the position is not in bounds.
+    /// </exception>
+    public void MoveEntity(IEntity entity, Position to) {
+      if (entity == null) {
+        throw new ArgumentNullException("Cannot remove a null entity from the map.");
+      } else if (!this.positionsByEntity.ContainsKey(entity)) {
+        throw new ArgumentException($"Entity {entity} is not on the map.");
+      } else if (!this.IsInBounds(to)) {
+        throw new ArgumentException($"Position must be in bounds: {to} vs {this.MapSize}");
+      }
+
+      Position oldPosition = this.positionsByEntity[entity];
+      Cell origin = this.GetCell(oldPosition);
+      origin.RemoveEntity(entity);
+      this.PlaceEntity(entity, to);
+      this.OnGameEvent(EntityLocationChanged.EntityMoved(entity, oldPosition, to));
+    }
+
+    /// <summary>
+    /// Delete an entity from the GameState, emitting an EntityDeleted event.
+    /// </summary>
+    /// <param name="entity">The entity to be deleted.</param>
+    /// <exception cref=ArgumentNullException>When entity is null</exception>
+    /// <exception cref=ArgumentException>When entity does not exist in the game state</exception>
+    public void DeleteEntity(IEntity entity) {
+      if (entity == null) {
+        throw new ArgumentNullException("Entity to delete must not be null.");
+      } else if (!this.uniqueEntities.Contains(entity)) {
+        throw new ArgumentException($"{entity} does not exist in the game state.");
+      }
+
+      if (this.positionsByEntity.ContainsKey(entity)) {
+        this.RemoveEntityFromMap(entity);
+      }
+      _ = this.uniqueEntities.Remove(entity);
       this.OnGameEvent(new EntityDeleted(entity));
     }
 
-    public Cell GetCell(Position p) {
-      if (!this.IsInBounds(p)) {
-        throw new ArgumentException($"Cannot get out-of bounds cell: {p} not in {this.MapSize}");
+    /// <summary>
+    /// Get one cell of the map.
+    /// </summary>
+    /// <param name="position">The Position of the cell to retrieve</param>
+    /// <returns>A Cell at the given position</returns>
+    /// <exception cref=ArgumentException>When the position is not in bounds.</exception>
+    public Cell GetCell(Position position) {
+      if (!this.IsInBounds(position)) {
+        throw new ArgumentException(
+          $"Cannot get out-of bounds cell: {position} not in {this.MapSize}");
       }
-      (int x, int y) = p;
-      if (this.map[x, y] == null) {
-        throw new ArgumentException($"Cell at {p} has not been assigned.");
-      }
+      (int x, int y) = position;
       return this.map[x, y];
-    }
-
-    private bool IsLegalMove(Position position) {
-      return this.IsInBounds(position) && this.GetCell(position).IsTraversable;
     }
 
     private bool IsInBounds(Position p) {
       return 0 <= p.X && p.X < this.MapSize.X && 0 <= p.Y && p.Y < this.MapSize.Y;
     }
 
-    private void PlaceEntity(int id, Position p) {
-      IEntity entity = this.entitiesById[id];
+    private void PlaceEntity(IEntity entity, Position p) {
       Cell destination = this.GetCell(p);
       entity.GetComponent<Movement>().EntityPosition = p;
       destination.PutContents(entity);
-    }
-
-    public void MoveEntity(int id, Position position) {
-      if (!this.IsLegalMove(position)) {
-        return;
-      }
-
-      IEntity entity = this.entitiesById[id];
-      Movement movement = entity.GetComponent<Movement>();
-      Position oldPos = movement.EntityPosition;
-      Cell origin = this.GetCell(oldPos);
-
-      origin.RemoveEntity(entity);
-      this.PlaceEntity(id, position);
-    }
-
-    public IEntity GetEntityById(int id) {
-      return this.entitiesById[id];
-    }
-
-    public ReadOnlyCollection<IEntity> GetEntities() {
-      return this.entities.ToList().AsReadOnly();
     }
 
   }

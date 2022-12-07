@@ -46,7 +46,7 @@ namespace URF.Server.RulesSystems {
         return;
       }
 
-      foreach (IEntity entity in this.GameState.GetEntities()) {
+      foreach (IEntity entity in this.GameState.GetAllEntities()) {
         IntelligenceControlMode mode = entity.GetComponent<Brain>().ControlMode;
         switch (mode) {
           case IntelligenceControlMode.Monster:

@@ -22,7 +22,8 @@ namespace URF.Server.RulesSystems {
           IEntity crab = this.entityFactory.Get("crab");
           Position position = (this.random.GetInt(1, this.GameState.MapSize.X - 2),
             this.random.GetInt(1, this.GameState.MapSize.Y - 2));
-          this.GameState.CreateEntityAtPosition(crab, position);
+          this.GameState.CreateEntity(crab);
+          this.GameState.PlaceEntityOnMap(crab, position);
           return;
         default:
           this.OnGameEvent(new GameErrored($"Unknown debug method {ev.Method}"));

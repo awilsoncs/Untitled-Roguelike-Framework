@@ -27,9 +27,12 @@ namespace URF.Server.RulesSystems {
       this.RecalculateFov(this.GameState);
     }
 
-    public override void HandleMoveAction(MoveAction ev) {
+    public override void HandleEntityLocationChanged(EntityLocationChanged entityLocationChanged) {
       // If it's not the MC, we don't care.
-      if (ev.Entity != this.mainCharacter) {
+      if (
+        entityLocationChanged.Entity != this.mainCharacter
+        || entityLocationChanged.SubType is not EntityLocationChanged.EventSubType.Moved
+      ) {
         return;
       }
       this.RecalculateFov(this.GameState);

@@ -30,5 +30,9 @@ namespace URF.Common.GameEvents {
     public void Visit(IEventHandler eventHandler) {
       eventHandler.HandleEntityVisibilityChanged(this);
     }
+
+    public override string ToString() {
+      return $"EntityVisibilityChanged({this.Entity}, {this.NewVisibility})";
+    }
   }
 }
