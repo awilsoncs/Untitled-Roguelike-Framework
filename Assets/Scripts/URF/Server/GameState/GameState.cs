@@ -7,7 +7,7 @@ namespace URF.Server.GameState {
   using URF.Common.GameEvents;
 
   /// <summary>
-  /// Represent the state of the game at the level of entities and their locations.
+  /// Represent the state of the game at the level of entities and their positions on the map.
   /// </summary>
   public class GameState : BaseGameEventChannel, IGameState {
 
@@ -200,8 +200,10 @@ namespace URF.Server.GameState {
     /// Get the location of an entity on the map. If the entity is not on the map, return an invalid
     /// position.
     /// </summary>
-    /// <param name="entity"></param>
-    /// <returns></returns>
+    /// <param name="entity">The entity to locate</param>
+    /// <returns>
+    /// A Position where the entity was found, or Position.Invalid if it's not on the map
+    /// </returns>
     /// <exception cref=ArgumentNullException>When entity is null</exception>
     /// <exception cref=EntityDetachedException>
     /// When the entity has not been created in the game state.
