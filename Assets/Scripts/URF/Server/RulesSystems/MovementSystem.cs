@@ -15,8 +15,7 @@ namespace URF.Server.RulesSystems {
 
     public override void HandleMoveAction(MoveAction ev) {
       IEntity entity = ev.Entity;
-      Movement movement = entity.GetComponent<Movement>();
-      Position newPosition = movement.EntityPosition + ev.Direction;
+      Position newPosition = this.GameState.LocateEntityOnMap(entity) + ev.Direction;
 
       this.GameState.MoveEntity(entity, newPosition);
       this.OnGameEvent(new TurnSpent(entity));
@@ -30,19 +29,12 @@ namespace URF.Server.RulesSystems {
       get; set;
     }
 
-    public Position EntityPosition {
-      get; set;
-    }
-
     public override void Load(IGameDataReader reader) {
       this.BlocksMove = reader.ReadBool();
-      this.EntityPosition = (reader.ReadInt(), reader.ReadInt());
     }
 
     public override void Save(IGameDataWriter writer) {
       writer.Write(this.BlocksMove);
-      writer.Write(this.EntityPosition.X);
-      writer.Write(this.EntityPosition.Y);
     }
 
   }

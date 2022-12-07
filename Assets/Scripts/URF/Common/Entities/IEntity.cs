@@ -30,6 +30,5 @@ namespace URF.Common.Entities {
     TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent;
 
     void AddComponent(BaseComponent component);
-
   }
 }

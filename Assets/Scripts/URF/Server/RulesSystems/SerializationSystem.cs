@@ -60,9 +60,9 @@ namespace URF.Server.RulesSystems {
         IEntity entity = this.entityFactory.Get();
         entity.ID = entityID;
         entity.Load(reader);
-        Position position = entity.GetComponent<Movement>().EntityPosition;
+        // todo save and load location
         this.GameState.CreateEntity(entity);
-        this.GameState.PlaceEntityOnMap(entity, position);
+        // this.GameState.PlaceEntityOnMap(entity, position);
         if (entityID == mainCharacterId) {
           this.OnGameEvent(new MainCharacterChanged(entity));
         }

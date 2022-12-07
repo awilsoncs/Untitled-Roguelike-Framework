@@ -250,8 +250,10 @@ namespace Tests.Server {
       List<EntityLocationChanged> emitted = listener.Events;
       Assert.That(emitted[0].Entity, Is.EqualTo(entityA));
       Assert.That(emitted[0].NewPosition, Is.EqualTo(new Position(0, 0)));
+      Assert.That(emitted[0].OldPosition, Is.EqualTo(new Position(-1, -1)));
       Assert.That(emitted[1].Entity, Is.EqualTo(entityB));
       Assert.That(emitted[1].NewPosition, Is.EqualTo(new Position(1, 1)));
+      Assert.That(emitted[1].OldPosition, Is.EqualTo(new Position(-1, -1)));
     }
 
     [Test]
@@ -288,6 +290,159 @@ namespace Tests.Server {
       this.gameState.RemoveEntityFromMap(entityA);
       Cell cell = this.gameState.GetCell(new Position(0, 0));
       Assert.That(cell.Contents.Contains(entityB));
+    }
+
+    [Test]
+    public void RemoveEntityFromMap_Should_EmitEntityLocationChangedEvent() {
+      var listener = new EntityLocationChangedListener();
+      listener.Listen(this.gameState);
+
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+      this.gameState.RemoveEntityFromMap(entity);
+
+      // We should have two EntityLocationChanged, Placed and Removed
+      Assert.That(listener.Events.Count, Is.EqualTo(2));
+      EntityLocationChanged actualEvent = listener.Events[1];
+      Assert.That(actualEvent.Entity, Is.EqualTo(entity));
+      Assert.That(actualEvent.OldPosition, Is.EqualTo(new Position(1, 1)));
+      Assert.That(actualEvent.NewPosition, Is.EqualTo(new Position(-1, -1)));
+    }
+
+    [Test]
+    public void MoveEntity_Should_PlaceEntityInNewCell() {
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+      this.gameState.MoveEntity(entity, new Position(2, 2));
+      Cell cell = this.gameState.GetCell(new Position(2, 2));
+      Assert.That(cell.Contents.Contains(entity));
+    }
+
+    [Test]
+    public void MoveEntity_Should_RejectNullEntities() {
+      _ = Assert.Throws<ArgumentNullException>(
+        () => this.gameState.MoveEntity(null, new Position(2, 2))
+      );
+    }
+
+    [Test]
+    public void MoveEntity_Should_RejectDetachedEntities() {
+      var entity = new Entity();
+      _ = Assert.Throws<EntityDetachedException>(
+        () => this.gameState.MoveEntity(entity, new Position(2, 2))
+      );
+    }
+
+    [Test]
+    public void MoveEntity_Should_RemoveEntityFromOldCell() {
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+      this.gameState.MoveEntity(entity, new Position(2, 2));
+      Cell cell = this.gameState.GetCell(new Position(1, 1));
+      Assert.That(!cell.Contents.Contains(entity));
+    }
+
+    [Test]
+    public void MoveEntity_ShouldNot_MoveOtherEntities() {
+      var entityA = new Entity();
+      var entityB = new Entity();
+      this.gameState.CreateEntity(entityA);
+      this.gameState.CreateEntity(entityB);
+      this.gameState.PlaceEntityOnMap(entityA, new Position(1, 1));
+      this.gameState.PlaceEntityOnMap(entityB, new Position(1, 1));
+      this.gameState.MoveEntity(entityA, new Position(2, 2));
+      Cell cell = this.gameState.GetCell(new Position(1, 1));
+      Assert.That(cell.Contents.Contains(entityB));
+    }
+
+    [Test]
+    public void MoveEntity_Should_EmitEntityLocationChangedEvent() {
+      var listener = new EntityLocationChangedListener();
+      listener.Listen(this.gameState);
+
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+      this.gameState.MoveEntity(entity, new Position(2, 2));
+
+      // We should have two EntityLocationChanged, Placed and Removed
+      Assert.That(listener.Events.Count, Is.EqualTo(2));
+      EntityLocationChanged actualEvent = listener.Events[1];
+      Assert.That(actualEvent.Entity, Is.EqualTo(entity));
+      Assert.That(actualEvent.SubType, Is.EqualTo(EntityLocationChanged.EventSubType.Moved));
+      Assert.That(actualEvent.OldPosition, Is.EqualTo(new Position(1, 1)));
+      Assert.That(actualEvent.NewPosition, Is.EqualTo(new Position(2, 2)));
+    }
+
+    [Test]
+    public void DeleteEntity_Should_RemoveEntityFromAllEntitiesList() {
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.DeleteEntity(entity);
+      Assert.That(!this.gameState.GetAllEntities().Contains(entity));
+    }
+
+    [Test]
+    public void DeleteEntity_Should_RemoveEntityFromMap() {
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+      this.gameState.DeleteEntity(entity);
+
+      Cell cell = this.gameState.GetCell(new Position(1, 1));
+      Assert.That(!cell.Contents.Contains(entity));
+    }
+
+    [Test]
+    public void DeleteEntity_Should_EmitEntityLocationChangedWhenEntityWasOnMap() {
+      // We don't want to force the caller to check for and call remove entity.
+      var listener = new EntityLocationChangedListener();
+      listener.Listen(this.gameState);
+
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+      this.gameState.DeleteEntity(entity);
+
+      List<EntityLocationChanged> events = listener.Events;
+      Assert.That(events.Count, Is.EqualTo(2));
+      EntityLocationChanged actualEvent = events[1];
+      Assert.That(actualEvent.Entity, Is.EqualTo(entity));
+      Assert.That(actualEvent.SubType, Is.EqualTo(EntityLocationChanged.EventSubType.Removed));
+      Assert.That(actualEvent.NewPosition, Is.EqualTo(new Position(-1, -1)));
+      Assert.That(actualEvent.OldPosition, Is.EqualTo(new Position(1, 1)));
+    }
+
+    [Test]
+    public void LocateEntity_Should_ReturnMappedEntityLocation() {
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+
+      Position location = this.gameState.LocateEntityOnMap(entity);
+      Assert.That(location, Is.EqualTo(new Position(1, 1)));
+    }
+
+    [Test]
+    public void LocateEntity_Should_ReturnNewPositionAfterMovingEntity() {
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      this.gameState.PlaceEntityOnMap(entity, new Position(1, 1));
+      this.gameState.MoveEntity(entity, new Position(2, 2));
+
+      Position location = this.gameState.LocateEntityOnMap(entity);
+      Assert.That(location, Is.EqualTo(new Position(2, 2)));
+    }
+
+    [Test]
+    public void LocateEntity_Should_ReturnInvalidPosition() {
+      var entity = new Entity();
+      this.gameState.CreateEntity(entity);
+      Position location = this.gameState.LocateEntityOnMap(entity);
+      Assert.That(location, Is.EqualTo(Position.Invalid));
     }
   }
 

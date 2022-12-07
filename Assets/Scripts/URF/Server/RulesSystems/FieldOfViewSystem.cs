@@ -39,7 +39,7 @@ namespace URF.Server.RulesSystems {
     }
 
     private void RecalculateFov(IGameState gs) {
-      Position position = this.mainCharacter.GetComponent<Movement>().EntityPosition;
+      Position position = this.GameState.LocateEntityOnMap(this.mainCharacter);
 
       int mapWidth = this.GameState.MapSize.X;
       int mapHeight = this.GameState.MapSize.Y;

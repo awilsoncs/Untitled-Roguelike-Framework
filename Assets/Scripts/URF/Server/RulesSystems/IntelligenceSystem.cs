@@ -64,11 +64,8 @@ namespace URF.Server.RulesSystems {
     private void UpdateEntity(IEntity entity) {
       // todo handle can't move
       // todo handle can't reach target
-      Movement mainMovement = this.mainCharacter.GetComponent<Movement>();
-      Position mainPosition = mainMovement.EntityPosition;
-
-      Movement entityMovement = entity.GetComponent<Movement>();
-      Position entityPosition = entityMovement.EntityPosition;
+      Position mainPosition = this.GameState.LocateEntityOnMap(this.mainCharacter);
+      Position entityPosition = this.GameState.LocateEntityOnMap(entity);
       bool[,] transparency = new bool[
         this.GameState.MapSize.X,
         this.GameState.MapSize.Y

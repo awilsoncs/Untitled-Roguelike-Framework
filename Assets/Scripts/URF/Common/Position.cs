@@ -10,6 +10,8 @@ namespace URF.Common {
       Y = y;
     }
 
+    public bool IsValidPosition => this.X >= 0 && this.Y >= 0;
+
     public static implicit operator Position((int, int) t) {
       return new Position(t.Item1, t.Item2);
     }
@@ -26,6 +28,8 @@ namespace URF.Common {
     public static Position operator +(Position first, Position second) {
       return (first.X + second.X, first.Y + second.Y);
     }
+
+    public static Position Invalid => new(-1, -1);
 
   }
 }

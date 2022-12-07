@@ -5,7 +5,6 @@ namespace URF.Server.GameState {
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
-  using URF.Server.RulesSystems;
 
   /// <summary>
   /// Represent the state of the game at the level of entities and their locations.
@@ -105,8 +104,7 @@ namespace URF.Server.GameState {
           $"A detached entity cannot be placed on the map.");
       }
 
-      this.positionsByEntity[entity] = position;
-      this.map[position.X, position.Y].PutContents(entity);
+      this.PlaceEntity(entity, position);
       this.OnGameEvent(EntityLocationChanged.EntityPlaced(entity, position));
     }
 
@@ -148,6 +146,8 @@ namespace URF.Server.GameState {
     public void MoveEntity(IEntity entity, Position to) {
       if (entity == null) {
         throw new ArgumentNullException("Cannot remove a null entity from the map.");
+      } else if (!this.uniqueEntities.Contains(entity)) {
+        throw new EntityDetachedException("Entity must be created before it can be moved.");
       } else if (!this.positionsByEntity.ContainsKey(entity)) {
         throw new ArgumentException($"Entity {entity} is not on the map.");
       } else if (!this.IsInBounds(to)) {
@@ -196,14 +196,38 @@ namespace URF.Server.GameState {
       return this.map[x, y];
     }
 
+    /// <summary>
+    /// Get the location of an entity on the map. If the entity is not on the map, return an invalid
+    /// position.
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <returns></returns>
+    /// <exception cref=ArgumentNullException>When entity is null</exception>
+    /// <exception cref=EntityDetachedException>
+    /// When the entity has not been created in the game state.
+    /// </exception>
+    public Position LocateEntityOnMap(IEntity entity) {
+      if (entity == null) {
+        throw new ArgumentNullException("Cannot locate a null entity.");
+      } else if (!this.uniqueEntities.Contains(entity)) {
+        throw new EntityDetachedException("Entity must be created before it can be located.");
+      }
+
+      if (this.positionsByEntity.ContainsKey(entity)) {
+        return this.positionsByEntity[entity];
+      }
+
+      return Position.Invalid;
+    }
+
     private bool IsInBounds(Position p) {
       return 0 <= p.X && p.X < this.MapSize.X && 0 <= p.Y && p.Y < this.MapSize.Y;
     }
 
     private void PlaceEntity(IEntity entity, Position p) {
       Cell destination = this.GetCell(p);
-      entity.GetComponent<Movement>().EntityPosition = p;
       destination.PutContents(entity);
+      this.positionsByEntity[entity] = p;
     }
 
   }

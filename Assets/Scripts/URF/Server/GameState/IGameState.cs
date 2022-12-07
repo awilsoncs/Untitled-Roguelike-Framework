@@ -69,5 +69,7 @@ namespace URF.Server.GameState {
     /// <returns>A Cell object</returns>
     Cell GetCell(Position position);
 
+
+    Position LocateEntityOnMap(IEntity entity);
   }
 }
