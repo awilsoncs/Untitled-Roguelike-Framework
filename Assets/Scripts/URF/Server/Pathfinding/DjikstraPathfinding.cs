@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using URF.Common;
-using URF.Common.PriorityQueue;
-
 namespace URF.Server.Pathfinding {
+  using System.Collections.Generic;
+  using URF.Common;
+  using URF.Common.PriorityQueue;
+
   /// <summary>
   /// Pathfinding implemented using Djikstra's Algorithm.
   /// </summary>
@@ -18,15 +18,19 @@ namespace URF.Server.Pathfinding {
 
       frontier.Enqueue(costs[start.X][start.Y], start);
       visitedNodes[start] = 0f;
-      while(frontier.Count > 0) {
+      while (frontier.Count > 0) {
         Position node = frontier.Dequeue();
-        if(node.Equals(end)) { return UnwindBestPath(nodesByBestPredecessor, node); }
+        if (node.Equals(end)) {
+          return UnwindBestPath(nodesByBestPredecessor, node);
+        }
         float nodeCost = visitedNodes[node];
-        foreach(Position successor in GetSuccessors(node)) {
-          if(OutOfBounds(costs.Length, costs[0].Length, successor)) { continue; }
+        foreach (Position successor in GetSuccessors(node)) {
+          if (OutOfBounds(costs.Length, costs[0].Length, successor)) {
+            continue;
+          }
 
           float totalCost = nodeCost + costs[successor.X][successor.Y];
-          if(IsImprovedPath(frontier, visitedNodes, successor, totalCost)) {
+          if (IsImprovedPath(frontier, visitedNodes, successor, totalCost)) {
             UpdateNodeInventoryWithNewPath(frontier, visitedNodes, nodesByBestPredecessor, node,
               successor, totalCost);
           }
@@ -46,7 +50,7 @@ namespace URF.Server.Pathfinding {
     ) {
       Position backTrack = node;
       var path = new List<Position> { node };
-      while(nodesByBestPredecessor.ContainsKey(backTrack)) {
+      while (nodesByBestPredecessor.ContainsKey(backTrack)) {
         // set the backtrack cursor to the best predecessor
         backTrack = nodesByBestPredecessor[backTrack];
         // add the predecessor to the path
@@ -82,7 +86,9 @@ namespace URF.Server.Pathfinding {
       Position successor,
       float totalCost
     ) {
-      if(frontier.Contains(successor)) { frontier.UpdatePriority(totalCost, successor); } else {
+      if (frontier.Contains(successor)) {
+        frontier.UpdatePriority(totalCost, successor);
+      } else {
         frontier.Enqueue(totalCost, successor);
       }
       visitedNodes[successor] = totalCost;
