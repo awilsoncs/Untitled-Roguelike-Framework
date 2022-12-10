@@ -35,7 +35,7 @@ namespace URF.Common {
       return (other is Position position) && this.Equals(position);
     }
     
-    public bool (Position other) {
+    public bool Equals(Position other) {
       return this.X == other.X && this.Y == other.Y;
     }
     
