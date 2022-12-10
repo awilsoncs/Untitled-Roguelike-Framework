@@ -1,6 +1,7 @@
 name: PR Workflow 🎉
 
 on:
+  [manual_workflow]
   pull_request:
     paths:
       - 'Assets/Scripts/**'
