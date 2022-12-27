@@ -30,6 +30,18 @@ namespace URF.Common {
     }
 
     public static Position Invalid => new(-1, -1);
+    
+    public override bool Equals(object other) {
+      return (other is Position position) && this.Equals(position);
+    }
+    
+    public bool Equals(Position other) {
+      return this.X == other.X && this.Y == other.Y;
+    }
+    
+    public override int GetHashCode() {
+      return (this.X, this.Y).GetHashCode();
+    }
 
   }
 }
