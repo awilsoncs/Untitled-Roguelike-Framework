@@ -1,7 +1,7 @@
-using System;
-using UnityEngine;
-
 namespace URF.Client.GUI {
+  using System;
+  using UnityEngine;
+
   [Serializable]
   public class GuiComponents {
 
@@ -9,9 +9,9 @@ namespace URF.Client.GUI {
 
     [SerializeField] private MessageBox messageBox;
 
-    public HealthBar HealthBar => healthBar;
+    public HealthBar HealthBar => this.healthBar;
 
-    public MessageBox MessageBox => messageBox;
+    public MessageBox MessageBox => this.messageBox;
 
   }
 }
