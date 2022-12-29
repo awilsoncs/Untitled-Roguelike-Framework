@@ -7,11 +7,11 @@ namespace URF.Common.GameEvents {
   /// </summary>
   public class GameConfigured : EventArgs, IGameEvent {
 
-    public IReadOnlyGameState GameState {
+    public IReadOnlyGameState<IReadOnlyCell> GameState {
       get;
     }
 
-    public GameConfigured(IReadOnlyGameState gameState) {
+    public GameConfigured(IReadOnlyGameState<IReadOnlyCell> gameState) {
       this.GameState = gameState;
     }
 

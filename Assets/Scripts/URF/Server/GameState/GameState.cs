@@ -5,7 +5,6 @@ namespace URF.Server.GameState {
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
-  using URF.Common.GameState;
 
   /// <summary>
   /// Represent the state of the game at the level of entities and their positions on the map.
@@ -189,15 +188,6 @@ namespace URF.Server.GameState {
     /// <returns>A Cell at the given position</returns>
     /// <exception cref=ArgumentException>When the position is not in bounds.</exception>
     public Cell GetCell(Position position) {
-      if (!this.IsInBounds(position)) {
-        throw new ArgumentException(
-          $"Cannot get out-of bounds cell: {position} not in {this.MapSize}");
-      }
-      (int x, int y) = position;
-      return this.map[x, y];
-    }
-
-    IReadOnlyCell IReadOnlyGameState.GetCell(Position position) {
       if (!this.IsInBounds(position)) {
         throw new ArgumentException(
           $"Cannot get out-of bounds cell: {position} not in {this.MapSize}");

@@ -52,7 +52,7 @@ namespace URF.Client {
 
     private Position mainCharacterPosition;
 
-    private IReadOnlyGameState gameState;
+    private IReadOnlyGameState<IReadOnlyCell> gameState;
 
     private readonly Queue<IGameEvent> gameEvents = new();
 

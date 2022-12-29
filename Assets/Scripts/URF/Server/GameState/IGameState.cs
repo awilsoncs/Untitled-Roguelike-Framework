@@ -8,7 +8,7 @@ namespace URF.Server.GameState {
   /// the game world. Beyond position, the IGameState does not have any awareness of entities'
   /// information.
   /// </summary>
-  public interface IGameState : IReadOnlyGameState {
+  public interface IGameState : IReadOnlyGameState<Cell> {
 
     /// <summary>
     /// Persist an entity in the game state. This method should be called when client code has
@@ -45,7 +45,5 @@ namespace URF.Server.GameState {
     /// </summary>
     /// <param name="entity">The IEntity to delete.</param>
     void DeleteEntity(IEntity entity);
-
-    new Cell GetCell(Position position);
   }
 }

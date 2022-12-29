@@ -2,7 +2,7 @@ namespace URF.Common.GameState {
   using System.Collections.Generic;
   using URF.Common.Entities;
 
-  public interface IReadOnlyGameState {
+  public interface IReadOnlyGameState<out TCell> where TCell : IReadOnlyCell {
     /// <summary>
     /// Get a Position representing the dimensions of the map
     /// </summary>
@@ -24,7 +24,7 @@ namespace URF.Common.GameState {
     /// </summary>
     /// <param name="position">The position of the cell to get.</param>
     /// <returns>A Cell object</returns>
-    IReadOnlyCell GetCell(Position position);
+    TCell GetCell(Position position);
 
     Position LocateEntityOnMap(IEntity entity);
   }
