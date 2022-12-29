@@ -53,8 +53,7 @@ namespace URF.Server.RulesSystems {
 
     public void Load(IGameDataReader reader) {
       this.randomGenerator.Load(reader);
-      Position mapSize = (this.GameState.MapSize.X, this.GameState.MapSize.Y);
-      this.OnGameEvent(new GameConfigured(mapSize));
+      this.OnGameEvent(new GameConfigured(this.GameState));
       int count = reader.ReadInt();
       int mainCharacterId = reader.ReadInt();
       for (int i = 0; i < count; i++) {

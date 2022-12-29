@@ -7,6 +7,7 @@ namespace URF.Client {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.RulesSystems;
+  using URF.Common.GameState;
 
   /// <summary>
   /// GameClient client view
@@ -49,15 +50,11 @@ namespace URF.Client {
 
     private IEntity mainCharacter;
 
-    private (int, int) mainCharacterPosition;
+    private Position mainCharacterPosition;
+
+    private IReadOnlyGameState gameState;
 
     private readonly Queue<IGameEvent> gameEvents = new();
-
-    // track attackable enemies so that we can attack instead of attempt to move
-    private readonly Dictionary<IEntity, (int, int)> entityPosition = new();
-
-    // todo add a convenience type here to simplify initialization
-    private List<IEntity>[][] entitiesByPosition;
 
     private bool usingFOV = true;
 
@@ -97,18 +94,6 @@ namespace URF.Client {
       this.pawns.Clear();
       this.pawnsByID.Clear();
       this.gameEvents.Clear();
-      this.entityPosition.Clear();
-      this.entitiesByPosition = null;
-    }
-
-    private void ConfigureClientMap(Position mapSize) {
-      this.entitiesByPosition = new List<IEntity>[mapSize.X][];
-      for (int x = 0; x < mapSize.X; x++) {
-        this.entitiesByPosition[x] = new List<IEntity>[mapSize.Y];
-        for (int y = 0; y < mapSize.Y; y++) {
-          this.entitiesByPosition[x][y] = new List<IEntity>();
-        }
-      }
     }
 
     private void ClearGame() {
@@ -134,12 +119,6 @@ namespace URF.Client {
     private void DoMove(IEntity entity, int x, int y) {
       Pawn pawn = this.pawnsByID[entity.ID];
       pawn.transform.position = new Vector3(x * GridMultiple, y * GridMultiple, 0f);
-      if (this.entityPosition.ContainsKey(entity)) {
-        (int x0, int y0) = this.entityPosition[entity];
-        _ = this.entitiesByPosition[x0][y0].Remove(entity);
-      }
-      this.entityPosition[entity] = (x, y);
-      this.entitiesByPosition[x][y].Add(entity);
 
       if (entity == this.mainCharacter) {
         this.mainCharacterPosition = (x, y);
@@ -189,16 +168,11 @@ namespace URF.Client {
       this.pawns.RemoveAt(lastIndex);
       _ = this.pawnsByID.Remove(id);
       pawn.Recycle(this.pawnFactory);
-
-      (int x, int y) = this.entityPosition[entity];
-      _ = this.entityPosition.Remove(entity);
-      _ = this.entitiesByPosition[x][y].Remove(entity);
     }
 
     public override void HandleEntityVisibilityChanged(EntityVisibilityChanged ev) {
       int id = ev.Entity.ID;
       bool newVis = ev.NewVisibility;
-      Debug.Log($"Testing: {ev}");
       this.pawnsByID[id].IsVisible = newVis;
       if (this.usingFOV || newVis) {
         this.pawnsByID[id].gameObject.SetActive(newVis);
@@ -212,7 +186,7 @@ namespace URF.Client {
 
     public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       this.mainCharacter = ev.Entity;
-      this.mainCharacterPosition = this.entityPosition[this.mainCharacter];
+      this.mainCharacterPosition = this.gameState.LocateEntityOnMap(this.mainCharacter);
       CombatComponent stats = this.mainCharacter.GetComponent<CombatComponent>();
       this.gui.HealthBar.CurrentHealth = stats.CurrentHealth;
       this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
@@ -236,10 +210,10 @@ namespace URF.Client {
     }
 
     public override void HandleGameConfigured(GameConfigured ev) {
-      this.ConfigureClientMap(ev.MapSize);
+      this.gameState = ev.GameState;
       this.mainCamera.transform.position = new Vector3(
-        ev.MapSize.X / (2 / GridMultiple),
-        ev.MapSize.Y / (2 / GridMultiple),
+        ev.GameState.MapSize.X / (2 / GridMultiple),
+        ev.GameState.MapSize.Y / (2 / GridMultiple),
         -10
       );
     }
@@ -289,10 +263,9 @@ namespace URF.Client {
     }
 
     private void GetItem() {
-      int x = this.mainCharacterPosition.Item1;
-      int y = this.mainCharacterPosition.Item2;
-      List<IEntity> entities = this.entitiesByPosition[x][y];
-      IEntity itemToGet = entities.FirstOrDefault(x => x != this.mainCharacter);
+      Position position = this.gameState.LocateEntityOnMap(this.mainCharacter);
+      IEntity itemToGet = this.gameState
+        .GetCell(position).Contents.FirstOrDefault(x => x != this.mainCharacter);
       if (itemToGet != null) {
         this.OnGameEvent(new GetAction(this.mainCharacter, itemToGet));
       } else {
@@ -306,24 +279,25 @@ namespace URF.Client {
         (int)((worldPos.x / GridMultiple) + 0.5f),
         (int)((worldPos.y / GridMultiple) + 0.5f)
       );
-      if (this.entitiesByPosition[pos.X][pos.Y].Count > 0) {
-        List<IEntity> entities = this.entitiesByPosition[pos.X][pos.Y];
-        foreach (IEntity entity in entities) {
-          EntityInfo entityInfo = entity.GetComponent<EntityInfo>();
-          string description = entityInfo.Description;
-          this.gui.MessageBox.AddMessage(description);
-        }
-      } else {
+
+      IReadOnlyCollection<IEntity> entities = this.gameState.GetCell(pos).Contents;
+      if (entities.Count == 0) {
         this.gui.MessageBox.AddMessage("There's nothing there.");
+        return;
+      }
+
+      foreach (IEntity entity in entities) {
+        EntityInfo entityInfo = entity.GetComponent<EntityInfo>();
+        string description = entityInfo.Description;
+        this.gui.MessageBox.AddMessage(description);
       }
     }
 
     private void Move(int mx, int my) {
-      int x = this.mainCharacterPosition.Item1 + mx;
-      int y = this.mainCharacterPosition.Item2 + my;
+      Position targetPosition = this.gameState.LocateEntityOnMap(this.mainCharacter) + (mx, my);
       List<IEntity> fighters = new();
       List<IEntity> blockers = new();
-      List<IEntity> entities = this.entitiesByPosition[x][y];
+      IReadOnlyCollection<IEntity> entities = this.gameState.GetCell(targetPosition).Contents;
       foreach (IEntity entity in entities) {
         if (entity.GetComponent<CombatComponent>().CanFight) {
           fighters.Add(entity);
