@@ -50,8 +50,6 @@ namespace URF.Client {
 
     private IEntity mainCharacter;
 
-    private Position mainCharacterPosition;
-
     private IReadOnlyGameState<IReadOnlyCell> gameState;
 
     private readonly Queue<IGameEvent> gameEvents = new();
@@ -119,10 +117,6 @@ namespace URF.Client {
     private void DoMove(IEntity entity, int x, int y) {
       Pawn pawn = this.pawnsByID[entity.ID];
       pawn.transform.position = new Vector3(x * GridMultiple, y * GridMultiple, 0f);
-
-      if (entity == this.mainCharacter) {
-        this.mainCharacterPosition = (x, y);
-      }
     }
 
     private void CreatePawn(IEntity entity, Position position) {
@@ -186,7 +180,6 @@ namespace URF.Client {
 
     public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       this.mainCharacter = ev.Entity;
-      this.mainCharacterPosition = this.gameState.LocateEntityOnMap(this.mainCharacter);
       CombatComponent stats = this.mainCharacter.GetComponent<CombatComponent>();
       this.gui.HealthBar.CurrentHealth = stats.CurrentHealth;
       this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
