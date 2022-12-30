@@ -244,10 +244,10 @@ namespace URF.Client {
       } else if (Input.GetKeyDown(this.getKey)) {
         this.GetItem();
       } else if (Input.GetKeyDown(this.saveKey)) {
-        this.OnGameEvent(new SaveAction());
+        this.OnGameEvent(PersistenceEvent.SaveRequested());
       } else if (Input.GetKeyDown(this.loadKey)) {
         this.ResetEverything();
-        this.OnGameEvent(new LoadAction());
+        this.OnGameEvent(PersistenceEvent.LoadRequested());
       } else if (Input.GetKeyDown(this.newGameKey)) {
         this.BeginNewGame();
       } else {

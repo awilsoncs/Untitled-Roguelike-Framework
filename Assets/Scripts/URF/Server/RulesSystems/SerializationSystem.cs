@@ -29,12 +29,18 @@ namespace URF.Server.RulesSystems {
       this.mainCharacter = ev.Entity;
     }
 
-    public override void HandleSaveAction(SaveAction _) {
-      this.persistentStorage.Save(this, SaveVersion);
-    }
-
-    public override void HandleLoad(LoadAction _) {
-      this.persistentStorage.Load(this);
+    public override void HandlePersistenceEvent(PersistenceEvent persistenceEvent) {
+      switch (persistenceEvent.Subtype) {
+        case PersistenceEvent.PersistenceEventSubtype.SaveRequested:
+          this.persistentStorage.Save(this, SaveVersion);
+          return;
+        case PersistenceEvent.PersistenceEventSubtype.LoadRequested:
+          this.persistentStorage.Load(this);
+          return;
+        default:
+          // no op;
+          return;
+      }
     }
 
     public void Save(IGameDataWriter writer) {

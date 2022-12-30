@@ -81,8 +81,10 @@ namespace URF.Server {
       this.pluginBundle.Random.Rotate();
     }
 
-    public override void HandleLoad(LoadAction loadAction) {
-      this.SetUpGame();
+    public override void HandlePersistenceEvent(PersistenceEvent persistenceEvent) {
+      if (persistenceEvent.Subtype == PersistenceEvent.PersistenceEventSubtype.LoadRequested) {
+        this.SetUpGame();
+      }
     }
 
     private void RegisterSystem(IRulesSystem system) {

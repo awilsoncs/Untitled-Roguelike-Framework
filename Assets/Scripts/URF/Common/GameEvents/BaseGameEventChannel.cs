@@ -69,19 +69,11 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleLoad(LoadAction load) {
-      // default no-op
-    }
-
     public virtual void HandleMainCharacterChanged(MainCharacterChanged mainCharacterChanged) {
       // default no-op
     }
 
     public virtual void HandleMoveAction(MoveAction moveAction) {
-      // default no-op
-    }
-
-    public virtual void HandleSaveAction(SaveAction saveAction) {
       // default no-op
     }
 
@@ -102,6 +94,10 @@ namespace URF.Common.GameEvents {
     }
 
     public virtual void HandleInventoryChanged(InventoryChanged inventoryChanged) {
+      // default no-op
+    }
+
+    public virtual void HandlePersistenceEvent(PersistenceEvent persistenceEvent) {
       // default no-op
     }
   }
