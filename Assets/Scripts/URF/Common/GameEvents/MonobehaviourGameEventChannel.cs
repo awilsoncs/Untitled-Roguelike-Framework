@@ -91,11 +91,7 @@ namespace URF.Common.GameEvents {
       // default no-op;
     }
 
-    public virtual void HandleGetAction(GetAction getAction) {
-      // default no-op
-    }
-
-    public virtual void HandleInventoryChanged(InventoryChanged inventoryChanged) {
+    public virtual void HandleInventoryEvent(InventoryEvent inventoryEvent) {
       // default no-op
     }
 

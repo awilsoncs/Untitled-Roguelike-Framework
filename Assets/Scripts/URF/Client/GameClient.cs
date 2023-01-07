@@ -211,16 +211,16 @@ namespace URF.Client {
       );
     }
 
-    public override void HandleInventoryChanged(InventoryChanged inventoryChanged) {
-      switch (inventoryChanged.Action) {
-        case InventoryChanged.InventoryAction.PickedUp:
-          string agent = "";
-          if (inventoryChanged.Entity == this.mainCharacter) {
+    public override void HandleInventoryEvent(InventoryEvent inventoryEvent) {
+      switch (inventoryEvent.Action) {
+        case InventoryEvent.InventoryAction.PickedUp:
+          string agent;
+          if (inventoryEvent.Entity == this.mainCharacter) {
             agent = "You";
           } else {
-            agent = inventoryChanged.Entity.GetComponent<EntityInfo>().Name;
+            agent = inventoryEvent.Entity.GetComponent<EntityInfo>().Name;
           }
-          string targetName = inventoryChanged.Item.GetComponent<EntityInfo>().Name;
+          string targetName = inventoryEvent.Item.GetComponent<EntityInfo>().Name;
           this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
           break;
       }
@@ -260,7 +260,7 @@ namespace URF.Client {
       IEntity itemToGet = this.gameState
         .GetCell(position).Contents.FirstOrDefault(x => x != this.mainCharacter);
       if (itemToGet != null) {
-        this.OnGameEvent(new GetAction(this.mainCharacter, itemToGet));
+        this.OnGameEvent(this.mainCharacter.WantsToGet(itemToGet));
       } else {
         this.gui.MessageBox.AddMessage("There's nothing here.");
       }

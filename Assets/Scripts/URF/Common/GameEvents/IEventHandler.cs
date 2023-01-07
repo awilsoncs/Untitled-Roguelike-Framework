@@ -16,8 +16,7 @@ namespace URF.Common.GameEvents {
     void HandleMainCharacterChanged(MainCharacterChanged mainCharacterChanged);
     void HandleMoveAction(MoveAction moveAction);
     void HandleTurnSpent(TurnSpent turnSpent);
-    void HandleGetAction(GetAction getAction);
-    void HandleInventoryChanged(InventoryChanged inventoryChanged);
+    void HandleInventoryEvent(InventoryEvent inventoryEvent);
     void HandlePersistenceEvent(PersistenceEvent persistenceEvent);
   }
 }

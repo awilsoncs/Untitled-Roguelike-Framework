@@ -5,9 +5,12 @@ namespace URF.Server.RulesSystems {
   /// Defines inventory handling for entities.
   /// </summary>
   public class InventorySystem : BaseRulesSystem {
-    public override void HandleGetAction(GetAction getAction) {
-      this.GameState.RemoveEntityFromMap(getAction.Target);
-      this.OnGameEvent(getAction.Entity.PickedUp(getAction.Target));
+    public override void HandleInventoryEvent(InventoryEvent inventoryEvent) {
+      if (inventoryEvent.Action != InventoryEvent.InventoryAction.WantsToGet) {
+        return;
+      }
+      this.GameState.RemoveEntityFromMap(inventoryEvent.Item);
+      this.OnGameEvent(inventoryEvent.Entity.PickedUp(inventoryEvent.Item));
     }
   }
 
