@@ -20,6 +20,15 @@ namespace URF.Common.GameState {
     IReadOnlyCollection<IEntity> GetAllEntities();
 
     /// <summary>
+    /// Get an Entity by entity ID.
+    /// </summary>
+    /// <returns>
+    /// The entity with matching ID.
+    /// </returns>
+    IEntity GetEntityById(int id);
+
+
+    /// <summary>
     /// Get a single map cell.
     /// </summary>
     /// <param name="position">The position of the cell to get.</param>

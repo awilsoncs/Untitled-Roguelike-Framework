@@ -40,6 +40,8 @@ namespace URF.Client {
 
     [SerializeField] private KeyCode getKey = KeyCode.G;
 
+    [SerializeField] private KeyCode dropKey = KeyCode.D;
+
     [SerializeField] private KeyCode mapKey = KeyCode.M;
 
     private const float GridMultiple = 0.5f;
@@ -243,6 +245,8 @@ namespace URF.Client {
         this.ToggleFieldOfView();
       } else if (Input.GetKeyDown(this.getKey)) {
         this.GetItem();
+      } else if (Input.GetKeyDown(this.dropKey)) {
+        this.DropItem();
       } else if (Input.GetKeyDown(this.saveKey)) {
         this.OnGameEvent(PersistenceEvent.SaveRequested());
       } else if (Input.GetKeyDown(this.loadKey)) {
@@ -264,6 +268,19 @@ namespace URF.Client {
       } else {
         this.gui.MessageBox.AddMessage("There's nothing here.");
       }
+    }
+
+    private void DropItem() {
+      // figure out which item to drop
+      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
+      if (inventory.Contents.Count == 0) {
+        this.gui.MessageBox.AddMessage("You're not holding anything.");
+        return;
+      }
+
+      int topItemId = inventory.Contents[0];
+      IEntity itemToDrop = this.gameState.GetEntityById(topItemId);
+      this.OnGameEvent(this.mainCharacter.WantsToDrop(itemToDrop));
     }
 
     private void MouseClicked(Vector3 clickPos) {

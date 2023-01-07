@@ -1,4 +1,5 @@
 namespace URF.Common.Entities {
+  using System;
   using System.Collections.Generic;
   using URF.Common.Persistence;
 
@@ -27,7 +28,19 @@ namespace URF.Common.Entities {
     /// </summary>
     /// <param name="entity">The entity to remove.</param>
     public void Remove(IEntity entity) {
+      if (!this.Contents.Contains(entity.ID)) {
+        throw new ArgumentException("Cannot remove item not in inventory");
+      }
       _ = this.Contents.Remove(entity.ID);
+    }
+
+    /// <summary>
+    /// Return whether this inventory contains the given entity.
+    /// </summary>
+    /// <param name="entity">The entity to query for</param>
+    /// <returns>True if the inventory contains the entity, false otherwise</returns>
+    public bool Contains(IEntity entity) {
+      return this.Contents.Contains(entity.ID);
     }
 
     /// <inheritdoc>
