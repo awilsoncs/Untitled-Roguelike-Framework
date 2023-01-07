@@ -19,5 +19,6 @@ namespace URF.Server.RulesSystems {
     }
 
     void ApplyPlugins(PluginBundle pluginBundle);
+
   }
 }

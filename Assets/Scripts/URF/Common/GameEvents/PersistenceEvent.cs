@@ -18,7 +18,13 @@ namespace URF.Common.GameEvents {
       /// <summary>
       /// The player has requested that the game be loaded.
       /// </summary>
-      LoadRequested
+      LoadRequested,
+      /// <summary>
+      /// The game server has initiated the late load step. Use for anything that most happen for
+      /// actions that occur after full deserialization but before the game starts e.g. Entity
+      /// ID resolution.
+      /// </summary>
+      LateLoadBegan
     }
 
     /// <summary>
@@ -44,6 +50,13 @@ namespace URF.Common.GameEvents {
     /// </summary>
     public static PersistenceEvent LoadRequested() {
       return new(PersistenceEventSubtype.LoadRequested);
+    }
+
+    /// <summary>
+    /// Create a LateLoadBegan PersistenceEvent.
+    /// </summary>
+    public static PersistenceEvent LateLoadBegan() {
+      return new(PersistenceEventSubtype.LateLoadBegan);
     }
 
     /// <inheritdoc />
