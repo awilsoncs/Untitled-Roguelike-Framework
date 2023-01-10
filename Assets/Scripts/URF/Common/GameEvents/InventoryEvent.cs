@@ -9,8 +9,9 @@ namespace URF.Common.GameEvents {
       Dropped,
       Consumed,
       WantsToGet,
-      WantsToDrop
-
+      WantsToDrop,
+      Used,
+      WantsToUse
     }
 
     /// <summary>The entity that picked the item up.</summary>
@@ -72,6 +73,20 @@ namespace URF.Common.GameEvents {
       IEntity other
     ) {
       return new InventoryEvent(entity, InventoryEvent.InventoryAction.WantsToDrop, other);
+    }
+
+    public static InventoryEvent Used(
+      this IEntity entity,
+      IEntity other
+    ) {
+      return new InventoryEvent(entity, InventoryEvent.InventoryAction.Used, other);
+    }
+
+    public static InventoryEvent WantsToUse(
+      this IEntity entity,
+      IEntity other
+    ) {
+      return new InventoryEvent(entity, InventoryEvent.InventoryAction.WantsToUse, other);
     }
   }
 

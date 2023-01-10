@@ -42,6 +42,8 @@ namespace URF.Client {
 
     [SerializeField] private KeyCode dropKey = KeyCode.D;
 
+    [SerializeField] private KeyCode healKey = KeyCode.H;
+
     [SerializeField] private KeyCode mapKey = KeyCode.M;
 
     private const float GridMultiple = 0.5f;
@@ -214,17 +216,20 @@ namespace URF.Client {
     }
 
     public override void HandleInventoryEvent(InventoryEvent inventoryEvent) {
+      string agent;
+      if (inventoryEvent.Entity == this.mainCharacter) {
+        agent = "You";
+      } else {
+        agent = inventoryEvent.Entity.GetComponent<EntityInfo>().Name;
+      }
+      string targetName = inventoryEvent.Item.GetComponent<EntityInfo>().Name;
       switch (inventoryEvent.Action) {
         case InventoryEvent.InventoryAction.PickedUp:
-          string agent;
-          if (inventoryEvent.Entity == this.mainCharacter) {
-            agent = "You";
-          } else {
-            agent = inventoryEvent.Entity.GetComponent<EntityInfo>().Name;
-          }
-          string targetName = inventoryEvent.Item.GetComponent<EntityInfo>().Name;
           this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
           break;
+        case InventoryEvent.InventoryAction.Used:
+          this.gui.MessageBox.AddMessage($"{agent} used a {targetName}.");
+          return;
       }
     }
 
@@ -247,6 +252,8 @@ namespace URF.Client {
         this.GetItem();
       } else if (Input.GetKeyDown(this.dropKey)) {
         this.DropItem();
+      } else if (Input.GetKeyDown(this.healKey)) {
+        this.Heal();
       } else if (Input.GetKeyDown(this.saveKey)) {
         this.OnGameEvent(PersistenceEvent.SaveRequested());
       } else if (Input.GetKeyDown(this.loadKey)) {
@@ -281,6 +288,19 @@ namespace URF.Client {
       int topItemId = inventory.Contents[0];
       IEntity itemToDrop = this.gameState.GetEntityById(topItemId);
       this.OnGameEvent(this.mainCharacter.WantsToDrop(itemToDrop));
+    }
+
+    private void Heal() {
+      // figure out which item to drop
+      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
+      if (inventory.Contents.Count == 0) {
+        this.gui.MessageBox.AddMessage("You don't have any potions.");
+        return;
+      }
+
+      int topItemId = inventory.Contents[0];
+      IEntity itemToUse = this.gameState.GetEntityById(topItemId);
+      this.OnGameEvent(this.mainCharacter.WantsToUse(itemToUse));
     }
 
     private void MouseClicked(Vector3 clickPos) {

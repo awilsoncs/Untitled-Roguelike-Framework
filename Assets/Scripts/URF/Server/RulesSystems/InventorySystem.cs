@@ -35,6 +35,9 @@ namespace URF.Server.RulesSystems {
         case InventoryEvent.InventoryAction.WantsToDrop:
           this.HandleWantsToDrop(inventoryEvent);
           return;
+        case InventoryEvent.InventoryAction.WantsToUse:
+          this.HandleWantsToUse(inventoryEvent);
+          return;
       }
     }
 
@@ -57,6 +60,27 @@ namespace URF.Server.RulesSystems {
       Position entityPos = this.GameState.LocateEntityOnMap(entity);
       this.GameState.PlaceEntityOnMap(item, entityPos);
       this.OnGameEvent(inventoryEvent.Entity.Dropped(item));
+      return;
+    }
+
+    private void HandleWantsToUse(InventoryEvent inventoryEvent) {
+      IEntity entity = inventoryEvent.Entity;
+      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
+      if (inventory == null) {
+        throw new GameEventException(
+          inventoryEvent, "The acting entity does not have an InventoryComponent.");
+      }
+
+      IEntity item = inventoryEvent.Item;
+
+      if (!inventory.Contains(item)) {
+        throw new GameEventException(
+          inventoryEvent, "The inventory doesn't contain the expected item.");
+      }
+
+      inventory.Remove(item);
+      this.OnGameEvent(entity.Used(item));
+      this.GameState.DeleteEntity(item);
       return;
     }
 
