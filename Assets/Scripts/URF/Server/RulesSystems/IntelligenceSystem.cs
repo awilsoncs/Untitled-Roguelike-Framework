@@ -5,9 +5,8 @@ namespace URF.Server.RulesSystems {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Common.Persistence;
-  using URF.Server.FieldOfView;
+  using URF.Algorithms;
   using URF.Server.GameState;
-  using URF.Server.Pathfinding;
 
   public enum IntelligenceControlMode {
 

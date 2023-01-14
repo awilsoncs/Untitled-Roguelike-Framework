@@ -1,6 +1,6 @@
 // Provide a port for random number generation.
 
-namespace URF.Server.RandomGeneration {
+namespace URF.Algorithms {
   using URF.Common.Persistence;
 
   public interface IRandomGenerator : IPersistableObject {

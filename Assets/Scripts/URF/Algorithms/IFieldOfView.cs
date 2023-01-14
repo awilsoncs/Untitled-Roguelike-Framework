@@ -1,4 +1,4 @@
-namespace URF.Server.FieldOfView {
+namespace URF.Algorithms {
   using URF.Common;
 
   /// <summary>

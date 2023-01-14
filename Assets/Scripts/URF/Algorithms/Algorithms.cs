@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
+namespace URF.Algorithms {
+  using System;
+  using System.Collections.Generic;
+  using URF.Common;
 
-namespace URF.Common {
-  public static class Algorithms {
-
-    private static void Swap<T>(ref T lhs, ref T rhs) {
-      (lhs, rhs) = (rhs, lhs);
-    }
+  public static class Lines {
 
     /// <summary>
     /// The plot function delegate
@@ -15,10 +12,14 @@ namespace URF.Common {
     /// <returns>True to continue, false to stop the algorithm</returns>
     public delegate bool PlotFunction(Position p);
 
+    private static void Swap<T>(ref T lhs, ref T rhs) {
+      (lhs, rhs) = (rhs, lhs);
+    }
+
     /// <summary>
     /// Runs Bresenham's line algorithm, reverse corrected.
     /// </summary>
-    public static void Line(Position start, Position end, PlotFunction plot) {
+    public static void Plot(Position start, Position end, PlotFunction plot) {
       // Explanation: in cases where the start is to the right of the end,
       // Bresenham's algorithm returns the line from end to start.
       // todo can we just fix the bresenham algorithm to not reverse?

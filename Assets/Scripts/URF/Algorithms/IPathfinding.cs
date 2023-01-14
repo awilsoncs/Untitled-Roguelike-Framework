@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using URF.Common;
 
-namespace URF.Server.Pathfinding {
+namespace URF.Algorithms {
   /// <summary>
   /// Provide all pathfinding and related graph traversal logic.
   /// </summary>
@@ -9,7 +9,7 @@ namespace URF.Server.Pathfinding {
 
     /// <summary>
     /// Get an optimal path from the start to the end, inclusive, over the
-    /// given cost map. 
+    /// given cost map.
     /// </summary>
     /// <param name="costs">An array of costs to enter the node</param>
     /// <param name="start">The starting node</param>

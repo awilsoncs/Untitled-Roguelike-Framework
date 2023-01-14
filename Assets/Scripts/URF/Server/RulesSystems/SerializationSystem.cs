@@ -5,7 +5,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common.GameEvents;
   using URF.Common.Persistence;
   using URF.Server.EntityFactory;
-  using URF.Server.RandomGeneration;
+  using URF.Algorithms;
 
   public class SerializationSystem : BaseRulesSystem, IPersistableObject {
 

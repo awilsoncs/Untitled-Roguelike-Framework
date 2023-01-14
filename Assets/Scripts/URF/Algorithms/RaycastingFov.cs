@@ -1,4 +1,4 @@
-namespace URF.Server.FieldOfView {
+namespace URF.Algorithms {
   using System.Collections.Generic;
   using URF.Common;
 
@@ -9,7 +9,7 @@ namespace URF.Server.FieldOfView {
   public class RaycastingFov : IFieldOfView {
 
     // Marks results true or false based on game state position transparency.
-    private static Algorithms.PlotFunction GetPlotter(
+    private static Lines.PlotFunction GetPlotter(
       bool[,] transparency,
       IDictionary<Position, bool> results
     ) {
@@ -29,18 +29,18 @@ namespace URF.Server.FieldOfView {
         return new FieldOfViewQueryResult(results);
       }
 
-      Algorithms.PlotFunction pf = GetPlotter(transparency, results);
+      Lines.PlotFunction pf = GetPlotter(transparency, results);
       int width = transparency.GetLength(0);
       int height = transparency.GetLength(1);
 
       for (int column = 0; column < width; column++) {
-        Algorithms.Line(pos, (column, height - 1), pf);
-        Algorithms.Line(pos, (column, 0), pf);
+        Lines.Plot(pos, (column, height - 1), pf);
+        Lines.Plot(pos, (column, 0), pf);
       }
 
       for (int row = 1; row < height - 1; row++) {
-        Algorithms.Line(pos, (0, row), pf);
-        Algorithms.Line(pos, (width - 1, row), pf);
+        Lines.Plot(pos, (0, row), pf);
+        Lines.Plot(pos, (width - 1, row), pf);
       }
 
       return new FieldOfViewQueryResult(results);
@@ -49,8 +49,8 @@ namespace URF.Server.FieldOfView {
     /// <inheritdoc />
     public bool IsVisible(bool[,] transparency, Position start, Position end) {
       var results = new Dictionary<Position, bool>();
-      Algorithms.PlotFunction pf = GetPlotter(transparency, results);
-      Algorithms.Line(start, end, pf);
+      Lines.PlotFunction pf = GetPlotter(transparency, results);
+      Lines.Plot(start, end, pf);
       return results.GetValueOrDefault(end);
     }
 

@@ -3,7 +3,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.EntityFactory;
-  using URF.Server.RandomGeneration;
+  using URF.Algorithms;
 
   public class DebugSystem : BaseRulesSystem {
 

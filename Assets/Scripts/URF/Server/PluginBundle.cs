@@ -1,14 +1,11 @@
-using System;
-using JetBrains.Annotations;
-using URF.Common.Logging;
-using URF.Common.Persistence;
-using URF.Server.EntityFactory;
-using URF.Server.FieldOfView;
-using URF.Server.GameState;
-using URF.Server.Pathfinding;
-using URF.Server.RandomGeneration;
-
 namespace URF.Server {
+  using System;
+  using JetBrains.Annotations;
+  using URF.Common.Logging;
+  using URF.Common.Persistence;
+  using URF.Server.EntityFactory;
+  using URF.Algorithms;
+
   public class PluginBundle {
 
     [NotNull]

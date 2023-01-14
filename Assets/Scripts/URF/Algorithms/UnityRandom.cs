@@ -1,7 +1,7 @@
 using UnityEngine;
 using URF.Common.Persistence;
 
-namespace URF.Server.RandomGeneration {
+namespace URF.Algorithms {
   public class UnityRandom : IRandomGenerator {
 
     private Random.State _mainRandomState;

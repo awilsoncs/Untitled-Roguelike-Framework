@@ -2,7 +2,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
-  using URF.Server.FieldOfView;
+  using URF.Algorithms;
   using URF.Server.GameState;
 
   public class FieldOfViewSystem : BaseRulesSystem {

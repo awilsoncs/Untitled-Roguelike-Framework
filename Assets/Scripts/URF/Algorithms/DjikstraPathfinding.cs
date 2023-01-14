@@ -1,4 +1,4 @@
-namespace URF.Server.Pathfinding {
+namespace URF.Algorithms {
   using System.Collections.Generic;
   using URF.Common;
   using URF.Common.PriorityQueue;
