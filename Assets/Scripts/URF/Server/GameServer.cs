@@ -44,6 +44,7 @@ namespace URF.Server {
       this.RegisterSystem(new IntelligenceSystem());
       this.RegisterSystem(new FieldOfViewSystem());
       this.RegisterSystem(new InventorySystem());
+      this.RegisterSystem(new EffectsSystem());
       this.RegisterSystem(new SerializationSystem());
 
 

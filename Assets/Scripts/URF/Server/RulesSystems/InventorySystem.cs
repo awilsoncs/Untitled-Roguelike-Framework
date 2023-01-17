@@ -4,6 +4,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
+  using URF.Effects;
 
   /// <summary>
   /// Defines inventory handling for entities.
@@ -37,6 +38,9 @@ namespace URF.Server.RulesSystems {
           return;
         case InventoryEvent.InventoryAction.WantsToUse:
           this.HandleWantsToUse(inventoryEvent);
+          return;
+        case InventoryEvent.InventoryAction.Used:
+          this.HandleUsed(inventoryEvent);
           return;
       }
     }
@@ -78,9 +82,7 @@ namespace URF.Server.RulesSystems {
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
-      inventory.Remove(item);
       this.OnGameEvent(entity.Used(item));
-      this.GameState.DeleteEntity(item);
       return;
     }
 
@@ -89,6 +91,25 @@ namespace URF.Server.RulesSystems {
       InventoryComponent inventory = inventoryEvent.Entity.GetComponent<InventoryComponent>();
       inventory.Add(inventoryEvent.Item);
       this.OnGameEvent(inventoryEvent.Entity.PickedUp(inventoryEvent.Item));
+      return;
+    }
+
+    private void HandleUsed(InventoryEvent inventoryEvent) {
+      IEntity entity = inventoryEvent.Entity;
+      IEntity item = inventoryEvent.Item;
+      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
+
+      if (!inventory.Contains(item)) {
+        throw new GameEventException(
+          inventoryEvent, "The inventory doesn't contain the expected item.");
+      }
+
+      this.OnGameEvent(
+        EffectEvent.Created(new RestoreHealthEffect(entity, 5))
+      );
+
+      inventory.Remove(item);
+      this.GameState.DeleteEntity(item);
       return;
     }
 

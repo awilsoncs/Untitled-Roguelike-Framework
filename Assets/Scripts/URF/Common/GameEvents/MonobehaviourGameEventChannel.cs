@@ -98,5 +98,9 @@ namespace URF.Common.GameEvents {
     public virtual void HandlePersistenceEvent(PersistenceEvent persistenceEvent) {
       // default no-op
     }
+
+    public virtual void HandleEffectEvent(EffectEvent effectEvent) {
+      // default no-op
+    }
   }
 }

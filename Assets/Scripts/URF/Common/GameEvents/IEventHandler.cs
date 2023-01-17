@@ -18,5 +18,6 @@ namespace URF.Common.GameEvents {
     void HandleTurnSpent(TurnSpent turnSpent);
     void HandleInventoryEvent(InventoryEvent inventoryEvent);
     void HandlePersistenceEvent(PersistenceEvent persistenceEvent);
+    void HandleEffectEvent(EffectEvent effectEvent);
   }
 }
