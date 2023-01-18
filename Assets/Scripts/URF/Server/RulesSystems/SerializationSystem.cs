@@ -38,7 +38,7 @@ namespace URF.Server.RulesSystems {
           this.persistentStorage.Load(this);
           return;
         default:
-          // no op;
+          // no op
           return;
       }
     }
