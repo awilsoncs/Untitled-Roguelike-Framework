@@ -1,4 +1,4 @@
-namespace URF.Effects {
+namespace URF.Common.Effects {
   using URF.Common;
   using URF.Server.GameState;
 

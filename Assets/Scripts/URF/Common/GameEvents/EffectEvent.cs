@@ -1,6 +1,6 @@
 namespace URF.Common.GameEvents {
   using System;
-  using URF.Effects;
+  using URF.Common.Effects;
 
   public class EffectEvent : EventArgs, IGameEvent {
 

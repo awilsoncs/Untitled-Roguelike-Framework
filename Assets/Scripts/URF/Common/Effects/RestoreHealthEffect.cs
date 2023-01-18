@@ -1,4 +1,4 @@
-namespace URF.Effects {
+namespace URF.Common.Effects {
   using System;
   using URF.Common.Entities;
   using URF.Common.Exceptions;

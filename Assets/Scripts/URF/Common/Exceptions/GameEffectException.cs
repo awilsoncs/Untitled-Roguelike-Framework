@@ -2,7 +2,7 @@
 namespace URF.Common.Exceptions {
   using System;
   using System.Runtime.Serialization;
-  using URF.Effects;
+  using URF.Common.Effects;
 
   /// <summary>
   /// Thrown by malformed effects.
