@@ -43,14 +43,6 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleEntityCreated(EntityCreated entityCreated) {
-      // default no-op
-    }
-
-    public virtual void HandleEntityDeleted(EntityDeleted entityKilled) {
-      // default no-op
-    }
-
     public virtual void HandleEntityLocationChanged(EntityLocationChanged entityMoved) {
       // default no-op
     }
@@ -100,6 +92,10 @@ namespace URF.Common.GameEvents {
     }
 
     public virtual void HandleEffectEvent(EffectEvent effectEvent) {
+      // default no-op
+    }
+
+    public virtual void HandleEntityEvent(EntityEvent effectEvent) {
       // default no-op
     }
   }

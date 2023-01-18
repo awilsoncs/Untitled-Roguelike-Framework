@@ -30,6 +30,7 @@ namespace URF.Server.RulesSystems {
 
       defenderCombat.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
       if (defenderCombat.CurrentHealth > 0) {
+        this.OnGameEvent(defender.WasUpdated());
         return;
       }
       this.GameState.DeleteEntity(defender);

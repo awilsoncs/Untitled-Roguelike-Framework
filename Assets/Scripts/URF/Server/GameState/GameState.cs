@@ -67,7 +67,7 @@ namespace URF.Server.GameState {
 
       this.entitiesById[entity.ID] = entity;
       _ = this.uniqueEntities.Add(entity);
-      this.OnGameEvent(new EntityCreated(entity));
+      this.OnGameEvent(entity.WasCreated());
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ namespace URF.Server.GameState {
       }
       _ = this.entitiesById.Remove(entity.ID);
       _ = this.uniqueEntities.Remove(entity);
-      this.OnGameEvent(new EntityDeleted(entity));
+      this.OnGameEvent(entity.WasDeleted());
     }
 
     /// <summary>

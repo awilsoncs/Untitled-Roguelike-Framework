@@ -1,6 +1,7 @@
 namespace URF.Effects {
   using System;
   using URF.Common.Entities;
+  using URF.Common.GameEvents;
 
   public class RestoreHealthEffect : BaseEffect {
 
@@ -23,6 +24,7 @@ namespace URF.Effects {
       int maxHealth = affectedCombat.MaxHealth;
       int currentHealth = affectedCombat.CurrentHealth;
       affectedCombat.CurrentHealth = Math.Clamp(currentHealth + this.magnitude, 0, maxHealth);
+      this.OnGameEvent(this.affected.WasUpdated());
     }
   }
 }

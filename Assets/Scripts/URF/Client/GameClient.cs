@@ -140,7 +140,26 @@ namespace URF.Client {
       this.DoMove(entity, position.X, position.Y);
     }
 
-    public override void HandleEntityDeleted(EntityDeleted ev) {
+    public override void HandleEntityEvent(EntityEvent ev) {
+      switch (ev.Method) {
+        case EntityEvent.EntityMethod.Updated:
+          this.HandleEntityEventUpdated(ev);
+          return;
+        case EntityEvent.EntityMethod.Deleted:
+          this.HandleEntityEventDeleted(ev);
+          return;
+      }
+    }
+
+    private void HandleEntityEventUpdated(EntityEvent ev) {
+      if (ev.Entity == this.mainCharacter) {
+        CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
+        this.gui.HealthBar.UpdateHealthBar(combat.CurrentHealth);
+      }
+    }
+
+
+    private void HandleEntityEventDeleted(EntityEvent ev) {
       if (ev.Entity == this.mainCharacter) {
         Debug.Log("Player died, reloading...");
         this.ClearGame();
@@ -148,7 +167,6 @@ namespace URF.Client {
       }
 
       if (this.pawnsByID.ContainsKey(ev.Entity.ID)) {
-        // If the server forgot to send a EntityLocationChanged first.
         this.DeletePawn(ev.Entity);
       }
     }
@@ -185,10 +203,8 @@ namespace URF.Client {
     public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       this.mainCharacter = ev.Entity;
       CombatComponent stats = this.mainCharacter.GetComponent<CombatComponent>();
-      this.gui.HealthBar.CurrentHealth = stats.CurrentHealth;
       this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
-      // todo should link updates to properties
-      this.gui.HealthBar.UpdateHealthBar();
+      this.gui.HealthBar.UpdateHealthBar(stats.CurrentHealth);
     }
 
     public override void HandleEntityAttacked(EntityAttacked ev) {
@@ -202,8 +218,6 @@ namespace URF.Client {
       if (ev.Defender != this.mainCharacter || !ev.Success) {
         return;
       }
-      this.gui.HealthBar.CurrentHealth -= ev.Damage;
-      this.gui.HealthBar.UpdateHealthBar();
     }
 
     public override void HandleGameConfigured(GameConfigured ev) {
