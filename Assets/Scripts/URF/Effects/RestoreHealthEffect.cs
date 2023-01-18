@@ -6,9 +6,9 @@ namespace URF.Effects {
 
   public class RestoreHealthEffect : BaseEffect {
 
-    private IEntity affected;
+    private readonly IEntity affected;
 
-    private int magnitude;
+    private readonly int magnitude;
 
     public RestoreHealthEffect(IEntity affected, int magnitude) {
       this.affected = affected;
