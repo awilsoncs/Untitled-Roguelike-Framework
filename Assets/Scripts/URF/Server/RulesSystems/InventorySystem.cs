@@ -44,6 +44,8 @@ namespace URF.Server.RulesSystems {
         case InventoryEvent.InventoryAction.Used:
           this.HandleUsed(inventoryEvent);
           return;
+        default:
+          return;
       }
     }
 
