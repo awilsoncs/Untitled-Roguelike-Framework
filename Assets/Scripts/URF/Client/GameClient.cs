@@ -305,12 +305,18 @@ namespace URF.Client {
     }
 
     private void Heal() {
-      // figure out which item to drop
       InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
       if (inventory.Contents.Count == 0) {
         this.gui.MessageBox.AddMessage("You don't have any potions.");
         return;
       }
+
+      CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
+      if (combat.CurrentHealth == combat.MaxHealth) {
+        this.gui.MessageBox.AddMessage("You're already at maximum health.");
+        return;
+      }
+
 
       int topItemId = inventory.Contents[0];
       IEntity itemToUse = this.gameState.GetEntityById(topItemId);
