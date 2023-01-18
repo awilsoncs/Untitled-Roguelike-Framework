@@ -1,6 +1,7 @@
 namespace URF.Effects {
   using System;
   using URF.Common.Entities;
+  using URF.Common.Exceptions;
   using URF.Common.GameEvents;
 
   public class RestoreHealthEffect : BaseEffect {

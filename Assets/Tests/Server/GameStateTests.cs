@@ -7,6 +7,7 @@ namespace Tests.Server {
   using URF.Server;
   using URF.Server.GameState;
   using URF.Common;
+  using URF.Common.Exceptions;
 
   public class GameStateTests {
 

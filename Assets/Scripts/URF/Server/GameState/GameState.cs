@@ -4,6 +4,7 @@ namespace URF.Server.GameState {
   using System.Linq;
   using URF.Common;
   using URF.Common.Entities;
+  using URF.Common.Exceptions;
   using URF.Common.GameEvents;
 
   /// <summary>
