@@ -141,13 +141,10 @@ namespace URF.Client {
     }
 
     public override void HandleEntityEvent(EntityEvent ev) {
-      switch (ev.Method) {
-        case EntityEvent.EntityMethod.Updated:
-          this.HandleEntityEventUpdated(ev);
-          return;
-        case EntityEvent.EntityMethod.Deleted:
-          this.HandleEntityEventDeleted(ev);
-          return;
+      if (ev.Method == EntityEvent.EntityMethod.Updated) {
+        this.HandleEntityEventUpdated(ev);
+      } else if (ev.Method == EntityEvent.EntityMethod.Deleted) {
+        this.HandleEntityEventDeleted(ev);
       }
     }
 
@@ -221,10 +218,13 @@ namespace URF.Client {
     }
 
     public override void HandleGameConfigured(GameConfigured ev) {
+      if (ev == null) {
+        Debug.LogError("Null GameConfigured event");
+      }
       this.gameState = ev.GameState;
       this.mainCamera.transform.position = new Vector3(
-        ev.GameState.MapSize.X / (2 / GridMultiple),
-        ev.GameState.MapSize.Y / (2 / GridMultiple),
+        ev.GameState.MapSize.X / 2 * GridMultiple,
+        ev.GameState.MapSize.Y / 2 * GridMultiple,
         -10
       );
     }
@@ -237,13 +237,10 @@ namespace URF.Client {
         agent = inventoryEvent.Entity.GetComponent<EntityInfo>().Name;
       }
       string targetName = inventoryEvent.Item.GetComponent<EntityInfo>().Name;
-      switch (inventoryEvent.Action) {
-        case InventoryEvent.InventoryAction.PickedUp:
-          this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
-          break;
-        case InventoryEvent.InventoryAction.Used:
-          this.gui.MessageBox.AddMessage($"{agent} used a {targetName}.");
-          return;
+      if (inventoryEvent.Action == InventoryEvent.InventoryAction.PickedUp) {
+        this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
+      } else if (inventoryEvent.Action == InventoryEvent.InventoryAction.Used) {
+        this.gui.MessageBox.AddMessage($"{agent} used a {targetName}.");
       }
     }
 

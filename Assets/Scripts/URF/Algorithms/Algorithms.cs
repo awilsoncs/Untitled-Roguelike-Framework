@@ -19,7 +19,7 @@ namespace URF.Algorithms {
     /// <summary>
     /// Runs Bresenham's line algorithm, reverse corrected.
     /// </summary>
-    public static void Plot(Position start, Position end, PlotFunction plot) {
+    public static void Plot(Position start, Position end, PlotFunction plotFunction) {
       // Explanation: in cases where the start is to the right of the end,
       // Bresenham's algorithm returns the line from end to start.
       // todo can we just fix the bresenham algorithm to not reverse?
@@ -28,23 +28,27 @@ namespace URF.Algorithms {
         line.Add(p);
         return true;
       });
-      if(!start.Equals(line[0])) { line.Reverse(); }
+      if (!start.Equals(line[0])) {
+        line.Reverse();
+      }
 
-      foreach(Position t in line) {
-        bool result = plot(t);
-        if(!result) { break; }
+      foreach (Position t in line) {
+        bool result = plotFunction(t);
+        if (!result) {
+          break;
+        }
       }
     }
 
-    private static void Bresenham(Position start, Position end, PlotFunction plot) {
+    private static void Bresenham(Position start, Position end, PlotFunction plotFunction) {
       (int x0, int y0) = start;
       (int x1, int y1) = end;
       bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
-      if(steep) {
+      if (steep) {
         Swap(ref x0, ref y0);
         Swap(ref x1, ref y1);
       }
-      if(x0 > x1) {
+      if (x0 > x1) {
         Swap(ref x0, ref x1);
         Swap(ref y0, ref y1);
       }
@@ -54,10 +58,13 @@ namespace URF.Algorithms {
         ystep = (y0 < y1 ? 1 : -1),
         y = y0;
 
-      for(int x = x0; x <= x1; ++x) {
-        if(!(steep ? plot((y, x)) : plot((x, y)))) return;
+      for (int x = x0; x <= x1; ++x) {
+        if (!(steep ? plotFunction((y, x)) : plotFunction((x, y))))
+          return;
         err = err - dY;
-        if(err >= 0) { continue; }
+        if (err >= 0) {
+          continue;
+        }
         y += ystep;
         err += dX;
       }
