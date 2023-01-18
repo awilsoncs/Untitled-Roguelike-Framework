@@ -27,6 +27,8 @@ namespace URF.Server.RulesSystems {
       } else if (inventoryEvent.Item == null) {
         throw new GameEventException(
           inventoryEvent, "InventoryEvent must specify target entity");
+      } else {
+        // no missing fields!
       }
 
       switch (inventoryEvent.Action) {
@@ -64,7 +66,6 @@ namespace URF.Server.RulesSystems {
       Position entityPos = this.GameState.LocateEntityOnMap(entity);
       this.GameState.PlaceEntityOnMap(item, entityPos);
       this.OnGameEvent(inventoryEvent.Entity.Dropped(item));
-      return;
     }
 
     private void HandleWantsToUse(InventoryEvent inventoryEvent) {
@@ -83,7 +84,6 @@ namespace URF.Server.RulesSystems {
       }
 
       this.OnGameEvent(entity.Used(item));
-      return;
     }
 
     private void HandleWantsToGet(InventoryEvent inventoryEvent) {
@@ -91,7 +91,6 @@ namespace URF.Server.RulesSystems {
       InventoryComponent inventory = inventoryEvent.Entity.GetComponent<InventoryComponent>();
       inventory.Add(inventoryEvent.Item);
       this.OnGameEvent(inventoryEvent.Entity.PickedUp(inventoryEvent.Item));
-      return;
     }
 
     private void HandleUsed(InventoryEvent inventoryEvent) {
@@ -110,7 +109,6 @@ namespace URF.Server.RulesSystems {
 
       inventory.Remove(item);
       this.GameState.DeleteEntity(item);
-      return;
     }
 
   }
