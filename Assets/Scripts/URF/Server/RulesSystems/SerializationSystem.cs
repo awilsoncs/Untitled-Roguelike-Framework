@@ -5,7 +5,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common.GameEvents;
   using URF.Common.Persistence;
   using URF.Server.EntityFactory;
-  using URF.Server.RandomGeneration;
+  using URF.Algorithms;
 
   public class SerializationSystem : BaseRulesSystem, IPersistableObject {
 
@@ -29,12 +29,18 @@ namespace URF.Server.RulesSystems {
       this.mainCharacter = ev.Entity;
     }
 
-    public override void HandleSaveAction(SaveAction _) {
-      this.persistentStorage.Save(this, SaveVersion);
-    }
-
-    public override void HandleLoad(LoadAction _) {
-      this.persistentStorage.Load(this);
+    public override void HandlePersistenceEvent(PersistenceEvent persistenceEvent) {
+      switch (persistenceEvent.Subtype) {
+        case PersistenceEvent.PersistenceEventSubtype.SaveRequested:
+          this.persistentStorage.Save(this, SaveVersion);
+          return;
+        case PersistenceEvent.PersistenceEventSubtype.LoadRequested:
+          this.persistentStorage.Load(this);
+          return;
+        default:
+          // no op
+          return;
+      }
     }
 
     public void Save(IGameDataWriter writer) {
@@ -53,8 +59,7 @@ namespace URF.Server.RulesSystems {
 
     public void Load(IGameDataReader reader) {
       this.randomGenerator.Load(reader);
-      Position mapSize = (this.GameState.MapSize.X, this.GameState.MapSize.Y);
-      this.OnGameEvent(new GameConfigured(mapSize));
+      this.OnGameEvent(new GameConfigured(this.GameState));
       int count = reader.ReadInt();
       int mainCharacterId = reader.ReadInt();
       for (int i = 0; i < count; i++) {

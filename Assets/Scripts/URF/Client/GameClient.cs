@@ -7,6 +7,7 @@ namespace URF.Client {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.RulesSystems;
+  using URF.Common.GameState;
 
   /// <summary>
   /// GameClient client view
@@ -39,6 +40,10 @@ namespace URF.Client {
 
     [SerializeField] private KeyCode getKey = KeyCode.G;
 
+    [SerializeField] private KeyCode dropKey = KeyCode.D;
+
+    [SerializeField] private KeyCode healKey = KeyCode.H;
+
     [SerializeField] private KeyCode mapKey = KeyCode.M;
 
     private const float GridMultiple = 0.5f;
@@ -49,15 +54,9 @@ namespace URF.Client {
 
     private IEntity mainCharacter;
 
-    private (int, int) mainCharacterPosition;
+    private IReadOnlyGameState<IReadOnlyCell> gameState;
 
     private readonly Queue<IGameEvent> gameEvents = new();
-
-    // track attackable enemies so that we can attack instead of attempt to move
-    private readonly Dictionary<IEntity, (int, int)> entityPosition = new();
-
-    // todo add a convenience type here to simplify initialization
-    private List<IEntity>[][] entitiesByPosition;
 
     private bool usingFOV = true;
 
@@ -97,18 +96,6 @@ namespace URF.Client {
       this.pawns.Clear();
       this.pawnsByID.Clear();
       this.gameEvents.Clear();
-      this.entityPosition.Clear();
-      this.entitiesByPosition = null;
-    }
-
-    private void ConfigureClientMap(Position mapSize) {
-      this.entitiesByPosition = new List<IEntity>[mapSize.X][];
-      for (int x = 0; x < mapSize.X; x++) {
-        this.entitiesByPosition[x] = new List<IEntity>[mapSize.Y];
-        for (int y = 0; y < mapSize.Y; y++) {
-          this.entitiesByPosition[x][y] = new List<IEntity>();
-        }
-      }
     }
 
     private void ClearGame() {
@@ -134,16 +121,6 @@ namespace URF.Client {
     private void DoMove(IEntity entity, int x, int y) {
       Pawn pawn = this.pawnsByID[entity.ID];
       pawn.transform.position = new Vector3(x * GridMultiple, y * GridMultiple, 0f);
-      if (this.entityPosition.ContainsKey(entity)) {
-        (int x0, int y0) = this.entityPosition[entity];
-        _ = this.entitiesByPosition[x0][y0].Remove(entity);
-      }
-      this.entityPosition[entity] = (x, y);
-      this.entitiesByPosition[x][y].Add(entity);
-
-      if (entity == this.mainCharacter) {
-        this.mainCharacterPosition = (x, y);
-      }
     }
 
     private void CreatePawn(IEntity entity, Position position) {
@@ -163,7 +140,23 @@ namespace URF.Client {
       this.DoMove(entity, position.X, position.Y);
     }
 
-    public override void HandleEntityDeleted(EntityDeleted ev) {
+    public override void HandleEntityEvent(EntityEvent ev) {
+      if (ev.Method == EntityEvent.EntityMethod.Updated) {
+        this.HandleEntityEventUpdated(ev);
+      } else if (ev.Method == EntityEvent.EntityMethod.Deleted) {
+        this.HandleEntityEventDeleted(ev);
+      }
+    }
+
+    private void HandleEntityEventUpdated(EntityEvent ev) {
+      if (ev.Entity == this.mainCharacter) {
+        CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
+        this.gui.HealthBar.UpdateHealthBar(combat.CurrentHealth);
+      }
+    }
+
+
+    private void HandleEntityEventDeleted(EntityEvent ev) {
       if (ev.Entity == this.mainCharacter) {
         Debug.Log("Player died, reloading...");
         this.ClearGame();
@@ -171,7 +164,6 @@ namespace URF.Client {
       }
 
       if (this.pawnsByID.ContainsKey(ev.Entity.ID)) {
-        // If the server forgot to send a EntityLocationChanged first.
         this.DeletePawn(ev.Entity);
       }
     }
@@ -189,16 +181,11 @@ namespace URF.Client {
       this.pawns.RemoveAt(lastIndex);
       _ = this.pawnsByID.Remove(id);
       pawn.Recycle(this.pawnFactory);
-
-      (int x, int y) = this.entityPosition[entity];
-      _ = this.entityPosition.Remove(entity);
-      _ = this.entitiesByPosition[x][y].Remove(entity);
     }
 
     public override void HandleEntityVisibilityChanged(EntityVisibilityChanged ev) {
       int id = ev.Entity.ID;
       bool newVis = ev.NewVisibility;
-      Debug.Log($"Testing: {ev}");
       this.pawnsByID[id].IsVisible = newVis;
       if (this.usingFOV || newVis) {
         this.pawnsByID[id].gameObject.SetActive(newVis);
@@ -212,12 +199,9 @@ namespace URF.Client {
 
     public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       this.mainCharacter = ev.Entity;
-      this.mainCharacterPosition = this.entityPosition[this.mainCharacter];
       CombatComponent stats = this.mainCharacter.GetComponent<CombatComponent>();
-      this.gui.HealthBar.CurrentHealth = stats.CurrentHealth;
       this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
-      // todo should link updates to properties
-      this.gui.HealthBar.UpdateHealthBar();
+      this.gui.HealthBar.UpdateHealthBar(stats.CurrentHealth);
     }
 
     public override void HandleEntityAttacked(EntityAttacked ev) {
@@ -231,31 +215,32 @@ namespace URF.Client {
       if (ev.Defender != this.mainCharacter || !ev.Success) {
         return;
       }
-      this.gui.HealthBar.CurrentHealth -= ev.Damage;
-      this.gui.HealthBar.UpdateHealthBar();
     }
 
     public override void HandleGameConfigured(GameConfigured ev) {
-      this.ConfigureClientMap(ev.MapSize);
+      if (ev == null) {
+        Debug.LogError("Null GameConfigured event");
+      }
+      this.gameState = ev.GameState;
       this.mainCamera.transform.position = new Vector3(
-        ev.MapSize.X / (2 / GridMultiple),
-        ev.MapSize.Y / (2 / GridMultiple),
+        ev.GameState.MapSize.X / 2 * GridMultiple,
+        ev.GameState.MapSize.Y / 2 * GridMultiple,
         -10
       );
     }
 
-    public override void HandleInventoryChanged(InventoryChanged inventoryChanged) {
-      switch (inventoryChanged.Action) {
-        case InventoryChanged.InventoryAction.PickedUp:
-          string agent = "";
-          if (inventoryChanged.Entity == this.mainCharacter) {
-            agent = "You";
-          } else {
-            agent = inventoryChanged.Entity.GetComponent<EntityInfo>().Name;
-          }
-          string targetName = inventoryChanged.Item.GetComponent<EntityInfo>().Name;
-          this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
-          break;
+    public override void HandleInventoryEvent(InventoryEvent inventoryEvent) {
+      string agent;
+      if (inventoryEvent.Entity == this.mainCharacter) {
+        agent = "You";
+      } else {
+        agent = inventoryEvent.Entity.GetComponent<EntityInfo>().Name;
+      }
+      string targetName = inventoryEvent.Item.GetComponent<EntityInfo>().Name;
+      if (inventoryEvent.Action == InventoryEvent.InventoryAction.PickedUp) {
+        this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
+      } else if (inventoryEvent.Action == InventoryEvent.InventoryAction.Used) {
+        this.gui.MessageBox.AddMessage($"{agent} used a {targetName}.");
       }
     }
 
@@ -276,11 +261,15 @@ namespace URF.Client {
         this.ToggleFieldOfView();
       } else if (Input.GetKeyDown(this.getKey)) {
         this.GetItem();
+      } else if (Input.GetKeyDown(this.dropKey)) {
+        this.DropItem();
+      } else if (Input.GetKeyDown(this.healKey)) {
+        this.Heal();
       } else if (Input.GetKeyDown(this.saveKey)) {
-        this.OnGameEvent(new SaveAction());
+        this.OnGameEvent(PersistenceEvent.SaveRequested());
       } else if (Input.GetKeyDown(this.loadKey)) {
         this.ResetEverything();
-        this.OnGameEvent(new LoadAction());
+        this.OnGameEvent(PersistenceEvent.LoadRequested());
       } else if (Input.GetKeyDown(this.newGameKey)) {
         this.BeginNewGame();
       } else {
@@ -289,15 +278,46 @@ namespace URF.Client {
     }
 
     private void GetItem() {
-      int x = this.mainCharacterPosition.Item1;
-      int y = this.mainCharacterPosition.Item2;
-      List<IEntity> entities = this.entitiesByPosition[x][y];
-      IEntity itemToGet = entities.FirstOrDefault(x => x != this.mainCharacter);
+      Position position = this.gameState.LocateEntityOnMap(this.mainCharacter);
+      IEntity itemToGet = this.gameState
+        .GetCell(position).Contents.FirstOrDefault(x => x != this.mainCharacter);
       if (itemToGet != null) {
-        this.OnGameEvent(new GetAction(this.mainCharacter, itemToGet));
+        this.OnGameEvent(this.mainCharacter.WantsToGet(itemToGet));
       } else {
         this.gui.MessageBox.AddMessage("There's nothing here.");
       }
+    }
+
+    private void DropItem() {
+      // figure out which item to drop
+      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
+      if (inventory.Contents.Count == 0) {
+        this.gui.MessageBox.AddMessage("You're not holding anything.");
+        return;
+      }
+
+      int topItemId = inventory.Contents[0];
+      IEntity itemToDrop = this.gameState.GetEntityById(topItemId);
+      this.OnGameEvent(this.mainCharacter.WantsToDrop(itemToDrop));
+    }
+
+    private void Heal() {
+      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
+      if (inventory.Contents.Count == 0) {
+        this.gui.MessageBox.AddMessage("You don't have any potions.");
+        return;
+      }
+
+      CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
+      if (combat.CurrentHealth == combat.MaxHealth) {
+        this.gui.MessageBox.AddMessage("You're already at maximum health.");
+        return;
+      }
+
+
+      int topItemId = inventory.Contents[0];
+      IEntity itemToUse = this.gameState.GetEntityById(topItemId);
+      this.OnGameEvent(this.mainCharacter.WantsToUse(itemToUse));
     }
 
     private void MouseClicked(Vector3 clickPos) {
@@ -306,24 +326,25 @@ namespace URF.Client {
         (int)((worldPos.x / GridMultiple) + 0.5f),
         (int)((worldPos.y / GridMultiple) + 0.5f)
       );
-      if (this.entitiesByPosition[pos.X][pos.Y].Count > 0) {
-        List<IEntity> entities = this.entitiesByPosition[pos.X][pos.Y];
-        foreach (IEntity entity in entities) {
-          EntityInfo entityInfo = entity.GetComponent<EntityInfo>();
-          string description = entityInfo.Description;
-          this.gui.MessageBox.AddMessage(description);
-        }
-      } else {
+
+      IReadOnlyCollection<IEntity> entities = this.gameState.GetCell(pos).Contents;
+      if (entities.Count == 0) {
         this.gui.MessageBox.AddMessage("There's nothing there.");
+        return;
+      }
+
+      foreach (IEntity entity in entities) {
+        EntityInfo entityInfo = entity.GetComponent<EntityInfo>();
+        string description = entityInfo.Description;
+        this.gui.MessageBox.AddMessage(description);
       }
     }
 
     private void Move(int mx, int my) {
-      int x = this.mainCharacterPosition.Item1 + mx;
-      int y = this.mainCharacterPosition.Item2 + my;
+      Position targetPosition = this.gameState.LocateEntityOnMap(this.mainCharacter) + (mx, my);
       List<IEntity> fighters = new();
       List<IEntity> blockers = new();
-      List<IEntity> entities = this.entitiesByPosition[x][y];
+      IReadOnlyCollection<IEntity> entities = this.gameState.GetCell(targetPosition).Contents;
       foreach (IEntity entity in entities) {
         if (entity.GetComponent<CombatComponent>().CanFight) {
           fighters.Add(entity);

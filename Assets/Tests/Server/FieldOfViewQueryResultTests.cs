@@ -2,7 +2,7 @@ namespace Tests.Server {
   using System.Collections.Generic;
   using NUnit.Framework;
   using URF.Common;
-  using URF.Server.FieldOfView;
+  using URF.Algorithms;
 
   public class FieldOfViewQueryResultTests {
     private readonly Position testCell = (5, 8);

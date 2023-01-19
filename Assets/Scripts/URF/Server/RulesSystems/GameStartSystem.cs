@@ -3,7 +3,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.EntityFactory;
-  using URF.Server.RandomGeneration;
+  using URF.Algorithms;
 
   public class GameStartSystem : BaseRulesSystem {
 
@@ -20,7 +20,7 @@ namespace URF.Server.RulesSystems {
     }
 
     public override void HandleConfigure(ConfigureAction _) {
-      this.OnGameEvent(new GameConfigured((this.MapWidth, this.MapHeight)));
+      this.OnGameEvent(new GameConfigured(this.GameState));
       this.BuildDungeon();
       this.OnGameEvent(new GameStarted());
     }

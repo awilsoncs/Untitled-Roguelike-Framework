@@ -1,7 +1,7 @@
 namespace Tests.Server {
   using NUnit.Framework;
   using URF.Common;
-  using URF.Server.FieldOfView;
+  using URF.Algorithms;
 
   [TestFixture]
   public class RaycastingFovTests {

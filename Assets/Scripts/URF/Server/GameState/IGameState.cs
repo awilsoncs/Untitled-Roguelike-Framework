@@ -1,37 +1,21 @@
 namespace URF.Server.GameState {
-  using System.Collections.Generic;
   using URF.Common;
   using URF.Common.Entities;
+  using URF.Common.GameState;
 
   /// <summary>
   /// Provide a repository interface for storing entities. Handles entities and their place within
   /// the game world. Beyond position, the IGameState does not have any awareness of entities'
   /// information.
   /// </summary>
-  public interface IGameState {
-
-    /// <summary>
-    /// Get a Position representing the dimensions of the map
-    /// </summary>
-    /// <value>A Position representing the int x int dimensions of the map.</value>
-    Position MapSize {
-      get;
-    }
+  public interface IGameState : IReadOnlyGameState<Cell> {
 
     /// <summary>
     /// Persist an entity in the game state. This method should be called when client code has
     /// created a new entity, so that other systems can access that entity.
-    /// </summary>
+    /// /// </summary>
     /// <param name="entity">The entity to be persisted.</param>
     void CreateEntity(IEntity entity);
-
-    /// <summary>
-    /// Get a collection of all Entities in the game.
-    /// </summary>
-    /// <returns>
-    /// An IReadOnlyCollection<IEntity> containing all entities in the game state.
-    /// </returns>
-    IReadOnlyCollection<IEntity> GetAllEntities();
 
     /// <summary>
     /// Places an IEntity that does not currently appear on the map at the given position.
@@ -61,15 +45,5 @@ namespace URF.Server.GameState {
     /// </summary>
     /// <param name="entity">The IEntity to delete.</param>
     void DeleteEntity(IEntity entity);
-
-    /// <summary>
-    /// Get a single map cell.
-    /// </summary>
-    /// <param name="position">The position of the cell to get.</param>
-    /// <returns>A Cell object</returns>
-    Cell GetCell(Position position);
-
-
-    Position LocateEntityOnMap(IEntity entity);
   }
 }

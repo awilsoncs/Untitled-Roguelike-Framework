@@ -41,14 +41,6 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleEntityCreated(EntityCreated entityCreated) {
-      // default no-op
-    }
-
-    public virtual void HandleEntityDeleted(EntityDeleted entityKilled) {
-      // default no-op
-    }
-
     public virtual void HandleEntityLocationChanged(EntityLocationChanged entityLocationChanged) {
       // default no-op
     }
@@ -69,19 +61,11 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleLoad(LoadAction load) {
-      // default no-op
-    }
-
     public virtual void HandleMainCharacterChanged(MainCharacterChanged mainCharacterChanged) {
       // default no-op
     }
 
     public virtual void HandleMoveAction(MoveAction moveAction) {
-      // default no-op
-    }
-
-    public virtual void HandleSaveAction(SaveAction saveAction) {
       // default no-op
     }
 
@@ -97,11 +81,19 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleGetAction(GetAction getAction) {
+    public virtual void HandleInventoryEvent(InventoryEvent inventoryEvent) {
       // default no-op
     }
 
-    public virtual void HandleInventoryChanged(InventoryChanged inventoryChanged) {
+    public virtual void HandlePersistenceEvent(PersistenceEvent persistenceEvent) {
+      // default no-op
+    }
+
+    public virtual void HandleEffectEvent(EffectEvent effectEvent) {
+      // default no-op
+    }
+
+    public virtual void HandleEntityEvent(EntityEvent effectEvent) {
       // default no-op
     }
   }

@@ -2,13 +2,10 @@ namespace URF.Server {
   using System.Collections.Generic;
   using System.Linq;
   using UnityEngine;
+  using URF.Algorithms;
   using URF.Common.GameEvents;
   using URF.Common.Logging;
   using URF.Common.Persistence;
-  using URF.Server.FieldOfView;
-  using URF.Server.GameState;
-  using URF.Server.Pathfinding;
-  using URF.Server.RandomGeneration;
   using URF.Server.RulesSystems;
 
   public class GameServer : MonobehaviourBaseGameEventChannel {
@@ -21,9 +18,10 @@ namespace URF.Server {
 
     private GameState.GameState gameState;
 
+    private PluginBundle pluginBundle;
+
     private readonly List<IRulesSystem> rulesSystems = new();
 
-    private PluginBundle pluginBundle;
 
     private readonly Queue<IGameEvent> gameEvents = new();
 
@@ -46,6 +44,7 @@ namespace URF.Server {
       this.RegisterSystem(new IntelligenceSystem());
       this.RegisterSystem(new FieldOfViewSystem());
       this.RegisterSystem(new InventorySystem());
+      this.RegisterSystem(new EffectsSystem());
       this.RegisterSystem(new SerializationSystem());
 
 
@@ -81,8 +80,10 @@ namespace URF.Server {
       this.pluginBundle.Random.Rotate();
     }
 
-    public override void HandleLoad(LoadAction loadAction) {
-      this.SetUpGame();
+    public override void HandlePersistenceEvent(PersistenceEvent persistenceEvent) {
+      if (persistenceEvent.Subtype == PersistenceEvent.PersistenceEventSubtype.LoadRequested) {
+        this.SetUpGame();
+      }
     }
 
     private void RegisterSystem(IRulesSystem system) {

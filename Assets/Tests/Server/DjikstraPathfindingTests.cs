@@ -2,7 +2,7 @@ namespace Tests.Common {
   using System.Collections.Generic;
   using NUnit.Framework;
   using URF.Common;
-  using URF.Server.Pathfinding;
+  using URF.Algorithms;
 
   public class DjikstraPathfindingTests {
 

@@ -7,6 +7,7 @@ namespace Tests.Server {
   using URF.Server;
   using URF.Server.GameState;
   using URF.Common;
+  using URF.Common.Exceptions;
 
   public class GameStateTests {
 
@@ -53,10 +54,10 @@ namespace Tests.Server {
 
     // Test handler to exposed caught events.
     private class EntityCreatedListener : BaseGameEventChannel {
-      public List<EntityCreated> Events {
+      public List<EntityEvent> Events {
         get;
       } = new();
-      public override void HandleEntityCreated(EntityCreated entityCreated) {
+      public override void HandleEntityEvent(EntityEvent entityCreated) {
         this.Events.Add(entityCreated);
       }
     }

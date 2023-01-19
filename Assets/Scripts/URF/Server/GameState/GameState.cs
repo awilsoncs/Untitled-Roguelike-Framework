@@ -4,6 +4,7 @@ namespace URF.Server.GameState {
   using System.Linq;
   using URF.Common;
   using URF.Common.Entities;
+  using URF.Common.Exceptions;
   using URF.Common.GameEvents;
 
   /// <summary>
@@ -27,6 +28,8 @@ namespace URF.Server.GameState {
     // Maintain an index of where each mapped entity is so that we can find them easily. If an
     // entity does not appear as a key in this dictionary, it is not on the map.
     private readonly Dictionary<IEntity, Position> positionsByEntity = new();
+
+    private readonly Dictionary<int, IEntity> entitiesById = new();
 
     /// <summary>
     /// Create a GameState with map dimensions equal to the given parameters.
@@ -63,8 +66,9 @@ namespace URF.Server.GameState {
         throw new ArgumentException("Cannot create an entity that already exists");
       }
 
+      this.entitiesById[entity.ID] = entity;
       _ = this.uniqueEntities.Add(entity);
-      this.OnGameEvent(new EntityCreated(entity));
+      this.OnGameEvent(entity.WasCreated());
     }
 
     /// <summary>
@@ -74,6 +78,11 @@ namespace URF.Server.GameState {
     /// <returns>A read-only collection of entities</returns>
     public IReadOnlyCollection<IEntity> GetAllEntities() {
       return this.uniqueEntities.ToList().AsReadOnly();
+    }
+
+    /// <inheritdoc />
+    public IEntity GetEntityById(int id) {
+      return this.entitiesById[id];
     }
 
     /// <summary>
@@ -177,8 +186,9 @@ namespace URF.Server.GameState {
       if (this.positionsByEntity.ContainsKey(entity)) {
         this.RemoveEntityFromMap(entity);
       }
+      _ = this.entitiesById.Remove(entity.ID);
       _ = this.uniqueEntities.Remove(entity);
-      this.OnGameEvent(new EntityDeleted(entity));
+      this.OnGameEvent(entity.WasDeleted());
     }
 
     /// <summary>

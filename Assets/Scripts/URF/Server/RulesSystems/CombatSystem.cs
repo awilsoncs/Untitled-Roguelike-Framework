@@ -18,21 +18,8 @@ namespace URF.Server.RulesSystems {
 
       int damage = attackerCombat.Damage;
       this.OnGameEvent(new EntityAttacked(attacker, defender, true, damage));
+      this.OnGameEvent(new EffectEvent(EffectEvent.EffectType.DamageHealth, damage, defender));
       this.OnGameEvent(new TurnSpent(attacker));
-    }
-
-    public override void HandleEntityAttacked(EntityAttacked entityAttacked) {
-      IEntity defender = entityAttacked.Defender;
-      CombatComponent defenderCombat = defender.GetComponent<CombatComponent>();
-      int maxHealth = defenderCombat.MaxHealth;
-      int currentHealth = defenderCombat.CurrentHealth;
-      int damage = entityAttacked.Damage;
-
-      defenderCombat.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
-      if (defenderCombat.CurrentHealth > 0) {
-        return;
-      }
-      this.GameState.DeleteEntity(defender);
     }
 
   }
