@@ -35,33 +35,52 @@ namespace URF.Algorithms {
       foreach (Position t in line) {
         bool result = plotFunction(t);
         if (!result) {
-          break;
+          return;
         }
       }
     }
 
     private static void Bresenham(Position start, Position end, PlotFunction plotFunction) {
+      // Clean up input before we perform the  calculation.
       (int x0, int y0) = start;
       (int x1, int y1) = end;
       bool steep = Math.Abs(y1 - y0) > Math.Abs(x1 - x0);
+
       if (steep) {
         Swap(ref x0, ref y0);
         Swap(ref x1, ref y1);
       }
+
       if (x0 > x1) {
         Swap(ref x0, ref x1);
         Swap(ref y0, ref y1);
       }
-      int dX = (x1 - x0),
-        dY = Math.Abs(y1 - y0),
-        err = (dX / 2),
-        ystep = (y0 < y1 ? 1 : -1),
-        y = y0;
+
+      CalculateBresenham(plotFunction, (x0, y0), (x1, y1), steep);
+    }
+
+    private static void CalculateBresenham(
+      PlotFunction plotFunction,
+      Position start,
+      Position end,
+      bool steep
+    ) {
+
+      (int x0, int y0) = start;
+      (int x1, int y1) = end;
+
+      int dX = x1 - x0;
+      int dY = Math.Abs(y1 - y0);
+      int err = dX / 2;
+      int ystep = y0 < y1 ? 1 : -1;
+      int y = y0;
 
       for (int x = x0; x <= x1; ++x) {
-        if (!(steep ? plotFunction((y, x)) : plotFunction((x, y))))
+        if (!(steep ? plotFunction((y, x)) : plotFunction((x, y)))) {
           return;
-        err = err - dY;
+        }
+
+        err -= dY;
         if (err >= 0) {
           continue;
         }
@@ -69,6 +88,5 @@ namespace URF.Algorithms {
         err += dX;
       }
     }
-
   }
 }
