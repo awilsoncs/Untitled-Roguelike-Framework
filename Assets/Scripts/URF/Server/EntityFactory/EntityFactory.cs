@@ -71,17 +71,16 @@ namespace URF.Server.EntityFactory {
       info.Name = "Player";
       info.Appearance = "player";
       info.Description = "A daring adventurer.";
-      CombatComponent combat = entity.GetComponent<CombatComponent>();
-      combat.CanFight = true;
-      combat.CurrentHealth = 10;
-      combat.MaxHealth = 10;
-      combat.Damage = 2;
       Movement movement = entity.GetComponent<Movement>();
       movement.BlocksMove = true;
       Brain brain = entity.GetComponent<Brain>();
       brain.ControlMode = IntelligenceControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
+      entity.CanFight = true;
+      entity.CurrentHealth = 10;
+      entity.MaxHealth = 10;
+      entity.Damage = 2;
     }
 
     private static void BuildCrab(IEntity entity) {
@@ -89,17 +88,16 @@ namespace URF.Server.EntityFactory {
       info.Name = "Crab";
       info.Appearance = "crab";
       info.Description = "A deadly crab.";
-      CombatComponent combat = entity.GetComponent<CombatComponent>();
-      combat.CanFight = true;
-      combat.CurrentHealth = 2;
-      combat.MaxHealth = 2;
-      combat.Damage = 1;
       Movement movement = entity.GetComponent<Movement>();
       movement.BlocksMove = true;
       Brain brain = entity.GetComponent<Brain>();
       brain.ControlMode = IntelligenceControlMode.Monster;
       entity.BlocksSight = false;
       entity.IsVisible = true;
+      entity.CanFight = true;
+      entity.CurrentHealth = 2;
+      entity.MaxHealth = 2;
+      entity.Damage = 1;
     }
 
     private static void BuildWall(IEntity entity) {
@@ -107,14 +105,13 @@ namespace URF.Server.EntityFactory {
       info.Name = "Wall";
       info.Appearance = "wall";
       info.Description = "Nothing but solid stone.";
-      CombatComponent combat = entity.GetComponent<CombatComponent>();
-      combat.CanFight = false;
       Movement movement = entity.GetComponent<Movement>();
       movement.BlocksMove = true;
       Brain brain = entity.GetComponent<Brain>();
       brain.ControlMode = IntelligenceControlMode.None;
       entity.BlocksSight = true;
       entity.IsVisible = true;
+      entity.CanFight = false;
     }
 
     private static void BuildHealthPotion(IEntity entity) {
@@ -122,14 +119,13 @@ namespace URF.Server.EntityFactory {
       info.Name = "Health Potion";
       info.Appearance = "healthPotion";
       info.Description = "It looks like Diet Soda.";
-      CombatComponent combat = entity.GetComponent<CombatComponent>();
-      combat.CanFight = false;
       Movement movement = entity.GetComponent<Movement>();
       movement.BlocksMove = false;
       Brain brain = entity.GetComponent<Brain>();
       brain.ControlMode = IntelligenceControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
+      entity.CanFight = false;
     }
 
   }

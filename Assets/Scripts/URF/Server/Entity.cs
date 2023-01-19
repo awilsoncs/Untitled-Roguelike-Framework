@@ -21,6 +21,18 @@ namespace URF.Server {
     public bool IsVisible {
       get; set;
     }
+    public bool CanFight {
+      get; set;
+    }
+    public int MaxHealth {
+      get; set;
+    }
+    public int CurrentHealth {
+      get; set;
+    }
+    public int Damage {
+      get; set;
+    }
 
     private readonly List<BaseComponent> components = new();
 
@@ -38,6 +50,10 @@ namespace URF.Server {
       }
       writer.Write(this.BlocksSight);
       writer.Write(this.IsVisible);
+      writer.Write(this.CanFight);
+      writer.Write(this.CurrentHealth);
+      writer.Write(this.MaxHealth);
+      writer.Write(this.Damage);
       foreach (BaseComponent component in this.components) {
         component.Save(writer);
       }
@@ -49,6 +65,10 @@ namespace URF.Server {
       }
       this.BlocksSight = reader.ReadBool();
       this.IsVisible = reader.ReadBool();
+      this.CanFight = reader.ReadBool();
+      this.CurrentHealth = reader.ReadInt();
+      this.MaxHealth = reader.ReadInt();
+      this.Damage = reader.ReadInt();
       foreach (BaseComponent component in this.components) {
         component.Load(reader);
       }

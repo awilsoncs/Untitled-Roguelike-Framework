@@ -10,25 +10,23 @@ namespace URF.Server.RulesSystems {
         return;
       }
 
-      if (ev.Method == EffectEvent.EffectType.RestoreHealth) {
-        CombatComponent affectedCombat = ev.Affected.GetComponent<CombatComponent>();
-        int maxHealth = affectedCombat.MaxHealth;
-        int currentHealth = affectedCombat.CurrentHealth;
-        affectedCombat.CurrentHealth = Math.Clamp(currentHealth + ev.Magnitude, 0, maxHealth);
-        this.OnGameEvent(ev.Affected.WasUpdated());
-      } else if (ev.Method == EffectEvent.EffectType.DamageHealth) {
-        IEntity defender = ev.Affected;
-        CombatComponent defenderCombat = defender.GetComponent<CombatComponent>();
-        int maxHealth = defenderCombat.MaxHealth;
-        int currentHealth = defenderCombat.CurrentHealth;
-        int damage = ev.Magnitude;
+      IEntity affected = ev.Affected;
 
-        defenderCombat.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
-        if (defenderCombat.CurrentHealth > 0) {
-          this.OnGameEvent(defender.WasUpdated());
+      if (ev.Method == EffectEvent.EffectType.RestoreHealth) {
+        int maxHealth = affected.MaxHealth;
+        int currentHealth = affected.CurrentHealth;
+        affected.CurrentHealth = Math.Clamp(currentHealth + ev.Magnitude, 0, maxHealth);
+        this.OnGameEvent(affected.WasUpdated());
+      } else if (ev.Method == EffectEvent.EffectType.DamageHealth) {
+        int maxHealth = affected.MaxHealth;
+        int currentHealth = affected.CurrentHealth;
+        int damage = ev.Magnitude;
+        affected.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
+        if (affected.CurrentHealth <= 0) {
+          this.GameState.DeleteEntity(affected);
           return;
         }
-        this.GameState.DeleteEntity(defender);
+        this.OnGameEvent(affected.WasUpdated());
       }
 
       this.OnGameEvent(ev.Applied);

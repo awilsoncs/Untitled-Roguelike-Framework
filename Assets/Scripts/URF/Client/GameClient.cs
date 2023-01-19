@@ -150,8 +150,7 @@ namespace URF.Client {
 
     private void HandleEntityEventUpdated(EntityEvent ev) {
       if (ev.Entity == this.mainCharacter) {
-        CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
-        this.gui.HealthBar.UpdateHealthBar(combat.CurrentHealth);
+        this.gui.HealthBar.UpdateHealthBar(this.mainCharacter.CurrentHealth);
       }
     }
 
@@ -199,9 +198,8 @@ namespace URF.Client {
 
     public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       this.mainCharacter = ev.Entity;
-      CombatComponent stats = this.mainCharacter.GetComponent<CombatComponent>();
-      this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
-      this.gui.HealthBar.UpdateHealthBar(stats.CurrentHealth);
+      this.gui.HealthBar.MaximumHealth = this.mainCharacter.MaxHealth;
+      this.gui.HealthBar.UpdateHealthBar(this.mainCharacter.CurrentHealth);
     }
 
     public override void HandleEntityAttacked(EntityAttacked ev) {
@@ -308,8 +306,7 @@ namespace URF.Client {
         return;
       }
 
-      CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
-      if (combat.CurrentHealth == combat.MaxHealth) {
+      if (this.mainCharacter.CurrentHealth == this.mainCharacter.MaxHealth) {
         this.gui.MessageBox.AddMessage("You're already at maximum health.");
         return;
       }
@@ -346,7 +343,7 @@ namespace URF.Client {
       List<IEntity> blockers = new();
       IReadOnlyCollection<IEntity> entities = this.gameState.GetCell(targetPosition).Contents;
       foreach (IEntity entity in entities) {
-        if (entity.GetComponent<CombatComponent>().CanFight) {
+        if (entity.CanFight) {
           fighters.Add(entity);
         } else if (entity.GetComponent<Movement>().BlocksMove) {
           blockers.Add(entity);

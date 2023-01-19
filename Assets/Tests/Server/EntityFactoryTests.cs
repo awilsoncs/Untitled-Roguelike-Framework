@@ -101,6 +101,22 @@ namespace Tests.Server {
         get => throw new NotSupportedException();
         set => throw new NotSupportedException();
       }
+      public bool CanFight {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+      }
+      public int MaxHealth {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+      }
+      public int CurrentHealth {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+      }
+      public int Damage {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+      }
 
       public void AddComponent(BaseComponent component) {
         Components.Add(component);
