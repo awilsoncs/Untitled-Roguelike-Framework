@@ -1,16 +1,27 @@
 namespace URF.Common.GameEvents {
   using System;
-  using URF.Common.Effects;
+  using URF.Common.Entities;
 
   public class EffectEvent : EventArgs, IGameEvent {
 
-    // todo include a list of affected
     public enum EffectEventStep {
       Created,
       Applied
     }
 
-    public IEffect Effect {
+    public enum EffectType {
+      RestoreHealth
+    }
+
+    public EffectType Method {
+      get;
+    }
+
+    public int Magnitude {
+      get;
+    }
+
+    public IEntity Affected {
       get;
     }
 
@@ -18,17 +29,25 @@ namespace URF.Common.GameEvents {
       get;
     }
 
-    public EffectEvent(IEffect effect, EffectEventStep step) {
-      this.Effect = effect;
+    public EffectEvent Applied => new(
+      this.Method,
+      this.Magnitude,
+      this.Affected,
+      EffectEventStep.Applied
+    );
+
+    public EffectEvent(EffectType method, int magnitude, IEntity affected) {
+      this.Method = method;
+      this.Magnitude = magnitude;
+      this.Affected = affected;
+      this.Step = EffectEventStep.Created;
+    }
+
+    private EffectEvent(EffectType method, int magnitude, IEntity affected, EffectEventStep step) {
+      this.Method = method;
+      this.Magnitude = magnitude;
+      this.Affected = affected;
       this.Step = step;
-    }
-
-    public static EffectEvent Created(IEffect effect) {
-      return new EffectEvent(effect, EffectEventStep.Created);
-    }
-
-    public static EffectEvent Applied(IEffect effect) {
-      return new EffectEvent(effect, EffectEventStep.Applied);
     }
 
     public void Visit(IEventHandler eventHandler) {
