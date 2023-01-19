@@ -11,11 +11,6 @@ namespace URF.Server.RulesSystems {
   /// </summary>
   public class InventorySystem : BaseRulesSystem {
 
-    public override List<Type> Components =>
-      new() {
-            typeof(InventoryComponent)
-      };
-
     /// <inheritdoc />
     public override void HandleInventoryEvent(InventoryEvent inventoryEvent) {
       if (inventoryEvent == null) {
@@ -51,20 +46,19 @@ namespace URF.Server.RulesSystems {
 
     private void HandleWantsToDrop(InventoryEvent inventoryEvent) {
       IEntity entity = inventoryEvent.Entity;
-      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
-      if (inventory == null) {
+      if (entity.Inventory == null) {
         throw new GameEventException(
           inventoryEvent, "The acting entity does not have an InventoryComponent.");
       }
 
       IEntity item = inventoryEvent.Item;
 
-      if (!inventory.Contains(item)) {
+      if (!entity.Inventory.Contains(item.ID)) {
         throw new GameEventException(
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
-      inventory.Remove(item);
+      _ = entity.Inventory.Remove(item.ID);
       Position entityPos = this.GameState.LocateEntityOnMap(entity);
       this.GameState.PlaceEntityOnMap(item, entityPos);
       this.OnGameEvent(inventoryEvent.Entity.Dropped(item));
@@ -72,15 +66,14 @@ namespace URF.Server.RulesSystems {
 
     private void HandleWantsToUse(InventoryEvent inventoryEvent) {
       IEntity entity = inventoryEvent.Entity;
-      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
-      if (inventory == null) {
+      if (entity.Inventory == null) {
         throw new GameEventException(
           inventoryEvent, "The acting entity does not have an InventoryComponent.");
       }
 
       IEntity item = inventoryEvent.Item;
 
-      if (!inventory.Contains(item)) {
+      if (!entity.Inventory.Contains(item.ID)) {
         throw new GameEventException(
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
@@ -90,24 +83,23 @@ namespace URF.Server.RulesSystems {
 
     private void HandleWantsToGet(InventoryEvent inventoryEvent) {
       this.GameState.RemoveEntityFromMap(inventoryEvent.Item);
-      InventoryComponent inventory = inventoryEvent.Entity.GetComponent<InventoryComponent>();
-      inventory.Add(inventoryEvent.Item);
+      IEntity entity = inventoryEvent.Entity;
+      entity.Inventory.Add(inventoryEvent.Item.ID);
       this.OnGameEvent(inventoryEvent.Entity.PickedUp(inventoryEvent.Item));
     }
 
     private void HandleUsed(InventoryEvent inventoryEvent) {
       IEntity entity = inventoryEvent.Entity;
       IEntity item = inventoryEvent.Item;
-      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
 
-      if (!inventory.Contains(item)) {
+      if (!entity.Inventory.Contains(item.ID)) {
         throw new GameEventException(
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
       this.OnGameEvent(new EffectEvent(EffectEvent.EffectType.RestoreHealth, 5, entity));
 
-      inventory.Remove(item);
+      _ = entity.Inventory.Remove(item.ID);
       this.GameState.DeleteEntity(item);
     }
 

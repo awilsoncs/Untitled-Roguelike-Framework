@@ -34,6 +34,10 @@ namespace URF.Server {
       get; set;
     }
 
+    public List<int> Inventory {
+      get;
+    } = new();
+
     private readonly List<BaseComponent> components = new();
 
     public T GetComponent<T>() where T : BaseComponent {
@@ -54,6 +58,10 @@ namespace URF.Server {
       writer.Write(this.CurrentHealth);
       writer.Write(this.MaxHealth);
       writer.Write(this.Damage);
+      writer.Write(this.Inventory.Count());
+      foreach (int itemId in this.Inventory) {
+        writer.Write(itemId);
+      }
       foreach (BaseComponent component in this.components) {
         component.Save(writer);
       }
@@ -69,6 +77,12 @@ namespace URF.Server {
       this.CurrentHealth = reader.ReadInt();
       this.MaxHealth = reader.ReadInt();
       this.Damage = reader.ReadInt();
+      this.Inventory.Clear();
+      int inventoryCount = reader.ReadInt();
+      for (int i = 0; i < inventoryCount; i++) {
+        this.Inventory.Add(reader.ReadInt());
+      }
+
       foreach (BaseComponent component in this.components) {
         component.Load(reader);
       }

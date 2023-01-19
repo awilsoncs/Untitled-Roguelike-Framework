@@ -1,4 +1,5 @@
 namespace URF.Common.Entities {
+  using System.Collections.Generic;
   using URF.Common.Persistence;
 
   /// <summary>
@@ -53,6 +54,13 @@ namespace URF.Common.Entities {
     /// </summary>
     int Damage {
       get; set;
+    }
+
+    /// <summary>
+    /// A list of entity IDs for entities contained within this object.
+    /// </summary>
+    List<int> Inventory {
+      get;
     }
 
     TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent;

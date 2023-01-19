@@ -118,6 +118,8 @@ namespace Tests.Server {
         set => throw new NotImplementedException();
       }
 
+      public List<int> Inventory => throw new NotImplementedException();
+
       public void AddComponent(BaseComponent component) {
         Components.Add(component);
       }

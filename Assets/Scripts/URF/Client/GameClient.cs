@@ -288,20 +288,18 @@ namespace URF.Client {
 
     private void DropItem() {
       // figure out which item to drop
-      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
-      if (inventory.Contents.Count == 0) {
+      if (this.mainCharacter.Inventory.Count == 0) {
         this.gui.MessageBox.AddMessage("You're not holding anything.");
         return;
       }
 
-      int topItemId = inventory.Contents[0];
+      int topItemId = this.mainCharacter.Inventory[0];
       IEntity itemToDrop = this.gameState.GetEntityById(topItemId);
       this.OnGameEvent(this.mainCharacter.WantsToDrop(itemToDrop));
     }
 
     private void Heal() {
-      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
-      if (inventory.Contents.Count == 0) {
+      if (this.mainCharacter.Inventory.Count == 0) {
         this.gui.MessageBox.AddMessage("You don't have any potions.");
         return;
       }
@@ -312,7 +310,7 @@ namespace URF.Client {
       }
 
 
-      int topItemId = inventory.Contents[0];
+      int topItemId = this.mainCharacter.Inventory[0];
       IEntity itemToUse = this.gameState.GetEntityById(topItemId);
       this.OnGameEvent(this.mainCharacter.WantsToUse(itemToUse));
     }
