@@ -10,6 +10,7 @@ namespace URF.Common.GameEvents {
     }
 
     public enum EffectType {
+      DamageHealth,
       RestoreHealth
     }
 
