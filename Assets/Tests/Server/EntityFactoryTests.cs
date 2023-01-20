@@ -1,10 +1,5 @@
 namespace Tests.Server {
-  using System;
-  using System.Linq;
-  using System.Collections.Generic;
   using NUnit.Framework;
-  using URF.Common.Entities;
-  using URF.Common.Persistence;
   using URF.Server;
   using URF.Server.EntityFactory;
 
@@ -12,12 +7,9 @@ namespace Tests.Server {
 
     private EntityFactory<Entity> entityFactory;
 
-    private static readonly List<BaseComponent> Components = new();
-
     [SetUp]
     public void Setup() {
       this.entityFactory = new EntityFactory<Entity>();
-      Components.Clear();
     }
 
     [Test]
@@ -73,79 +65,6 @@ namespace Tests.Server {
         !secondInvoked,
         "EntityFactory should not invoke second builder when getting base Entity."
       );
-    }
-
-    private sealed class ComponentA : BaseComponent {
-      // stub test class
-    }
-
-    private sealed class ComponentB : BaseComponent {
-      // stub test class
-    }
-
-    private sealed class ComponentC : BaseComponent {
-      // stub test class
-    }
-
-    private sealed class FakeEntityType : IEntity {
-
-      public int ID {
-        get => throw new NotSupportedException();
-        set => throw new NotSupportedException();
-      }
-      public bool BlocksSight {
-        get => throw new NotSupportedException();
-        set => throw new NotSupportedException();
-      }
-      public bool IsVisible {
-        get => throw new NotSupportedException();
-        set => throw new NotSupportedException();
-      }
-      public bool CanFight {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-      }
-      public int MaxHealth {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-      }
-      public int CurrentHealth {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-      }
-      public int Damage {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-      }
-
-      public List<int> Inventory => throw new NotImplementedException();
-
-      public void AddComponent(BaseComponent component) {
-        Components.Add(component);
-      }
-
-      public TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent {
-        throw new NotSupportedException();
-      }
-
-      public void Load(IGameDataReader _) {
-        // no op
-      }
-
-      public void Save(IGameDataWriter _) {
-        // no op
-      }
-    }
-
-    [Test]
-    public void EntityFactory_Should_AddTheSpecifiedComponents() {
-      EntityFactory<FakeEntityType> factory = new();
-      factory.UpdateEntitySpec(new List<Type> { typeof(ComponentA), typeof(ComponentB) });
-      _ = factory.Get();
-      Assert.That(Components.Any(x => x is ComponentA));
-      Assert.That(Components.Any(x => x is ComponentB));
-      Assert.That(!Components.Any(x => x is ComponentC));
-
     }
   }
 }

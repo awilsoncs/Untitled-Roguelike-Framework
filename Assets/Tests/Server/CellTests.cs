@@ -2,7 +2,6 @@ namespace Tests.Backend {
   using NUnit.Framework;
   using URF.Server;
   using URF.Server.GameState;
-  using URF.Server.RulesSystems;
 
   public class CellTests {
     private Cell cell;
@@ -92,28 +91,32 @@ namespace Tests.Backend {
 
     [Test]
     public void CellWithOnlyPassableEntityShouldBePassable() {
-      var entity = new Entity();
-      entity.AddComponent(new Movement { BlocksMove = false });
+      var entity = new Entity {
+        BlocksMove = false
+      };
       this.cell.PutContents(entity);
       Assert.That(this.cell.IsTraversable);
     }
 
     [Test]
     public void CellWithOnlyBlockingEntityShouldNotBePassable() {
-      var entity = new Entity();
-      entity.AddComponent(new Movement { BlocksMove = true });
+      var entity = new Entity {
+        BlocksMove = true
+      };
       this.cell.PutContents(entity);
       Assert.That(!this.cell.IsTraversable);
     }
 
     [Test]
     public void CellWithBlockingAndPassableContentsShouldNotBePassable() {
-      var entity1 = new Entity();
-      entity1.AddComponent(new Movement { BlocksMove = false });
+      var entity1 = new Entity {
+        BlocksMove = false
+      };
       this.cell.PutContents(entity1);
 
-      var entity2 = new Entity();
-      entity2.AddComponent(new Movement { BlocksMove = true });
+      var entity2 = new Entity {
+        BlocksMove = true
+      };
       this.cell.PutContents(entity2);
       Assert.That(!this.cell.IsTraversable);
     }

@@ -1,7 +1,6 @@
 namespace URF.Server {
   using System.Collections.Generic;
   using System.Linq;
-  using System.Text;
   using URF.Common.Entities;
   using URF.Common.Persistence;
 
@@ -11,6 +10,10 @@ namespace URF.Server {
   public class Entity : IEntity {
 
     public int ID {
+      get; set;
+    }
+
+    public bool BlocksMove {
       get; set;
     }
 
@@ -38,21 +41,30 @@ namespace URF.Server {
       get;
     } = new();
 
-    private readonly List<BaseComponent> components = new();
-
-    public T GetComponent<T>() where T : BaseComponent {
-      return (T)this.components.FirstOrDefault(c => c is T);
+    public string Name {
+      get; set;
+    }
+    public string Appearance {
+      get; set;
+    }
+    public string Description {
+      get; set;
     }
 
-    public void AddComponent(BaseComponent component) {
-      this.components.Add(component);
+    public ControlMode ControlMode {
+      get; set;
     }
 
     public void Save(IGameDataWriter writer) {
       if (writer == null) {
         return;
       }
+      writer.Write(this.Name);
+      writer.Write((int)this.ControlMode);
+      writer.Write(this.Appearance);
+      writer.Write(this.Description);
       writer.Write(this.BlocksSight);
+      writer.Write(this.BlocksMove);
       writer.Write(this.IsVisible);
       writer.Write(this.CanFight);
       writer.Write(this.CurrentHealth);
@@ -62,16 +74,18 @@ namespace URF.Server {
       foreach (int itemId in this.Inventory) {
         writer.Write(itemId);
       }
-      foreach (BaseComponent component in this.components) {
-        component.Save(writer);
-      }
     }
 
     public void Load(IGameDataReader reader) {
       if (reader == null) {
         return;
       }
+      this.Name = reader.ReadString();
+      this.ControlMode = (ControlMode)reader.ReadInt();
+      this.Appearance = reader.ReadString();
+      this.Description = reader.ReadString();
       this.BlocksSight = reader.ReadBool();
+      this.BlocksMove = reader.ReadBool();
       this.IsVisible = reader.ReadBool();
       this.CanFight = reader.ReadBool();
       this.CurrentHealth = reader.ReadInt();
@@ -82,23 +96,11 @@ namespace URF.Server {
       for (int i = 0; i < inventoryCount; i++) {
         this.Inventory.Add(reader.ReadInt());
       }
-
-      foreach (BaseComponent component in this.components) {
-        component.Load(reader);
-      }
     }
 
     public override string ToString() {
-      var stringBuilder = new StringBuilder();
-      _ = stringBuilder.Append(this.ID);
-      foreach (BaseComponent component in this.components) {
-        string contribution = component.EntityString;
-        if (!string.IsNullOrEmpty(contribution)) {
-          _ = stringBuilder.Append($"::{contribution}");
-        }
-      }
+      return "";
 
-      return stringBuilder.ToString();
     }
 
   }

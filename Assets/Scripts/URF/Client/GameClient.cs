@@ -6,7 +6,6 @@ namespace URF.Client {
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
-  using URF.Server.RulesSystems;
   using URF.Common.GameState;
 
   /// <summary>
@@ -125,8 +124,7 @@ namespace URF.Client {
 
     private void CreatePawn(IEntity entity, Position position) {
       int id = entity.ID;
-      EntityInfo info = entity.GetComponent<EntityInfo>();
-      string appearance = info.Appearance;
+      string appearance = entity.Appearance;
       Pawn pawn = this.pawnFactory.Get(appearance);
       pawn.EntityId = id;
       this.pawns.Add(pawn);
@@ -203,13 +201,12 @@ namespace URF.Client {
     }
 
     public override void HandleEntityAttacked(EntityAttacked ev) {
-      EntityInfo attackerInfo = ev.Attacker.GetComponent<EntityInfo>();
-      EntityInfo defenderInfo = ev.Defender.GetComponent<EntityInfo>();
 
-      string attackerName = attackerInfo.Name;
-      string defenderName = defenderInfo.Name;
+      string attackerName = ev.Attacker.Name;
+      string defenderName = ev.Defender.Name;
 
-      this.gui.MessageBox.AddMessage($"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
+      this.gui.MessageBox.AddMessage(
+        $"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
       if (ev.Defender != this.mainCharacter || !ev.Success) {
         return;
       }
@@ -232,9 +229,9 @@ namespace URF.Client {
       if (inventoryEvent.Entity == this.mainCharacter) {
         agent = "You";
       } else {
-        agent = inventoryEvent.Entity.GetComponent<EntityInfo>().Name;
+        agent = inventoryEvent.Entity.Name;
       }
-      string targetName = inventoryEvent.Item.GetComponent<EntityInfo>().Name;
+      string targetName = inventoryEvent.Item.Name;
       if (inventoryEvent.Action == InventoryEvent.InventoryAction.PickedUp) {
         this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
       } else if (inventoryEvent.Action == InventoryEvent.InventoryAction.Used) {
@@ -329,8 +326,7 @@ namespace URF.Client {
       }
 
       foreach (IEntity entity in entities) {
-        EntityInfo entityInfo = entity.GetComponent<EntityInfo>();
-        string description = entityInfo.Description;
+        string description = entity.Description;
         this.gui.MessageBox.AddMessage(description);
       }
     }
@@ -343,7 +339,7 @@ namespace URF.Client {
       foreach (IEntity entity in entities) {
         if (entity.CanFight) {
           fighters.Add(entity);
-        } else if (entity.GetComponent<Movement>().BlocksMove) {
+        } else if (entity.BlocksMove) {
           blockers.Add(entity);
         } else {
           // this entity can be stepped on or into

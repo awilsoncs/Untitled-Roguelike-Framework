@@ -1,6 +1,7 @@
 namespace URF.Common.Entities {
   using System.Collections.Generic;
   using URF.Common.Persistence;
+  using URF.Server.RulesSystems;
 
   /// <summary>
   /// High level representation of logical game objects.
@@ -11,6 +12,26 @@ namespace URF.Common.Entities {
     /// The entity's unique identifier in the game world.
     /// </summary>
     int ID {
+      get; set;
+    }
+
+    string Name {
+      get; set;
+    }
+
+    ControlMode ControlMode {
+      get; set;
+    }
+
+    string Appearance {
+      get; set;
+    }
+
+    string Description {
+      get; set;
+    }
+
+    bool BlocksMove {
       get; set;
     }
 
@@ -63,8 +84,5 @@ namespace URF.Common.Entities {
       get;
     }
 
-    TComponentType GetComponent<TComponentType>() where TComponentType : BaseComponent;
-
-    void AddComponent(BaseComponent component);
   }
 }

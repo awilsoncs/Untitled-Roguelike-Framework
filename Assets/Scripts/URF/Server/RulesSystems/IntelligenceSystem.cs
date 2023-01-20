@@ -1,21 +1,10 @@
 namespace URF.Server.RulesSystems {
-  using System;
   using System.Collections.Generic;
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
-  using URF.Common.Persistence;
   using URF.Algorithms;
   using URF.Server.GameState;
-
-  public enum IntelligenceControlMode {
-
-    // NOTE: player is controlled externally, use control mode None.
-    None,
-
-    Monster
-
-  }
 
   // todo need to make this require movement and combat systems
   public class IntelligenceSystem : BaseRulesSystem {
@@ -25,11 +14,6 @@ namespace URF.Server.RulesSystems {
     private IPathfinding pathfinding;
 
     private IEntity mainCharacter;
-
-    // todo see notes below
-    // After implementing the turn controller, convert this system
-    // to handle a command emitted by the turn controller.
-    public override List<Type> Components => new() { typeof(Brain) };
 
     public override void ApplyPlugins(PluginBundle pluginBundle) {
       this.fov = pluginBundle.FieldOfView;
@@ -46,12 +30,12 @@ namespace URF.Server.RulesSystems {
       }
 
       foreach (IEntity entity in this.GameState.GetAllEntities()) {
-        IntelligenceControlMode mode = entity.GetComponent<Brain>().ControlMode;
+        ControlMode mode = entity.ControlMode;
         switch (mode) {
-          case IntelligenceControlMode.Monster:
+          case ControlMode.Monster:
             this.UpdateEntity(entity);
             break;
-          case IntelligenceControlMode.None:
+          case ControlMode.None:
             break;
           default:
             this.OnGameEvent(new GameErrored($"Forgot to support intelligence mode {mode}"));
@@ -101,22 +85,6 @@ namespace URF.Server.RulesSystems {
         }
       }
       return costs;
-    }
-
-  }
-
-  public class Brain : BaseComponent {
-
-    public IntelligenceControlMode ControlMode {
-      get; set;
-    }
-
-    public override void Load(IGameDataReader reader) {
-      this.ControlMode = (IntelligenceControlMode)reader.ReadInt();
-    }
-
-    public override void Save(IGameDataWriter writer) {
-      writer.Write((int)this.ControlMode);
     }
 
   }

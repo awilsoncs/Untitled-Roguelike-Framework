@@ -1,7 +1,6 @@
 namespace Tests.Server {
   using NUnit.Framework;
   using UnityEngine;
-  using URF.Common.Entities;
   using URF.Common.Persistence;
   using URF.Server;
 
@@ -36,50 +35,6 @@ namespace Tests.Server {
 
       this.testEntity.IsVisible = false;
       Assert.That(!this.testEntity.IsVisible);
-    }
-
-
-    // mock component
-    private sealed class ComponentA : BaseComponent {
-      public IGameDataReader SavedReader {
-        get; private set;
-      }
-      public IGameDataWriter SavedWriter {
-        get; private set;
-      }
-
-      public override void Load(IGameDataReader reader) {
-        this.SavedReader = reader;
-      }
-
-      public override void Save(IGameDataWriter writer) {
-        this.SavedWriter = writer;
-      }
-
-      public override string EntityString => "testString";
-    }
-
-
-    private sealed class ComponentB : BaseComponent {
-      // stub test class
-    }
-
-    [Test]
-    public void Entity_Should_HaveGivenComponent() {
-      var component = new ComponentA();
-
-      this.testEntity.AddComponent(component);
-      ComponentA foundComponent = this.testEntity.GetComponent<ComponentA>();
-      Assert.That(foundComponent, Is.EqualTo(component));
-    }
-
-    [Test]
-    public void Entity_ShouldNot_HaveNotGivenComponent() {
-      var component = new ComponentA();
-
-      this.testEntity.AddComponent(component);
-      ComponentB foundComponent = this.testEntity.GetComponent<ComponentB>();
-      Assert.That(foundComponent, Is.Null);
     }
 
     private sealed class MockGameDataWriter : IGameDataWriter {
@@ -126,38 +81,6 @@ namespace Tests.Server {
       public Vector3 ReadVector3() {
         return Vector3.zero;
       }
-    }
-
-    [Test]
-    public void Entity_Should_AskComponentsToSave() {
-      var component = new ComponentA();
-
-      this.testEntity.AddComponent(component);
-      var mockWriter = new MockGameDataWriter();
-
-      this.testEntity.Save(mockWriter);
-      Assert.That(component.SavedWriter, Is.EqualTo(mockWriter));
-    }
-
-    [Test]
-    public void Entity_Should_AskComponentsToLoad() {
-      var component = new ComponentA();
-
-      this.testEntity.AddComponent(component);
-      var mockReader = new MockGameDataReader();
-
-      this.testEntity.Load(mockReader);
-      Assert.That(component.SavedReader, Is.EqualTo(mockReader));
-    }
-
-    [Test]
-    public void Entity_Should_QueryComponentsForToStringDetails() {
-      var component = new ComponentA();
-      this.testEntity.ID = 1;
-
-      this.testEntity.AddComponent(component);
-      string entityRepr = this.testEntity.ToString();
-      Assert.That(entityRepr, Is.EqualTo("1::testString"));
     }
 
     [Test]

@@ -1,21 +1,15 @@
 namespace URF.Server.EntityFactory {
-  using System;
   using System.Collections.Generic;
   using System.Diagnostics;
   using URF.Common.Entities;
-  using URF.Server.RulesSystems;
 
   public class EntityFactory<TEntity> : IEntityFactory<TEntity> where TEntity : IEntity, new() {
 
     private int idCounter;
 
-
     private readonly Dictionary<string, EntityBuilder> builders;
 
-    private readonly List<Type> entitySpecComponents;
-
     public EntityFactory() {
-      this.entitySpecComponents = new List<Type>();
       this.builders = new Dictionary<string, EntityBuilder> {
         { "player", BuildPlayer },
         { "crab", BuildCrab },
@@ -29,12 +23,7 @@ namespace URF.Server.EntityFactory {
     /// </summary>
     /// <returns></returns>
     public IEntity Get() {
-      var entity = new TEntity();
-      foreach (Type t in this.entitySpecComponents) {
-        entity.AddComponent((BaseComponent)Activator.CreateInstance(t));
-      }
-
-      return entity;
+      return new TEntity();
     }
 
     /// <summary>
@@ -49,12 +38,6 @@ namespace URF.Server.EntityFactory {
       return entity;
     }
 
-    public void UpdateEntitySpec(List<Type> componentTypes) {
-      foreach (Type slot in componentTypes) {
-        this.entitySpecComponents.Add(slot);
-      }
-    }
-
     public void Reclaim(TEntity entity) {
       // Haven't yet implemented this, but need to know where it should be called, so we leave it.
     }
@@ -67,14 +50,11 @@ namespace URF.Server.EntityFactory {
     // short term hardcoded delegates
 
     private static void BuildPlayer(IEntity entity) {
-      EntityInfo info = entity.GetComponent<EntityInfo>();
-      info.Name = "Player";
-      info.Appearance = "player";
-      info.Description = "A daring adventurer.";
-      Movement movement = entity.GetComponent<Movement>();
-      movement.BlocksMove = true;
-      Brain brain = entity.GetComponent<Brain>();
-      brain.ControlMode = IntelligenceControlMode.None;
+      entity.Name = "Player";
+      entity.Appearance = "player";
+      entity.Description = "A daring adventurer.";
+      entity.BlocksMove = true;
+      entity.ControlMode = ControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
       entity.CanFight = true;
@@ -84,14 +64,11 @@ namespace URF.Server.EntityFactory {
     }
 
     private static void BuildCrab(IEntity entity) {
-      EntityInfo info = entity.GetComponent<EntityInfo>();
-      info.Name = "Crab";
-      info.Appearance = "crab";
-      info.Description = "A deadly crab.";
-      Movement movement = entity.GetComponent<Movement>();
-      movement.BlocksMove = true;
-      Brain brain = entity.GetComponent<Brain>();
-      brain.ControlMode = IntelligenceControlMode.Monster;
+      entity.Name = "Crab";
+      entity.Appearance = "crab";
+      entity.Description = "A deadly crab.";
+      entity.BlocksMove = true;
+      entity.ControlMode = ControlMode.Monster;
       entity.BlocksSight = false;
       entity.IsVisible = true;
       entity.CanFight = true;
@@ -101,28 +78,22 @@ namespace URF.Server.EntityFactory {
     }
 
     private static void BuildWall(IEntity entity) {
-      EntityInfo info = entity.GetComponent<EntityInfo>();
-      info.Name = "Wall";
-      info.Appearance = "wall";
-      info.Description = "Nothing but solid stone.";
-      Movement movement = entity.GetComponent<Movement>();
-      movement.BlocksMove = true;
-      Brain brain = entity.GetComponent<Brain>();
-      brain.ControlMode = IntelligenceControlMode.None;
+      entity.Name = "Wall";
+      entity.Appearance = "wall";
+      entity.Description = "Nothing but solid stone.";
+      entity.BlocksMove = true;
+      entity.ControlMode = ControlMode.None;
       entity.BlocksSight = true;
       entity.IsVisible = true;
       entity.CanFight = false;
     }
 
     private static void BuildHealthPotion(IEntity entity) {
-      EntityInfo info = entity.GetComponent<EntityInfo>();
-      info.Name = "Health Potion";
-      info.Appearance = "healthPotion";
-      info.Description = "It looks like Diet Soda.";
-      Movement movement = entity.GetComponent<Movement>();
-      movement.BlocksMove = false;
-      Brain brain = entity.GetComponent<Brain>();
-      brain.ControlMode = IntelligenceControlMode.None;
+      entity.Name = "Health Potion";
+      entity.Appearance = "healthPotion";
+      entity.Description = "It looks like Diet Soda.";
+      entity.BlocksMove = false;
+      entity.ControlMode = ControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
       entity.CanFight = false;
