@@ -99,8 +99,7 @@ namespace URF.Server {
     }
 
     public override string ToString() {
-      return "";
-
+      return $"{this.ID}::{this.Name}";
     }
 
   }

@@ -1,4 +1,5 @@
 namespace URF.Server.RulesSystems {
+  using System.Linq;
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
@@ -16,6 +17,12 @@ namespace URF.Server.RulesSystems {
       this.entityFactory = pluginBundle.EntityFactory;
     }
 
+    public override void HandleTargetEvent(TargetEvent targetEvent) {
+      if (targetEvent.Method == TargetEvent.TargetEventMethod.Response) {
+        this.OnGameEvent(new GameErrored($"target: {targetEvent.Targets.Single()}"));
+      }
+    }
+
     public override void HandleDebug(DebugAction ev) {
       switch (ev.Method) {
         case DebugAction.DebugMethod.SpawnCrab:
@@ -25,6 +32,10 @@ namespace URF.Server.RulesSystems {
           this.GameState.CreateEntity(crab);
           this.GameState.PlaceEntityOnMap(crab, position);
           return;
+        case DebugAction.DebugMethod.TriggerRequest:
+          // The player wants to test requests
+          this.OnGameEvent(new TargetEvent(TargetEvent.TargetEventMethod.Request));
+          break;
         default:
           this.OnGameEvent(new GameErrored($"Unknown debug method {ev.Method}"));
           return;

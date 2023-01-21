@@ -239,6 +239,14 @@ namespace URF.Client {
       }
     }
 
+    public override void HandleTargetEvent(TargetEvent targetEvent) {
+      if (targetEvent.Method == TargetEvent.TargetEventMethod.Request) {
+        Debug.Log("Targeting request received! Replying...");
+        IEntity entity = this.gameState.GetAllEntities().First();
+        this.OnGameEvent(targetEvent.Select(entity));
+      }
+    }
+
     private void HandleUserInput() {
       if (Input.GetMouseButtonDown(0)) {
         this.MouseClicked(Input.mousePosition);
@@ -251,7 +259,7 @@ namespace URF.Client {
       } else if (Input.GetKeyDown(this.downKey)) {
         this.Move(0, -1);
       } else if (Input.GetKeyDown(this.spawnKey)) {
-        this.SpawnCrab();
+        this.DebugKey();
       } else if (Input.GetKeyDown(this.mapKey)) {
         this.ToggleFieldOfView();
       } else if (Input.GetKeyDown(this.getKey)) {
@@ -355,8 +363,8 @@ namespace URF.Client {
       }
     }
 
-    private void SpawnCrab() {
-      this.OnGameEvent(DebugAction.SpawnCrab());
+    private void DebugKey() {
+      this.OnGameEvent(new DebugAction(DebugAction.DebugMethod.TriggerRequest));
     }
 
     private void ToggleFieldOfView() {

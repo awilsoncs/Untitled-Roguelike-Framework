@@ -18,5 +18,6 @@ namespace URF.Common.GameEvents {
     void HandlePersistenceEvent(PersistenceEvent persistenceEvent);
     void HandleEffectEvent(EffectEvent effectEvent);
     void HandleEntityEvent(EntityEvent effectEvent);
+    void HandleTargetEvent(TargetEvent targetEvent);
   }
 }
