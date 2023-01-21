@@ -45,6 +45,8 @@ namespace URF.Client {
 
     [SerializeField] private KeyCode mapKey = KeyCode.M;
 
+    [SerializeField] private KeyCode cancelKey = KeyCode.Escape;
+
     private const float GridMultiple = 0.5f;
 
     private readonly List<Pawn> pawns = new();
@@ -59,6 +61,8 @@ namespace URF.Client {
 
     private bool usingFOV = true;
 
+    private TargetEvent targetRequest;
+
     // Unity message events appear unused to simple IDEs.
     private void Start() {
       this.gameEventChannel.Connect(this);
@@ -66,12 +70,14 @@ namespace URF.Client {
     }
 
     private void Update() {
-      if (this.gameEvents.Count > 0) {
-        Debug.Log("Beginning client update...");
-      }
-      while (this.gameEvents.Count > 0) {
-        IGameEvent ev = this.gameEvents.Dequeue();
-        base.HandleEvent(this, ev);
+      if (this.targetRequest == null) {
+        if (this.gameEvents.Count > 0) {
+          Debug.Log("Beginning client update...");
+        }
+        while (this.gameEvents.Count > 0) {
+          IGameEvent ev = this.gameEvents.Dequeue();
+          base.HandleEvent(this, ev);
+        }
       }
       this.HandleUserInput();
     }
@@ -241,13 +247,31 @@ namespace URF.Client {
 
     public override void HandleTargetEvent(TargetEvent targetEvent) {
       if (targetEvent.Method == TargetEvent.TargetEventMethod.Request) {
-        Debug.Log("Targeting request received! Replying...");
-        IEntity entity = this.gameState.GetAllEntities().First();
-        this.OnGameEvent(targetEvent.Select(entity));
+        Debug.Log("Targeting request received! Entering target control mode.");
+        this.gui.MessageBox.AddMessage("Select a target.");
+        this.targetRequest = targetEvent;
       }
     }
 
     private void HandleUserInput() {
+      if (this.targetRequest == null) {
+        this.HandleNormalFlow();
+      } else {
+        this.HandleTargetSelection();
+      }
+    }
+
+    private void HandleTargetSelection() {
+      if (Input.GetMouseButtonDown(0)) {
+        this.MouseClicked(Input.mousePosition);
+      } else if (Input.GetKeyDown(this.cancelKey)) {
+        this.OnGameEvent(new TargetEvent(TargetEvent.TargetEventMethod.Cancelled));
+        this.gui.MessageBox.AddMessage("Action canceled.");
+        this.targetRequest = null;
+      }
+    }
+
+    private void HandleNormalFlow() {
       if (Input.GetMouseButtonDown(0)) {
         this.MouseClicked(Input.mousePosition);
       } else if (Input.GetKeyDown(this.leftKey)) {
@@ -333,9 +357,25 @@ namespace URF.Client {
         return;
       }
 
-      foreach (IEntity entity in entities) {
-        string description = entity.Description;
-        this.gui.MessageBox.AddMessage(description);
+      if (this.targetRequest != null) {
+        IEnumerable<IEntity> targets = this.targetRequest.Targets.Intersect(entities);
+        if (!targets.Any()) {
+          this.gui.MessageBox.AddMessage("There are no legal targets there.");
+          return;
+        }
+
+        this.OnGameEvent(
+          new TargetEvent(
+            TargetEvent.TargetEventMethod.Response,
+            new List<IEntity>() { targets.First() }
+          )
+        );
+        this.targetRequest = null;
+      } else {
+        foreach (IEntity entity in entities) {
+          string description = entity.Description;
+          this.gui.MessageBox.AddMessage(description);
+        }
       }
     }
 
@@ -364,7 +404,7 @@ namespace URF.Client {
     }
 
     private void DebugKey() {
-      this.OnGameEvent(new DebugAction(DebugAction.DebugMethod.TriggerRequest));
+      this.OnGameEvent(new DebugAction(DebugAction.DebugMethod.Damage));
     }
 
     private void ToggleFieldOfView() {

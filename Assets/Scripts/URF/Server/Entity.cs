@@ -55,6 +55,10 @@ namespace URF.Server {
       get; set;
     }
 
+    public List<IEntity> VisibleEntities {
+      get;
+    } = new();
+
     public void Save(IGameDataWriter writer) {
       if (writer == null) {
         return;
@@ -91,6 +95,7 @@ namespace URF.Server {
       this.CurrentHealth = reader.ReadInt();
       this.MaxHealth = reader.ReadInt();
       this.Damage = reader.ReadInt();
+      this.VisibleEntities.Clear();
       this.Inventory.Clear();
       int inventoryCount = reader.ReadInt();
       for (int i = 0; i < inventoryCount; i++) {

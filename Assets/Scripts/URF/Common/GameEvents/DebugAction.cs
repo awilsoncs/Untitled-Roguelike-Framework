@@ -6,7 +6,7 @@ namespace URF.Common.GameEvents {
     public enum DebugMethod {
 
       SpawnCrab,
-      TriggerRequest
+      Damage
 
     }
 

@@ -12,14 +12,21 @@ namespace URF.Server.RulesSystems {
 
     private IEntityFactory<Entity> entityFactory;
 
+    private IEntity mainCharacter;
+
     public override void ApplyPlugins(PluginBundle pluginBundle) {
       this.random = pluginBundle.Random;
       this.entityFactory = pluginBundle.EntityFactory;
     }
 
+    public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
+      this.mainCharacter = ev.Entity;
+    }
+
     public override void HandleTargetEvent(TargetEvent targetEvent) {
       if (targetEvent.Method == TargetEvent.TargetEventMethod.Response) {
-        this.OnGameEvent(new GameErrored($"target: {targetEvent.Targets.Single()}"));
+        this.OnGameEvent(
+          new EffectEvent(EffectEvent.EffectType.DamageHealth, 1000, targetEvent.Targets.First()));
       }
     }
 
@@ -32,9 +39,14 @@ namespace URF.Server.RulesSystems {
           this.GameState.CreateEntity(crab);
           this.GameState.PlaceEntityOnMap(crab, position);
           return;
-        case DebugAction.DebugMethod.TriggerRequest:
+        case DebugAction.DebugMethod.Damage:
           // The player wants to test requests
-          this.OnGameEvent(new TargetEvent(TargetEvent.TargetEventMethod.Request));
+          this.OnGameEvent(
+            new TargetEvent(
+              TargetEvent.TargetEventMethod.Request,
+              this.mainCharacter.VisibleEntities
+            )
+          );
           break;
         default:
           this.OnGameEvent(new GameErrored($"Unknown debug method {ev.Method}"));

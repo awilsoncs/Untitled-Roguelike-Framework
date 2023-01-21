@@ -84,5 +84,9 @@ namespace URF.Common.Entities {
       get;
     }
 
+    List<IEntity> VisibleEntities {
+      get;
+    }
+
   }
 }
