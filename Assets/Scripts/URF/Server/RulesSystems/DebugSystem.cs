@@ -5,6 +5,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common.GameEvents;
   using URF.Server.EntityFactory;
   using URF.Algorithms;
+  using URF.Common.Effects;
 
   public class DebugSystem : BaseRulesSystem {
 
@@ -26,7 +27,9 @@ namespace URF.Server.RulesSystems {
     public override void HandleTargetEvent(TargetEvent targetEvent) {
       if (targetEvent.Method == TargetEvent.TargetEventMethod.Response) {
         this.OnGameEvent(
-          new EffectEvent(EffectEvent.EffectType.DamageHealth, 1000, targetEvent.Targets.First()));
+          new EffectEvent(
+            EffectType.DamageHealth.WithMagnitude(1000),
+            targetEvent.Targets.First()));
       }
     }
 

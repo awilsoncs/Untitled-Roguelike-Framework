@@ -1,4 +1,5 @@
 namespace URF.Server.RulesSystems {
+  using URF.Common.Effects;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
 
@@ -9,7 +10,9 @@ namespace URF.Server.RulesSystems {
       IEntity defender = ev.Defender;
       int damage = attacker.Damage;
       this.OnGameEvent(new EntityAttacked(attacker, defender, true, damage));
-      this.OnGameEvent(new EffectEvent(EffectEvent.EffectType.DamageHealth, damage, defender));
+
+
+      this.OnGameEvent(new EffectEvent(EffectType.DamageHealth.WithMagnitude(damage), defender));
       this.OnGameEvent(new TurnSpent(attacker));
     }
 

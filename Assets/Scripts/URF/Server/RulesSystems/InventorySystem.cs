@@ -1,5 +1,6 @@
 namespace URF.Server.RulesSystems {
   using URF.Common;
+  using URF.Common.Effects;
   using URF.Common.Entities;
   using URF.Common.Exceptions;
   using URF.Common.GameEvents;
@@ -95,7 +96,7 @@ namespace URF.Server.RulesSystems {
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
-      this.OnGameEvent(new EffectEvent(EffectEvent.EffectType.RestoreHealth, 5, entity));
+      this.OnGameEvent(new EffectEvent(EffectType.RestoreHealth.WithMagnitude(5), entity));
 
       _ = entity.Inventory.Remove(item.ID);
       this.GameState.DeleteEntity(item);
