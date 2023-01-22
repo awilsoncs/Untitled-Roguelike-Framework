@@ -6,6 +6,8 @@ namespace URF.Server.RulesSystems {
   using URF.Server.EntityFactory;
   using URF.Algorithms;
   using URF.Common.Effects;
+  using URF.Server.Resolvables;
+  using System.Collections.Generic;
 
   public class DebugSystem : BaseRulesSystem {
 
@@ -24,15 +26,6 @@ namespace URF.Server.RulesSystems {
       this.mainCharacter = ev.Entity;
     }
 
-    public override void HandleTargetEvent(TargetEvent targetEvent) {
-      if (targetEvent.Method == TargetEvent.TargetEventMethod.Response) {
-        this.OnGameEvent(
-          new EffectEvent(
-            EffectType.DamageHealth.WithMagnitude(1000),
-            targetEvent.Targets.First()));
-      }
-    }
-
     public override void HandleDebug(DebugAction ev) {
       switch (ev.Method) {
         case DebugAction.DebugMethod.SpawnCrab:
@@ -43,11 +36,13 @@ namespace URF.Server.RulesSystems {
           this.GameState.PlaceEntityOnMap(crab, position);
           return;
         case DebugAction.DebugMethod.Damage:
-          // The player wants to test requests
           this.OnGameEvent(
-            new TargetEvent(
-              TargetEvent.TargetEventMethod.Request,
-              this.mainCharacter.VisibleEntities
+            new ResolvableEvent(
+              new Resolvable(
+                this.mainCharacter,
+                TargetScope.OneCreature,
+                new HashSet<IEffect>() { EffectType.DamageHealth.WithMagnitude(1000) }
+              )
             )
           );
           break;

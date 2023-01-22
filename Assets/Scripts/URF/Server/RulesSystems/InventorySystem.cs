@@ -119,10 +119,7 @@ namespace URF.Server.RulesSystems {
     private void BeginTargeting(Resolvable resolvable) {
       // Emit the resolvable event for targeting.
       this.OnGameEvent(
-        new ResolvableEvent(
-          resolvable,
-          ResolvableEvent.ResolvableEventStep.TargetDetermination
-        )
+        new ResolvableEvent(resolvable)
       );
     }
   }

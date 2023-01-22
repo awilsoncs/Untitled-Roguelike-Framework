@@ -21,6 +21,11 @@ namespace URF.Common.GameEvents {
       get;
     }
 
+    public ResolvableEvent(IResolvable resolvable) {
+      this.Resolvable = resolvable;
+      this.Step = ResolvableEventStep.TargetDetermination;
+    }
+
     public ResolvableEvent(IResolvable resolvable, ResolvableEventStep step) {
       this.Resolvable = resolvable;
       this.Step = step;

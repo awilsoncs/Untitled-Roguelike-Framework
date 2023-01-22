@@ -2,6 +2,7 @@ namespace URF.Common.GameEvents {
   using System;
   using System.Collections.Generic;
   using URF.Common.Entities;
+  using URF.Server.Resolvables;
 
   public class TargetEvent : EventArgs, IGameEvent {
 
@@ -15,25 +16,29 @@ namespace URF.Common.GameEvents {
       get;
     }
 
-    public IEnumerable<IEntity> Targets {
+    public IResolvable Resolvable {
       get;
-    } = new List<IEntity>();
-
-    public TargetEvent(TargetEventMethod method) {
-      this.Method = method;
     }
 
-    public TargetEvent(TargetEventMethod method, IEnumerable<IEntity> targets) {
+    public IEnumerable<IEntity> Targets => this.Resolvable.LegalTargets;
+
+    public IEnumerable<IEntity> SelectedTargets => this.Resolvable.ResolvedTargets;
+
+    public TargetEvent(IResolvable resolvable) {
+      this.Resolvable = resolvable;
+      this.Method = TargetEventMethod.Request;
+    }
+
+    public TargetEvent(TargetEventMethod method, IResolvable resolvable) {
       this.Method = method;
-      this.Targets = targets;
+      this.Resolvable = resolvable;
     }
 
     public TargetEvent Select(IEntity target) {
+      this.Resolvable.ResolveTargets(new HashSet<IEntity>() { target });
       return new(
         TargetEventMethod.Response,
-        new List<IEntity>() {
-          target
-        }
+        this.Resolvable
       );
     }
 

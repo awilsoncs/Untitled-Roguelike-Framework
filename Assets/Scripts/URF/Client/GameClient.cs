@@ -265,7 +265,10 @@ namespace URF.Client {
       if (Input.GetMouseButtonDown(0)) {
         this.MouseClicked(Input.mousePosition);
       } else if (Input.GetKeyDown(this.cancelKey)) {
-        this.OnGameEvent(new TargetEvent(TargetEvent.TargetEventMethod.Cancelled));
+        this.OnGameEvent(
+          new TargetEvent(
+            TargetEvent.TargetEventMethod.Cancelled,
+            this.targetRequest.Resolvable));
         this.gui.MessageBox.AddMessage("Action canceled.");
         this.targetRequest = null;
       }
@@ -363,13 +366,7 @@ namespace URF.Client {
           this.gui.MessageBox.AddMessage("There are no legal targets there.");
           return;
         }
-
-        this.OnGameEvent(
-          new TargetEvent(
-            TargetEvent.TargetEventMethod.Response,
-            new List<IEntity>() { targets.First() }
-          )
-        );
+        this.OnGameEvent(this.targetRequest.Select(targets.First()));
         this.targetRequest = null;
       } else {
         foreach (IEntity entity in entities) {
