@@ -10,7 +10,7 @@ namespace URF.Common.GameEvents {
       Applied
     }
 
-    public Effect Effect {
+    public IEffect Effect {
       get;
     }
 
@@ -28,13 +28,13 @@ namespace URF.Common.GameEvents {
       EffectEventStep.Applied
     );
 
-    public EffectEvent(Effect effect, IEntity affected) {
+    public EffectEvent(IEffect effect, IEntity affected) {
       this.Effect = effect;
       this.Affected = affected;
       this.Step = EffectEventStep.Created;
     }
 
-    private EffectEvent(Effect effect, IEntity affected, EffectEventStep step) {
+    private EffectEvent(IEffect effect, IEntity affected, EffectEventStep step) {
       this.Effect = effect;
       this.Affected = affected;
       this.Step = step;

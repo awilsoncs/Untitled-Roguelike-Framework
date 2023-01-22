@@ -101,6 +101,9 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
+    public virtual void HandleResolvableEvent(ResolvableEvent resolvableEvent) {
+      // default no-op
+    }
 
   }
 }
