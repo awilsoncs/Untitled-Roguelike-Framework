@@ -1,5 +1,6 @@
 namespace URF.Common.GameEvents {
   using System;
+  using URF.Common.Effects;
   using URF.Common.Entities;
 
   public class EffectEvent : EventArgs, IGameEvent {
@@ -9,16 +10,7 @@ namespace URF.Common.GameEvents {
       Applied
     }
 
-    public enum EffectType {
-      DamageHealth,
-      RestoreHealth
-    }
-
-    public EffectType Method {
-      get;
-    }
-
-    public int Magnitude {
+    public IEffect Effect {
       get;
     }
 
@@ -31,22 +23,19 @@ namespace URF.Common.GameEvents {
     }
 
     public EffectEvent Applied => new(
-      this.Method,
-      this.Magnitude,
+      this.Effect,
       this.Affected,
       EffectEventStep.Applied
     );
 
-    public EffectEvent(EffectType method, int magnitude, IEntity affected) {
-      this.Method = method;
-      this.Magnitude = magnitude;
+    public EffectEvent(IEffect effect, IEntity affected) {
+      this.Effect = effect;
       this.Affected = affected;
       this.Step = EffectEventStep.Created;
     }
 
-    private EffectEvent(EffectType method, int magnitude, IEntity affected, EffectEventStep step) {
-      this.Method = method;
-      this.Magnitude = magnitude;
+    private EffectEvent(IEffect effect, IEntity affected, EffectEventStep step) {
+      this.Effect = effect;
       this.Affected = affected;
       this.Step = step;
     }

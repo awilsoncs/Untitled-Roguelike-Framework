@@ -1,20 +1,16 @@
 namespace URF.Server.RulesSystems {
-  using System;
   using System.Collections.Generic;
   using URF.Common;
+  using URF.Common.Effects;
   using URF.Common.Entities;
   using URF.Common.Exceptions;
   using URF.Common.GameEvents;
+  using URF.Server.Resolvables;
 
   /// <summary>
   /// Defines inventory handling for entities.
   /// </summary>
   public class InventorySystem : BaseRulesSystem {
-
-    public override List<Type> Components =>
-      new() {
-            typeof(InventoryComponent)
-      };
 
     /// <inheritdoc />
     public override void HandleInventoryEvent(InventoryEvent inventoryEvent) {
@@ -51,20 +47,19 @@ namespace URF.Server.RulesSystems {
 
     private void HandleWantsToDrop(InventoryEvent inventoryEvent) {
       IEntity entity = inventoryEvent.Entity;
-      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
-      if (inventory == null) {
+      if (entity.Inventory == null) {
         throw new GameEventException(
           inventoryEvent, "The acting entity does not have an InventoryComponent.");
       }
 
       IEntity item = inventoryEvent.Item;
 
-      if (!inventory.Contains(item)) {
+      if (!entity.Inventory.Contains(item.ID)) {
         throw new GameEventException(
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
-      inventory.Remove(item);
+      _ = entity.Inventory.Remove(item.ID);
       Position entityPos = this.GameState.LocateEntityOnMap(entity);
       this.GameState.PlaceEntityOnMap(item, entityPos);
       this.OnGameEvent(inventoryEvent.Entity.Dropped(item));
@@ -72,15 +67,14 @@ namespace URF.Server.RulesSystems {
 
     private void HandleWantsToUse(InventoryEvent inventoryEvent) {
       IEntity entity = inventoryEvent.Entity;
-      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
-      if (inventory == null) {
+      if (entity.Inventory == null) {
         throw new GameEventException(
           inventoryEvent, "The acting entity does not have an InventoryComponent.");
       }
 
       IEntity item = inventoryEvent.Item;
 
-      if (!inventory.Contains(item)) {
+      if (!entity.Inventory.Contains(item.ID)) {
         throw new GameEventException(
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
@@ -90,27 +84,44 @@ namespace URF.Server.RulesSystems {
 
     private void HandleWantsToGet(InventoryEvent inventoryEvent) {
       this.GameState.RemoveEntityFromMap(inventoryEvent.Item);
-      InventoryComponent inventory = inventoryEvent.Entity.GetComponent<InventoryComponent>();
-      inventory.Add(inventoryEvent.Item);
+      IEntity entity = inventoryEvent.Entity;
+      entity.Inventory.Add(inventoryEvent.Item.ID);
       this.OnGameEvent(inventoryEvent.Entity.PickedUp(inventoryEvent.Item));
     }
 
     private void HandleUsed(InventoryEvent inventoryEvent) {
       IEntity entity = inventoryEvent.Entity;
       IEntity item = inventoryEvent.Item;
-      InventoryComponent inventory = entity.GetComponent<InventoryComponent>();
 
-      if (!inventory.Contains(item)) {
+      if (!entity.Inventory.Contains(item.ID)) {
         throw new GameEventException(
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
-      this.OnGameEvent(new EffectEvent(EffectEvent.EffectType.RestoreHealth, 5, entity));
+      Resolvable resolvable = CreateResolvable(entity);
+      this.BeginTargeting(resolvable);
 
-      inventory.Remove(item);
+      // todo this will delete the potion even if the user cancels.
+      _ = entity.Inventory.Remove(item.ID);
       this.GameState.DeleteEntity(item);
     }
 
+    private static Resolvable CreateResolvable(IEntity entity) {
+      // Generate a resolvable for the item or ability and user.
+      // todo we'll want this to read information off of the item or ability eventually
+      return new Resolvable(
+        entity,
+        TargetScope.Self,
+        new HashSet<IEffect>() { EffectType.RestoreHealth.WithMagnitude(5) }
+      );
+    }
+
+    private void BeginTargeting(Resolvable resolvable) {
+      // Emit the resolvable event for targeting.
+      this.OnGameEvent(
+        new ResolvableEvent(resolvable)
+      );
+    }
   }
 
 }

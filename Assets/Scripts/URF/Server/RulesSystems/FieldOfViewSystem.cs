@@ -51,11 +51,15 @@ namespace URF.Server.RulesSystems {
         }
       }
       IFieldOfViewQueryResult result = this.fov.CalculateFov(transparency, position);
+      this.mainCharacter.VisibleEntities.Clear();
       for (int x = 0; x < mapWidth; x++) {
         for (int y = 0; y < mapHeight; y++) {
           bool isVisible = result.IsVisible((x, y));
           Cell cell = gs.GetCell((x, y));
           foreach (IEntity entity in cell.Contents) {
+            if (isVisible) {
+              this.mainCharacter.VisibleEntities.Add(entity);
+            }
             entity.IsVisible = isVisible;
             this.OnGameEvent(new EntityVisibilityChanged(entity, isVisible));
           }

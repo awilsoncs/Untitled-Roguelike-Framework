@@ -1,9 +1,13 @@
 namespace URF.Server.RulesSystems {
+  using System.Linq;
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
   using URF.Server.EntityFactory;
   using URF.Algorithms;
+  using URF.Common.Effects;
+  using URF.Server.Resolvables;
+  using System.Collections.Generic;
 
   public class DebugSystem : BaseRulesSystem {
 
@@ -11,9 +15,15 @@ namespace URF.Server.RulesSystems {
 
     private IEntityFactory<Entity> entityFactory;
 
+    private IEntity mainCharacter;
+
     public override void ApplyPlugins(PluginBundle pluginBundle) {
       this.random = pluginBundle.Random;
       this.entityFactory = pluginBundle.EntityFactory;
+    }
+
+    public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
+      this.mainCharacter = ev.Entity;
     }
 
     public override void HandleDebug(DebugAction ev) {
@@ -25,6 +35,17 @@ namespace URF.Server.RulesSystems {
           this.GameState.CreateEntity(crab);
           this.GameState.PlaceEntityOnMap(crab, position);
           return;
+        case DebugAction.DebugMethod.Damage:
+          this.OnGameEvent(
+            new ResolvableEvent(
+              new Resolvable(
+                this.mainCharacter,
+                TargetScope.OneCreature,
+                new HashSet<IEffect>() { EffectType.DamageHealth.WithMagnitude(1000) }
+              )
+            )
+          );
+          break;
         default:
           this.OnGameEvent(new GameErrored($"Unknown debug method {ev.Method}"));
           return;

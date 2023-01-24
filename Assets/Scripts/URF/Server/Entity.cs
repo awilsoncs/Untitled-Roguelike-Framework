@@ -1,7 +1,6 @@
 namespace URF.Server {
   using System.Collections.Generic;
   using System.Linq;
-  using System.Text;
   using URF.Common.Entities;
   using URF.Common.Persistence;
 
@@ -14,6 +13,10 @@ namespace URF.Server {
       get; set;
     }
 
+    public bool BlocksMove {
+      get; set;
+    }
+
     public bool BlocksSight {
       get; set;
     }
@@ -21,25 +24,59 @@ namespace URF.Server {
     public bool IsVisible {
       get; set;
     }
-
-    private readonly List<BaseComponent> components = new();
-
-    public T GetComponent<T>() where T : BaseComponent {
-      return (T)this.components.FirstOrDefault(c => c is T);
+    public bool CanFight {
+      get; set;
+    }
+    public int MaxHealth {
+      get; set;
+    }
+    public int CurrentHealth {
+      get; set;
+    }
+    public int Damage {
+      get; set;
     }
 
-    public void AddComponent(BaseComponent component) {
-      this.components.Add(component);
+    public List<int> Inventory {
+      get;
+    } = new();
+
+    public string Name {
+      get; set;
     }
+    public string Appearance {
+      get; set;
+    }
+    public string Description {
+      get; set;
+    }
+
+    public ControlMode ControlMode {
+      get; set;
+    }
+
+    public List<IEntity> VisibleEntities {
+      get;
+    } = new();
 
     public void Save(IGameDataWriter writer) {
       if (writer == null) {
         return;
       }
+      writer.Write(this.Name);
+      writer.Write((int)this.ControlMode);
+      writer.Write(this.Appearance);
+      writer.Write(this.Description);
       writer.Write(this.BlocksSight);
+      writer.Write(this.BlocksMove);
       writer.Write(this.IsVisible);
-      foreach (BaseComponent component in this.components) {
-        component.Save(writer);
+      writer.Write(this.CanFight);
+      writer.Write(this.CurrentHealth);
+      writer.Write(this.MaxHealth);
+      writer.Write(this.Damage);
+      writer.Write(this.Inventory.Count());
+      foreach (int itemId in this.Inventory) {
+        writer.Write(itemId);
       }
     }
 
@@ -47,24 +84,27 @@ namespace URF.Server {
       if (reader == null) {
         return;
       }
+      this.Name = reader.ReadString();
+      this.ControlMode = (ControlMode)reader.ReadInt();
+      this.Appearance = reader.ReadString();
+      this.Description = reader.ReadString();
       this.BlocksSight = reader.ReadBool();
+      this.BlocksMove = reader.ReadBool();
       this.IsVisible = reader.ReadBool();
-      foreach (BaseComponent component in this.components) {
-        component.Load(reader);
+      this.CanFight = reader.ReadBool();
+      this.CurrentHealth = reader.ReadInt();
+      this.MaxHealth = reader.ReadInt();
+      this.Damage = reader.ReadInt();
+      this.VisibleEntities.Clear();
+      this.Inventory.Clear();
+      int inventoryCount = reader.ReadInt();
+      for (int i = 0; i < inventoryCount; i++) {
+        this.Inventory.Add(reader.ReadInt());
       }
     }
 
     public override string ToString() {
-      var stringBuilder = new StringBuilder();
-      _ = stringBuilder.Append(this.ID);
-      foreach (BaseComponent component in this.components) {
-        string contribution = component.EntityString;
-        if (!string.IsNullOrEmpty(contribution)) {
-          _ = stringBuilder.Append($"::{contribution}");
-        }
-      }
-
-      return stringBuilder.ToString();
+      return $"{this.ID}::{this.Name}";
     }
 
   }

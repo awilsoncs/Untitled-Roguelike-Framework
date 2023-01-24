@@ -1,6 +1,4 @@
 namespace URF.Server.EntityFactory {
-  using System;
-  using System.Collections.Generic;
   using URF.Common.Entities;
 
   public interface IEntityFactory<TEntity> where TEntity : IEntity, new() {
@@ -23,12 +21,6 @@ namespace URF.Server.EntityFactory {
     /// </summary>
     /// <param name="entity">the entity to be reclaimed</param>
     void Reclaim(TEntity entity);
-
-    /// <summary>
-    /// Apply a list of types to the entity specification.
-    /// </summary>
-    /// <param name="componentTypes">a list of types to apply to the specification</param>
-    void UpdateEntitySpec(List<Type> componentTypes);
 
     /// <summary>
     /// Register a blueprint with the factory.

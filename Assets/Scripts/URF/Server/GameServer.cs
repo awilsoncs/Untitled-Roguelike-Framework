@@ -38,12 +38,12 @@ namespace URF.Server {
 
       this.RegisterSystem(new GameStartSystem());
       this.RegisterSystem(new DebugSystem());
-      this.RegisterSystem(new EntityInfoSystem());
       this.RegisterSystem(new MovementSystem());
       this.RegisterSystem(new CombatSystem());
       this.RegisterSystem(new IntelligenceSystem());
       this.RegisterSystem(new FieldOfViewSystem());
       this.RegisterSystem(new InventorySystem());
+      this.RegisterSystem(new ResolvableSystem());
       this.RegisterSystem(new EffectsSystem());
       this.RegisterSystem(new SerializationSystem());
 
@@ -89,7 +89,6 @@ namespace URF.Server {
     private void RegisterSystem(IRulesSystem system) {
       // grant references to the plugins
       system.ApplyPlugins(this.pluginBundle);
-      this.pluginBundle.EntityFactory.UpdateEntitySpec(system.Components);
 
       // want to queue incoming events rather than directly execute them
       this.Connect(system);

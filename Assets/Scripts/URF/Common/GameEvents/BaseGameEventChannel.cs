@@ -93,8 +93,17 @@ namespace URF.Common.GameEvents {
       // default no-op
     }
 
-    public virtual void HandleEntityEvent(EntityEvent effectEvent) {
+    public virtual void HandleEntityEvent(EntityEvent entityEvent) {
       // default no-op
     }
+
+    public virtual void HandleTargetEvent(TargetEvent targetEvent) {
+      // default no-op
+    }
+
+    public virtual void HandleResolvableEvent(ResolvableEvent resolvableEvent) {
+      // default no-op
+    }
+
   }
 }

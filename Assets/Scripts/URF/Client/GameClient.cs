@@ -6,7 +6,6 @@ namespace URF.Client {
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
-  using URF.Server.RulesSystems;
   using URF.Common.GameState;
 
   /// <summary>
@@ -46,6 +45,8 @@ namespace URF.Client {
 
     [SerializeField] private KeyCode mapKey = KeyCode.M;
 
+    [SerializeField] private KeyCode cancelKey = KeyCode.Escape;
+
     private const float GridMultiple = 0.5f;
 
     private readonly List<Pawn> pawns = new();
@@ -60,6 +61,8 @@ namespace URF.Client {
 
     private bool usingFOV = true;
 
+    private TargetEvent targetRequest;
+
     // Unity message events appear unused to simple IDEs.
     private void Start() {
       this.gameEventChannel.Connect(this);
@@ -67,12 +70,14 @@ namespace URF.Client {
     }
 
     private void Update() {
-      if (this.gameEvents.Count > 0) {
-        Debug.Log("Beginning client update...");
-      }
-      while (this.gameEvents.Count > 0) {
-        IGameEvent ev = this.gameEvents.Dequeue();
-        base.HandleEvent(this, ev);
+      if (this.targetRequest == null) {
+        if (this.gameEvents.Count > 0) {
+          Debug.Log("Beginning client update...");
+        }
+        while (this.gameEvents.Count > 0) {
+          IGameEvent ev = this.gameEvents.Dequeue();
+          base.HandleEvent(this, ev);
+        }
       }
       this.HandleUserInput();
     }
@@ -125,8 +130,7 @@ namespace URF.Client {
 
     private void CreatePawn(IEntity entity, Position position) {
       int id = entity.ID;
-      EntityInfo info = entity.GetComponent<EntityInfo>();
-      string appearance = info.Appearance;
+      string appearance = entity.Appearance;
       Pawn pawn = this.pawnFactory.Get(appearance);
       pawn.EntityId = id;
       this.pawns.Add(pawn);
@@ -150,8 +154,7 @@ namespace URF.Client {
 
     private void HandleEntityEventUpdated(EntityEvent ev) {
       if (ev.Entity == this.mainCharacter) {
-        CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
-        this.gui.HealthBar.UpdateHealthBar(combat.CurrentHealth);
+        this.gui.HealthBar.UpdateHealthBar(this.mainCharacter.CurrentHealth);
       }
     }
 
@@ -199,19 +202,17 @@ namespace URF.Client {
 
     public override void HandleMainCharacterChanged(MainCharacterChanged ev) {
       this.mainCharacter = ev.Entity;
-      CombatComponent stats = this.mainCharacter.GetComponent<CombatComponent>();
-      this.gui.HealthBar.MaximumHealth = stats.MaxHealth;
-      this.gui.HealthBar.UpdateHealthBar(stats.CurrentHealth);
+      this.gui.HealthBar.MaximumHealth = this.mainCharacter.MaxHealth;
+      this.gui.HealthBar.UpdateHealthBar(this.mainCharacter.CurrentHealth);
     }
 
     public override void HandleEntityAttacked(EntityAttacked ev) {
-      EntityInfo attackerInfo = ev.Attacker.GetComponent<EntityInfo>();
-      EntityInfo defenderInfo = ev.Defender.GetComponent<EntityInfo>();
 
-      string attackerName = attackerInfo.Name;
-      string defenderName = defenderInfo.Name;
+      string attackerName = ev.Attacker.Name;
+      string defenderName = ev.Defender.Name;
 
-      this.gui.MessageBox.AddMessage($"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
+      this.gui.MessageBox.AddMessage(
+        $"{attackerName} attacked {defenderName} for {ev.Damage} damage!");
       if (ev.Defender != this.mainCharacter || !ev.Success) {
         return;
       }
@@ -234,9 +235,9 @@ namespace URF.Client {
       if (inventoryEvent.Entity == this.mainCharacter) {
         agent = "You";
       } else {
-        agent = inventoryEvent.Entity.GetComponent<EntityInfo>().Name;
+        agent = inventoryEvent.Entity.Name;
       }
-      string targetName = inventoryEvent.Item.GetComponent<EntityInfo>().Name;
+      string targetName = inventoryEvent.Item.Name;
       if (inventoryEvent.Action == InventoryEvent.InventoryAction.PickedUp) {
         this.gui.MessageBox.AddMessage($"{agent} got a {targetName}.");
       } else if (inventoryEvent.Action == InventoryEvent.InventoryAction.Used) {
@@ -244,7 +245,36 @@ namespace URF.Client {
       }
     }
 
+    public override void HandleTargetEvent(TargetEvent targetEvent) {
+      if (targetEvent.Method == TargetEvent.TargetEventMethod.Request) {
+        Debug.Log("Targeting request received! Entering target control mode.");
+        this.gui.MessageBox.AddMessage("Select a target.");
+        this.targetRequest = targetEvent;
+      }
+    }
+
     private void HandleUserInput() {
+      if (this.targetRequest == null) {
+        this.HandleNormalFlow();
+      } else {
+        this.HandleTargetSelection();
+      }
+    }
+
+    private void HandleTargetSelection() {
+      if (Input.GetMouseButtonDown(0)) {
+        this.MouseClicked(Input.mousePosition);
+      } else if (Input.GetKeyDown(this.cancelKey)) {
+        this.OnGameEvent(
+          new TargetEvent(
+            TargetEvent.TargetEventMethod.Cancelled,
+            this.targetRequest.Resolvable));
+        this.gui.MessageBox.AddMessage("Action canceled.");
+        this.targetRequest = null;
+      }
+    }
+
+    private void HandleNormalFlow() {
       if (Input.GetMouseButtonDown(0)) {
         this.MouseClicked(Input.mousePosition);
       } else if (Input.GetKeyDown(this.leftKey)) {
@@ -256,7 +286,7 @@ namespace URF.Client {
       } else if (Input.GetKeyDown(this.downKey)) {
         this.Move(0, -1);
       } else if (Input.GetKeyDown(this.spawnKey)) {
-        this.SpawnCrab();
+        this.DebugKey();
       } else if (Input.GetKeyDown(this.mapKey)) {
         this.ToggleFieldOfView();
       } else if (Input.GetKeyDown(this.getKey)) {
@@ -290,32 +320,29 @@ namespace URF.Client {
 
     private void DropItem() {
       // figure out which item to drop
-      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
-      if (inventory.Contents.Count == 0) {
+      if (this.mainCharacter.Inventory.Count == 0) {
         this.gui.MessageBox.AddMessage("You're not holding anything.");
         return;
       }
 
-      int topItemId = inventory.Contents[0];
+      int topItemId = this.mainCharacter.Inventory[0];
       IEntity itemToDrop = this.gameState.GetEntityById(topItemId);
       this.OnGameEvent(this.mainCharacter.WantsToDrop(itemToDrop));
     }
 
     private void Heal() {
-      InventoryComponent inventory = this.mainCharacter.GetComponent<InventoryComponent>();
-      if (inventory.Contents.Count == 0) {
+      if (this.mainCharacter.Inventory.Count == 0) {
         this.gui.MessageBox.AddMessage("You don't have any potions.");
         return;
       }
 
-      CombatComponent combat = this.mainCharacter.GetComponent<CombatComponent>();
-      if (combat.CurrentHealth == combat.MaxHealth) {
+      if (this.mainCharacter.CurrentHealth == this.mainCharacter.MaxHealth) {
         this.gui.MessageBox.AddMessage("You're already at maximum health.");
         return;
       }
 
 
-      int topItemId = inventory.Contents[0];
+      int topItemId = this.mainCharacter.Inventory[0];
       IEntity itemToUse = this.gameState.GetEntityById(topItemId);
       this.OnGameEvent(this.mainCharacter.WantsToUse(itemToUse));
     }
@@ -333,10 +360,19 @@ namespace URF.Client {
         return;
       }
 
-      foreach (IEntity entity in entities) {
-        EntityInfo entityInfo = entity.GetComponent<EntityInfo>();
-        string description = entityInfo.Description;
-        this.gui.MessageBox.AddMessage(description);
+      if (this.targetRequest != null) {
+        IEnumerable<IEntity> targets = this.targetRequest.Targets.Intersect(entities);
+        if (!targets.Any()) {
+          this.gui.MessageBox.AddMessage("There are no legal targets there.");
+          return;
+        }
+        this.OnGameEvent(this.targetRequest.Select(targets.First()));
+        this.targetRequest = null;
+      } else {
+        foreach (IEntity entity in entities) {
+          string description = entity.Description;
+          this.gui.MessageBox.AddMessage(description);
+        }
       }
     }
 
@@ -346,9 +382,9 @@ namespace URF.Client {
       List<IEntity> blockers = new();
       IReadOnlyCollection<IEntity> entities = this.gameState.GetCell(targetPosition).Contents;
       foreach (IEntity entity in entities) {
-        if (entity.GetComponent<CombatComponent>().CanFight) {
+        if (entity.CanFight) {
           fighters.Add(entity);
-        } else if (entity.GetComponent<Movement>().BlocksMove) {
+        } else if (entity.BlocksMove) {
           blockers.Add(entity);
         } else {
           // this entity can be stepped on or into
@@ -364,8 +400,8 @@ namespace URF.Client {
       }
     }
 
-    private void SpawnCrab() {
-      this.OnGameEvent(DebugAction.SpawnCrab());
+    private void DebugKey() {
+      this.OnGameEvent(new DebugAction(DebugAction.DebugMethod.Damage));
     }
 
     private void ToggleFieldOfView() {

@@ -3,7 +3,6 @@ namespace URF.Server.GameState {
   using System.Linq;
   using URF.Common.Entities;
   using URF.Common.GameState;
-  using URF.Server.RulesSystems;
 
   /// <summary>
   /// Cells provide a geometric container for game objects. Cells do NOT provide
@@ -15,7 +14,7 @@ namespace URF.Server.GameState {
     IReadOnlyCollection<IEntity> IReadOnlyCell.Contents => this.Contents;
 
     public bool IsTraversable => this.Contents.Count == 0 ||
-          this.Contents.Select(x => x.GetComponent<Movement>()).All(x => !x.BlocksMove);
+          this.Contents.All(x => !x.BlocksMove);
 
     public bool IsTransparent => this.Contents.Count == 0 || !this.Contents.Any(x => x.BlocksSight);
 

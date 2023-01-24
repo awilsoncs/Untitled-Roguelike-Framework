@@ -5,7 +5,8 @@ namespace URF.Common.GameEvents {
 
     public enum DebugMethod {
 
-      SpawnCrab
+      SpawnCrab,
+      Damage
 
     }
 
@@ -13,12 +14,8 @@ namespace URF.Common.GameEvents {
       get;
     }
 
-    private DebugAction(DebugMethod method) {
+    public DebugAction(DebugMethod method) {
       this.Method = method;
-    }
-
-    public static DebugAction SpawnCrab() {
-      return new DebugAction(DebugMethod.SpawnCrab);
     }
 
     public void Visit(IEventHandler eventHandler) {
