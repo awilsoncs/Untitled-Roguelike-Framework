@@ -8,7 +8,7 @@ namespace URF.Server.RulesSystems {
     public override void HandleAttackAction(AttackAction ev) {
       IEntity attacker = ev.Attacker;
       IEntity defender = ev.Defender;
-      int damage = attacker.Damage;
+      int damage = attacker.CombatStats.Damage;
       this.OnGameEvent(new EntityAttacked(attacker, defender, true, damage));
 
 

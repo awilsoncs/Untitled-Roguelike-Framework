@@ -59,6 +59,10 @@ namespace URF.Server {
       get;
     } = new();
 
+    public ICombatStats CombatStats => this.combatStats;
+
+    private readonly CombatStats combatStats = new();
+
     public void Save(IGameDataWriter writer) {
       if (writer == null) {
         return;
@@ -78,6 +82,8 @@ namespace URF.Server {
       foreach (int itemId in this.Inventory) {
         writer.Write(itemId);
       }
+
+      this.combatStats.Save(writer);
     }
 
     public void Load(IGameDataReader reader) {
@@ -101,6 +107,8 @@ namespace URF.Server {
       for (int i = 0; i < inventoryCount; i++) {
         this.Inventory.Add(reader.ReadInt());
       }
+
+      this.combatStats.Load(reader);
     }
 
     public override string ToString() {

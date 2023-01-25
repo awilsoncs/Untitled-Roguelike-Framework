@@ -57,10 +57,10 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
-      entity.CanFight = true;
-      entity.CurrentHealth = 10;
-      entity.MaxHealth = 10;
-      entity.Damage = 2;
+      entity.CombatStats.CanFight = true;
+      entity.CombatStats.CurrentHealth = 10;
+      entity.CombatStats.MaxHealth = 10;
+      entity.CombatStats.Damage = 10;
     }
 
     private static void BuildCrab(IEntity entity) {
@@ -71,10 +71,10 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.Monster;
       entity.BlocksSight = false;
       entity.IsVisible = true;
-      entity.CanFight = true;
-      entity.CurrentHealth = 2;
-      entity.MaxHealth = 2;
-      entity.Damage = 1;
+      entity.CombatStats.CanFight = true;
+      entity.CombatStats.CurrentHealth = 2;
+      entity.CombatStats.MaxHealth = 2;
+      entity.CombatStats.Damage = 1;
     }
 
     private static void BuildWall(IEntity entity) {
@@ -85,7 +85,7 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = true;
       entity.IsVisible = true;
-      entity.CanFight = false;
+      entity.CombatStats.CanFight = false;
     }
 
     private static void BuildHealthPotion(IEntity entity) {
@@ -96,7 +96,7 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
-      entity.CanFight = false;
+      entity.CombatStats.CanFight = false;
     }
 
   }

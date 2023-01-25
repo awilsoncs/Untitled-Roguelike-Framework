@@ -13,18 +13,19 @@ namespace URF.Server.RulesSystems {
 
       IEntity affected = ev.Affected;
       IEffect effect = ev.Effect;
+      ICombatStats affectedStats = affected.CombatStats;
 
       if (effect.Type == EffectType.RestoreHealth) {
-        int maxHealth = affected.MaxHealth;
-        int currentHealth = affected.CurrentHealth;
-        affected.CurrentHealth = Math.Clamp(currentHealth + effect.Magnitude, 0, maxHealth);
+        int maxHealth = affectedStats.MaxHealth;
+        int currentHealth = affectedStats.CurrentHealth;
+        affectedStats.CurrentHealth = Math.Clamp(currentHealth + effect.Magnitude, 0, maxHealth);
         this.OnGameEvent(affected.WasUpdated());
       } else if (effect.Type == EffectType.DamageHealth) {
-        int maxHealth = affected.MaxHealth;
-        int currentHealth = affected.CurrentHealth;
+        int maxHealth = affectedStats.MaxHealth;
+        int currentHealth = affectedStats.CurrentHealth;
         int damage = effect.Magnitude;
-        affected.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
-        if (affected.CurrentHealth <= 0) {
+        affectedStats.CurrentHealth = Math.Min(maxHealth, Math.Max(currentHealth - damage, 0));
+        if (affectedStats.CurrentHealth <= 0) {
           this.GameState.DeleteEntity(affected);
           return;
         }
