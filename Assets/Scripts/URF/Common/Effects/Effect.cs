@@ -1,4 +1,5 @@
 namespace URF.Common.Effects {
+  using URF.Common.Persistence;
 
   /// <summary>
   /// Basic implementation of IEffect.
@@ -8,16 +9,32 @@ namespace URF.Common.Effects {
     /// <inheritdoc />
     public EffectType Type {
       get;
+      set;
     }
 
     /// <inheritdoc />
     public int Magnitude {
       get;
+      set;
+    }
+
+    public Effect() {
+      // We need the default constructor to support serialization patterns.
     }
 
     public Effect(EffectType type, int magnitude) {
       this.Type = type;
       this.Magnitude = magnitude;
+    }
+
+    public void Save(IGameDataWriter writer) {
+      writer.Write((int)this.Type);
+      writer.Write(this.Magnitude);
+    }
+
+    public void Load(IGameDataReader reader) {
+      this.Type = (EffectType)reader.ReadInt();
+      this.Magnitude = reader.ReadInt();
     }
   }
 

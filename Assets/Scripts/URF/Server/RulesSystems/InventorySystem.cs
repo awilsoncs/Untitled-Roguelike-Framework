@@ -1,7 +1,5 @@
 namespace URF.Server.RulesSystems {
-  using System.Collections.Generic;
   using URF.Common;
-  using URF.Common.Effects;
   using URF.Common.Entities;
   using URF.Common.Exceptions;
   using URF.Common.GameEvents;
@@ -79,6 +77,10 @@ namespace URF.Server.RulesSystems {
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
+      if (!item.UseableInfo.IsUseable) {
+        throw new GameEventException(inventoryEvent, "That item can't be used.");
+      }
+
       this.OnGameEvent(entity.Used(item));
     }
 
@@ -98,29 +100,12 @@ namespace URF.Server.RulesSystems {
           inventoryEvent, "The inventory doesn't contain the expected item.");
       }
 
-      Resolvable resolvable = CreateResolvable(entity);
-      this.BeginTargeting(resolvable);
+      if (!item.UseableInfo.IsUseable) {
+        throw new GameEventException(inventoryEvent, "That item can't be used.");
+      }
 
-      // todo this will delete the potion even if the user cancels.
-      _ = entity.Inventory.Remove(item.ID);
-      this.GameState.DeleteEntity(item);
-    }
-
-    private static Resolvable CreateResolvable(IEntity entity) {
-      // Generate a resolvable for the item or ability and user.
-      // todo we'll want this to read information off of the item or ability eventually
-      return new Resolvable(
-        entity,
-        TargetScope.Self,
-        new HashSet<IEffect>() { EffectType.RestoreHealth.WithMagnitude(5) }
-      );
-    }
-
-    private void BeginTargeting(Resolvable resolvable) {
-      // Emit the resolvable event for targeting.
-      this.OnGameEvent(
-        new ResolvableEvent(resolvable)
-      );
+      IResolvable resolvable = item.UseableInfo.Useable.UsedBy(entity);
+      this.OnGameEvent(new ResolvableEvent(resolvable));
     }
   }
 

@@ -1,9 +1,10 @@
 namespace URF.Common.Effects {
+  using URF.Common.Persistence;
 
   /// <summary>
   /// A prototypical effect.
   /// </summary>
-  public interface IEffect {
+  public interface IEffect : IPersistableObject {
 
     /// <summary>
     /// The type of the effect.

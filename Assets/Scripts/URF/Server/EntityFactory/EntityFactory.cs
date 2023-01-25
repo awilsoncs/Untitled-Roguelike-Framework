@@ -1,7 +1,9 @@
 namespace URF.Server.EntityFactory {
   using System.Collections.Generic;
   using System.Diagnostics;
+  using URF.Common.Effects;
   using URF.Common.Entities;
+  using URF.Server.Useables;
 
   public class EntityFactory<TEntity> : IEntityFactory<TEntity> where TEntity : IEntity, new() {
 
@@ -85,7 +87,6 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = true;
       entity.IsVisible = true;
-      entity.CombatStats.CanFight = false;
     }
 
     private static void BuildHealthPotion(IEntity entity) {
@@ -96,7 +97,11 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
-      entity.CombatStats.CanFight = false;
+      entity.UseableInfo.Useable = new Useable(
+        Resolvables.TargetScope.Self,
+        EffectType.RestoreHealth.WithMagnitude(5)
+      );
+
     }
 
   }

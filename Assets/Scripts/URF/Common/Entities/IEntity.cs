@@ -14,6 +14,10 @@ namespace URF.Common.Entities {
       get; set;
     }
 
+    /// <summary>
+    /// The entity's name.
+    /// </summary>
+    /// <value></value>
     string Name {
       get; set;
     }
@@ -63,6 +67,10 @@ namespace URF.Common.Entities {
     /// This entity's combat information. E.g. health and attack stats.
     /// </summary>
     ICombatStats CombatStats {
+      get;
+    }
+
+    IUseableInfo UseableInfo {
       get;
     }
 

@@ -3,6 +3,7 @@ namespace URF.Server {
   using System.Linq;
   using URF.Common.Entities;
   using URF.Common.Persistence;
+  using URF.Server.Entities;
 
   /// <summary>
   /// Backing implementation for the IEntity. Only EntityFactory should have access to this.
@@ -24,15 +25,19 @@ namespace URF.Server {
     public bool IsVisible {
       get; set;
     }
+
     public bool CanFight {
       get; set;
     }
+
     public int MaxHealth {
       get; set;
     }
+
     public int CurrentHealth {
       get; set;
     }
+
     public int Damage {
       get; set;
     }
@@ -44,9 +49,11 @@ namespace URF.Server {
     public string Name {
       get; set;
     }
+
     public string Appearance {
       get; set;
     }
+
     public string Description {
       get; set;
     }
@@ -62,6 +69,11 @@ namespace URF.Server {
     public ICombatStats CombatStats => this.combatStats;
 
     private readonly CombatStats combatStats = new();
+
+    public IUseableInfo UseableInfo => this.useableInfo;
+
+    private readonly UseableInfo useableInfo = new();
+
 
     public void Save(IGameDataWriter writer) {
       if (writer == null) {
@@ -84,6 +96,7 @@ namespace URF.Server {
       }
 
       this.combatStats.Save(writer);
+      this.useableInfo.Save(writer);
     }
 
     public void Load(IGameDataReader reader) {
@@ -102,6 +115,7 @@ namespace URF.Server {
       this.MaxHealth = reader.ReadInt();
       this.Damage = reader.ReadInt();
       this.VisibleEntities.Clear();
+
       this.Inventory.Clear();
       int inventoryCount = reader.ReadInt();
       for (int i = 0; i < inventoryCount; i++) {
@@ -109,6 +123,7 @@ namespace URF.Server {
       }
 
       this.combatStats.Load(reader);
+      this.useableInfo.Load(reader);
     }
 
     public override string ToString() {

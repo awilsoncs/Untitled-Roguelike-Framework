@@ -1,4 +1,5 @@
-namespace URF.Common.Entities {
+namespace URF.Server.Entities {
+  using URF.Common.Entities;
   using URF.Common.Persistence;
 
   public class CombatStats : ICombatStats, IPersistableObject {
