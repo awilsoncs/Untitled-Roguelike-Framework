@@ -3,6 +3,7 @@ namespace URF.Server.EntityFactory {
   using System.Diagnostics;
   using URF.Common.Effects;
   using URF.Common.Entities;
+  using URF.Server.Effects;
   using URF.Server.Useables;
 
   public class EntityFactory<TEntity> : IEntityFactory<TEntity> where TEntity : IEntity, new() {
@@ -63,6 +64,7 @@ namespace URF.Server.EntityFactory {
       entity.CombatStats.CurrentHealth = 10;
       entity.CombatStats.MaxHealth = 10;
       entity.CombatStats.Damage = 10;
+
     }
 
     private static void BuildCrab(IEntity entity) {
@@ -99,7 +101,8 @@ namespace URF.Server.EntityFactory {
       entity.IsVisible = true;
       entity.UseableInfo.Useable = new Useable(
         Resolvables.TargetScope.Self,
-        EffectType.RestoreHealth.WithMagnitude(5)
+        EffectType.RestoreHealth.WithMagnitude(1),
+        EffectType.ConsumeSource.WithMagnitude(0)
       );
 
     }

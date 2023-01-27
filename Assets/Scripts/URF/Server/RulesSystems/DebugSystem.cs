@@ -1,5 +1,4 @@
 namespace URF.Server.RulesSystems {
-  using System.Linq;
   using URF.Common;
   using URF.Common.Entities;
   using URF.Common.GameEvents;
@@ -7,7 +6,8 @@ namespace URF.Server.RulesSystems {
   using URF.Algorithms;
   using URF.Common.Effects;
   using URF.Server.Resolvables;
-  using System.Collections.Generic;
+  using URF.Server.Useables;
+  using URF.Server.Effects;
 
   public class DebugSystem : BaseRulesSystem {
 
@@ -36,13 +36,14 @@ namespace URF.Server.RulesSystems {
           this.GameState.PlaceEntityOnMap(crab, position);
           return;
         case DebugAction.DebugMethod.Damage:
+          Useable debugDamageUseable = new(
+            TargetScope.OneCreature,
+            EffectType.DamageHealth.WithMagnitude(1000)
+          );
+
           this.OnGameEvent(
             new ResolvableEvent(
-              new Resolvable(
-                this.mainCharacter,
-                TargetScope.OneCreature,
-                new HashSet<IEffect>() { EffectType.DamageHealth.WithMagnitude(1000) }
-              )
+              new Resolvable(this.mainCharacter, this.mainCharacter, debugDamageUseable)
             )
           );
           break;

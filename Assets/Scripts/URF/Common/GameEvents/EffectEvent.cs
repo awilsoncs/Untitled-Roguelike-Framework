@@ -1,20 +1,23 @@
 namespace URF.Common.GameEvents {
   using System;
   using URF.Common.Effects;
-  using URF.Common.Entities;
 
   public class EffectEvent : EventArgs, IGameEvent {
 
     public enum EffectEventStep {
+      // Hypothetically apply the effect to see if it can be fully executed.
+      Queried,
+      // The hypothetical cost could be full applied
+      Confirmed,
+      // The hypothetical cost could not be fully applied
+      Denied,
+      // The effect has been created but not applied.
       Created,
+      // The effect has been applied and should be considered done.
       Applied
     }
 
     public IEffect Effect {
-      get;
-    }
-
-    public IEntity Affected {
       get;
     }
 
@@ -24,19 +27,16 @@ namespace URF.Common.GameEvents {
 
     public EffectEvent Applied => new(
       this.Effect,
-      this.Affected,
       EffectEventStep.Applied
     );
 
-    public EffectEvent(IEffect effect, IEntity affected) {
+    public EffectEvent(IEffect effect) {
       this.Effect = effect;
-      this.Affected = affected;
       this.Step = EffectEventStep.Created;
     }
 
-    private EffectEvent(IEffect effect, IEntity affected, EffectEventStep step) {
+    public EffectEvent(IEffect effect, EffectEventStep step) {
       this.Effect = effect;
-      this.Affected = affected;
       this.Step = step;
     }
 

@@ -3,6 +3,7 @@ namespace URF.Server.RulesSystems {
   using URF.Common.Entities;
   using URF.Common.Exceptions;
   using URF.Common.GameEvents;
+  using URF.Common.Useables;
   using URF.Server.Resolvables;
 
   /// <summary>
@@ -37,6 +38,9 @@ namespace URF.Server.RulesSystems {
           return;
         case InventoryEvent.InventoryAction.Used:
           this.HandleUsed(inventoryEvent);
+          return;
+        case InventoryEvent.InventoryAction.Consumed:
+          this.HandleConsumed(inventoryEvent);
           return;
         default:
           return;
@@ -104,8 +108,16 @@ namespace URF.Server.RulesSystems {
         throw new GameEventException(inventoryEvent, "That item can't be used.");
       }
 
-      IResolvable resolvable = item.UseableInfo.Useable.UsedBy(entity);
+      IUseable useable = item.UseableInfo.Useable;
+      Resolvable resolvable = new(entity, item, useable);
       this.OnGameEvent(new ResolvableEvent(resolvable));
+    }
+
+    private void HandleConsumed(InventoryEvent inventoryEvent) {
+      IEntity agent = inventoryEvent.Entity;
+      IEntity item = inventoryEvent.Item;
+      _ = agent.Inventory.Remove(item.ID);
+      this.GameState.DeleteEntity(item);
     }
   }
 

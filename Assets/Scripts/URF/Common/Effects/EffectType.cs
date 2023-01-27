@@ -8,6 +8,7 @@ namespace URF.Common.Effects {
     // A generic damage effect
     DamageHealth,
     // An effect that restores health to the affected
-    RestoreHealth
+    RestoreHealth,
+    ConsumeSource
   }
 }

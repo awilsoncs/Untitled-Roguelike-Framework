@@ -35,7 +35,6 @@ namespace URF.Common.GameEvents {
     }
 
     public TargetEvent Select(IEntity target) {
-      this.Resolvable.ResolveTargets(new HashSet<IEntity>() { target });
       return new(
         TargetEventMethod.Response,
         this.Resolvable
