@@ -17,7 +17,8 @@ namespace URF.Server.EntityFactory {
         { "player", BuildPlayer },
         { "crab", BuildCrab },
         { "wall", BuildWall },
-        { "healthPotion", BuildHealthPotion }
+        { "healthPotion", BuildHealthPotion },
+        { "scrollOfLightning", BuildScrollOfLightning }
       };
     }
 
@@ -104,7 +105,21 @@ namespace URF.Server.EntityFactory {
         EffectType.RestoreHealth.WithMagnitude(1),
         EffectType.ConsumeSource.WithMagnitude(0)
       );
+    }
 
+    private static void BuildScrollOfLightning(IEntity entity) {
+      entity.Name = "Scroll of Lightning";
+      entity.Appearance = "scrollOfLightning";
+      entity.Description = "It sizzles and pops.";
+      entity.BlocksMove = false;
+      entity.ControlMode = ControlMode.None;
+      entity.BlocksSight = false;
+      entity.IsVisible = true;
+      entity.UseableInfo.Useable = new Useable(
+        Resolvables.TargetScope.OneCreature,
+        EffectType.DamageHealth.WithMagnitude(5),
+        EffectType.ConsumeSource.WithMagnitude(0)
+      );
     }
 
   }

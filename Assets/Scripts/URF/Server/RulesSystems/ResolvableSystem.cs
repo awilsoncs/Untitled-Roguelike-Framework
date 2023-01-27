@@ -135,11 +135,17 @@ namespace URF.Server.RulesSystems {
     }
 
     public override void HandleTargetEvent(TargetEvent targetEvent) {
-      if (targetEvent == null) {
-        throw new ArgumentNullException("targetEvent cannot be null");
-      } else if (targetEvent.Method == TargetEvent.TargetEventMethod.Request) {
+      if (targetEvent.Method == TargetEvent.TargetEventMethod.Request) {
         // We don't care about this one
         return;
+      }
+
+      if (targetEvent == null) {
+        throw new ArgumentNullException("targetEvent cannot be null");
+      } else if (targetEvent.SelectedTargets.Count() == 0) {
+        throw new ArgumentException("targetEvent received with no targets");
+      } else {
+        // all good!
       }
 
       // Cancel conditions

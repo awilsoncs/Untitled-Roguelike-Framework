@@ -21,3 +21,5 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: 0069d8a60bd0eaa40ad9044b0f3d6449, type: 3}
   - name: healthPotion
     sprite: {fileID: 21300000, guid: 56622edf7356c224da4ca9104a5ba5cb, type: 3}
+  - name: scrollOfLightning
+    sprite: {fileID: 21300000, guid: b0a3557df2965364fa913aa87cc245cd, type: 3}
