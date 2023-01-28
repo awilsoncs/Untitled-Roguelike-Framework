@@ -1,4 +1,5 @@
 namespace URF.Server.Entities {
+  using System;
   using URF.Common.Entities;
   using URF.Common.Persistence;
   using URF.Common.Useables;
@@ -9,9 +10,12 @@ namespace URF.Server.Entities {
 
     public IUseable Useable {
       get; set;
-    } = null;
+    }
 
     public void Load(IGameDataReader reader) {
+      if (reader == null) {
+        throw new ArgumentNullException(nameof(reader));
+      }
       bool isUseable = reader.ReadBool();
       if (isUseable) {
         this.Useable = new Useable();
@@ -22,6 +26,9 @@ namespace URF.Server.Entities {
     }
 
     public void Save(IGameDataWriter writer) {
+      if (writer == null) {
+        throw new ArgumentNullException(nameof(writer));
+      }
       writer.Write(this.IsUseable);
       if (this.IsUseable) {
         this.Useable.Save(writer);
