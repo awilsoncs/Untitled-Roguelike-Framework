@@ -83,7 +83,7 @@ namespace Tests.Server.Effects {
       this.resolvable.ResolveTarget(legalTarget);
       Assert.That(
         this.resolvable.ResolvedTargets,
-        Is.EquivalentTo(new List<IEntity>() { legalTarget }));
+        Is.EquivalentTo(new List<IEntity> { legalTarget }));
     }
 
     [Test]
@@ -118,8 +118,8 @@ namespace Tests.Server.Effects {
         Scope = TargetScope.Self
       };
 
-      Resolvable resolvable = new(agent, source, useable);
-      _ = Assert.Throws<ArgumentException>(() => resolvable.AddLegalTarget(source));
+      Resolvable localResolvable = new(agent, source, useable);
+      _ = Assert.Throws<ArgumentException>(() => localResolvable.AddLegalTarget(source));
     }
 
     [Test]
