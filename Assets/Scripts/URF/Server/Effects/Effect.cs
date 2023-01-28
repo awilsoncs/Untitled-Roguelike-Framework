@@ -21,10 +21,10 @@ namespace URF.Server.Effects {
     }
 
     public Effect(IEntity agent, IEntity source, IEntity affected, IEffectSpec spec) {
-      this.Agent = agent ?? throw new ArgumentNullException("Agent cannot be null");
-      this.Source = source ?? throw new ArgumentNullException("Source cannot be null");
-      this.Affected = affected ?? throw new ArgumentNullException("Affected cannot be null");
-      this.Spec = spec ?? throw new ArgumentNullException("Spec cannot be null");
+      this.Agent = agent ?? throw new ArgumentNullException(nameof(agent));
+      this.Source = source ?? throw new ArgumentNullException(nameof(source));
+      this.Affected = affected ?? throw new ArgumentNullException(nameof(affected));
+      this.Spec = spec ?? throw new ArgumentNullException(nameof(spec));
     }
   }
 }
