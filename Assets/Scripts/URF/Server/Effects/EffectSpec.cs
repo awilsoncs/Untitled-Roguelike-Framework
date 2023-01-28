@@ -1,4 +1,5 @@
 namespace URF.Server.Effects {
+  using System;
   using URF.Common.Effects;
   using URF.Common.Persistence;
 
@@ -39,6 +40,9 @@ namespace URF.Server.Effects {
     /// owning object.
     /// </summary>
     public void Save(IGameDataWriter writer) {
+      if (writer == null) {
+        throw new ArgumentNullException(nameof(writer));
+      }
       writer.Write((int)this.Type);
       writer.Write(this.Magnitude);
     }
@@ -48,6 +52,9 @@ namespace URF.Server.Effects {
     /// object.
     /// </summary>
     public void Load(IGameDataReader reader) {
+      if (reader == null) {
+        throw new ArgumentNullException(nameof(reader));
+      }
       this.Type = (EffectType)reader.ReadInt();
       this.Magnitude = reader.ReadInt();
     }
