@@ -25,7 +25,7 @@ namespace URF.Server.RulesSystems {
     /// </summary>
     public override void HandleResolvableEvent(ResolvableEvent ev) {
       if (ev == null) {
-        throw new ArgumentNullException("ResolvableEvent cannot be null");
+        throw new ArgumentNullException(nameof(ev));
       }
 
       this.currentResolvable = ev.Resolvable;
@@ -141,9 +141,9 @@ namespace URF.Server.RulesSystems {
       }
 
       if (targetEvent == null) {
-        throw new ArgumentNullException("targetEvent cannot be null");
+        throw new ArgumentNullException(nameof(targetEvent));
       } else if (targetEvent.SelectedTargets.Count() == 0) {
-        throw new ArgumentException("targetEvent received with no targets");
+        throw new ArgumentException($"{nameof(targetEvent)} received with no targets");
       } else {
         // all good!
       }
@@ -177,21 +177,15 @@ namespace URF.Server.RulesSystems {
 
     public override void HandleEffectEvent(EffectEvent effectEvent) {
       if (effectEvent == null) {
-        throw new ArgumentNullException("effectEvent cannot be null");
-      }
-
-      if (
-        effectEvent.Step is not EffectEvent.EffectEventStep.Confirmed
-        or EffectEvent.EffectEventStep.Denied
-      ) {
-        // we only care about payability responses here
-        return;
+        throw new ArgumentNullException(nameof(effectEvent));
       }
 
       if (effectEvent.Step is EffectEvent.EffectEventStep.Confirmed) {
         this.HandleConfirmedCostEffectEvent(effectEvent);
       } else if (effectEvent.Step is EffectEvent.EffectEventStep.Denied) {
         this.HandleDeniedCostEffectEvent();
+      } else {
+        // do nothing, we don't care about this one!
       }
     }
 
