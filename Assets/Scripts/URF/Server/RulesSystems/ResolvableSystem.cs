@@ -135,17 +135,17 @@ namespace URF.Server.RulesSystems {
     }
 
     public override void HandleTargetEvent(TargetEvent targetEvent) {
-      if (targetEvent.Method == TargetEvent.TargetEventMethod.Request) {
-        // We don't care about this one
-        return;
-      }
-
       if (targetEvent == null) {
         throw new ArgumentNullException(nameof(targetEvent));
       } else if (targetEvent.SelectedTargets.Count() == 0) {
         throw new ArgumentException($"{nameof(targetEvent)} received with no targets");
       } else {
         // all good!
+      }
+
+      if (targetEvent.Method == TargetEvent.TargetEventMethod.Request) {
+        // We don't care about this one
+        return;
       }
 
       // Cancel conditions
