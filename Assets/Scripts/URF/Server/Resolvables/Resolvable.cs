@@ -34,22 +34,22 @@ namespace URF.Server.Resolvables {
       IEntity source,
       IUseable useable
     ) {
-      this.Agent = agent ?? throw new ArgumentNullException("agent cannot be null");
-      this.Source = source ?? throw new ArgumentNullException("source cannot be null");
-      this.Useable = useable ?? throw new ArgumentNullException("useable cannot be null");
+      this.Agent = agent ?? throw new ArgumentNullException(nameof(agent));
+      this.Source = source ?? throw new ArgumentNullException(nameof(source));
+      this.Useable = useable ?? throw new ArgumentNullException(nameof(useable));
     }
 
     public void AddLegalTarget(IEntity entity) {
       if (entity == null) {
-        throw new ArgumentNullException("entity cannot be null");
+        throw new ArgumentNullException(nameof(entity));
       } else if (this.legalTargets.Contains(entity)) {
-        throw new ArgumentException("entity already a legal target");
+        throw new ArgumentException($"{nameof(entity)} already a legal target");
       } else {
         // all good!
       }
 
       if (!this.IsInTargetScope(entity)) {
-        throw new ArgumentException("entity does not match target scope");
+        throw new ArgumentException($"{nameof(entity)} does not match target scope");
       }
 
       _ = this.legalTargets.Add(entity);
@@ -64,13 +64,13 @@ namespace URF.Server.Resolvables {
 
     public void ResolveTarget(IEntity target) {
       if (target == null) {
-        throw new ArgumentNullException("target cannot be null");
+        throw new ArgumentNullException(nameof(target));
       } else if (this.resolvedTargets.Contains(target)) {
-        throw new ArgumentException("entity already a resolved target");
+        throw new ArgumentException($"{nameof(target)} already a resolved target");
       } else if (!this.legalTargets.Contains(target)) {
-        throw new ArgumentException("entity is not a legal target");
-      } else if (!this.IsTargetResolvable(target)) {
-        throw new ArgumentException("target cannot be resolved");
+        throw new ArgumentException($"{nameof(target)} is not a legal target");
+      } else if (!this.IsTargetResolvable()) {
+        throw new ArgumentException($"{nameof(target)} cannot be resolved");
       } else {
         // all good!
       }
@@ -78,7 +78,7 @@ namespace URF.Server.Resolvables {
       _ = this.resolvedTargets.Add(target);
     }
 
-    private bool IsTargetResolvable(IEntity target) {
+    private bool IsTargetResolvable() {
       if (this.Useable.Scope is TargetScope.OneCreature) {
         return this.resolvedTargets.Count == 0;
       }
