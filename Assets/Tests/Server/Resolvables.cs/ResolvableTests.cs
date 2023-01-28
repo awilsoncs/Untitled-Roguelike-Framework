@@ -27,11 +27,11 @@ namespace Tests.Server.Effects {
       Entity source = new();
       Useable useable = new();
 
-      Resolvable resolvable = new(agent, source, useable);
+      Resolvable localResolvable = new(agent, source, useable);
 
-      Assert.That(resolvable.Agent, Is.EqualTo(agent));
-      Assert.That(resolvable.Source, Is.EqualTo(source));
-      Assert.That(resolvable.Useable, Is.EqualTo(useable));
+      Assert.That(localResolvable.Agent, Is.EqualTo(agent));
+      Assert.That(localResolvable.Source, Is.EqualTo(source));
+      Assert.That(localResolvable.Useable, Is.EqualTo(useable));
     }
 
     [Test]
@@ -61,7 +61,7 @@ namespace Tests.Server.Effects {
       this.resolvable.AddLegalTarget(legalTarget);
       Assert.That(
         this.resolvable.LegalTargets,
-        Is.EquivalentTo(new List<IEntity>() { legalTarget }));
+        Is.EquivalentTo(new List<IEntity> { legalTarget }));
     }
 
     [Test]
