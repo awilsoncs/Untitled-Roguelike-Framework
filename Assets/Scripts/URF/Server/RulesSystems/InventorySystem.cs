@@ -68,12 +68,20 @@ namespace URF.Server.RulesSystems {
     }
 
     private void HandleWantsToUse(InventoryEvent inventoryEvent) {
+      ValidateInventoryEvent(inventoryEvent);
+
       IEntity entity = inventoryEvent.Entity;
       if (entity.Inventory == null) {
         throw new GameEventException(
           inventoryEvent, "The acting entity does not have an InventoryComponent.");
       }
 
+      IEntity item = inventoryEvent.Item;
+      this.OnGameEvent(entity.Used(item));
+    }
+
+    private static void ValidateInventoryEvent(InventoryEvent inventoryEvent) {
+      IEntity entity = inventoryEvent.Entity;
       IEntity item = inventoryEvent.Item;
 
       if (!entity.Inventory.Contains(item.ID)) {
@@ -84,8 +92,6 @@ namespace URF.Server.RulesSystems {
       if (!item.UseableInfo.IsUseable) {
         throw new GameEventException(inventoryEvent, "That item can't be used.");
       }
-
-      this.OnGameEvent(entity.Used(item));
     }
 
     private void HandleWantsToGet(InventoryEvent inventoryEvent) {
@@ -96,17 +102,11 @@ namespace URF.Server.RulesSystems {
     }
 
     private void HandleUsed(InventoryEvent inventoryEvent) {
+      ValidateInventoryEvent(inventoryEvent);
+
       IEntity entity = inventoryEvent.Entity;
       IEntity item = inventoryEvent.Item;
 
-      if (!entity.Inventory.Contains(item.ID)) {
-        throw new GameEventException(
-          inventoryEvent, "The inventory doesn't contain the expected item.");
-      }
-
-      if (!item.UseableInfo.IsUseable) {
-        throw new GameEventException(inventoryEvent, "That item can't be used.");
-      }
 
       IUseable useable = item.UseableInfo.Useable;
       Resolvable resolvable = new(entity, item, useable);
