@@ -1,4 +1,5 @@
 namespace URF.Server.Useables {
+  using System;
   using System.Collections.Generic;
   using URF.Common.Effects;
   using URF.Common.Persistence;
@@ -18,13 +19,17 @@ namespace URF.Server.Useables {
 
     /// <value>The costs that must be paid when this useable is used.</value>
     public IEnumerable<IEffectSpec> Costs => this.costs;
-    private List<IEffectSpec> costs;
+    private IList<IEffectSpec> costs;
 
     /// <value>The effects of the Useable when it resolves.</value>
     public IEnumerable<IEffectSpec> Effects => this.effects;
-    private List<IEffectSpec> effects;
+    private IList<IEffectSpec> effects;
 
-    public Useable() {
+    public Useable() : this(
+      TargetScope.Invalid,
+      new List<IEffectSpec> { },
+      new List<IEffectSpec> { }
+    ) {
       // We need the default constructor to support serialization patterns.
     }
 
@@ -32,8 +37,8 @@ namespace URF.Server.Useables {
     /// Simple constructor with a single effect and no costs.
     public Useable(TargetScope scope, IEffectSpec effect) : this(
       scope,
-      new List<IEffectSpec>() { effect },
-      new List<IEffectSpec>() { }
+      new List<IEffectSpec> { effect },
+      new List<IEffectSpec> { }
     ) {
     }
 
@@ -42,15 +47,16 @@ namespace URF.Server.Useables {
     /// </summary>
     public Useable(TargetScope scope, IEffectSpec effect, IEffectSpec cost) : this(
       scope,
-      new List<IEffectSpec>() { effect },
-      new List<IEffectSpec>() { cost }
+      new List<IEffectSpec> { effect },
+      new List<IEffectSpec> { cost }
     ) {
     }
 
     /// <summary>
     /// All purpose constructor with zero or more effects and costs.
     /// </summary>
-    public Useable(TargetScope scope, List<IEffectSpec> effects, List<IEffectSpec> costs) {
+    public Useable(
+      TargetScope scope, IList<IEffectSpec> effects, IList<IEffectSpec> costs) {
       // Multi-effect constructor
       this.Scope = scope;
       this.effects = effects;
@@ -58,6 +64,10 @@ namespace URF.Server.Useables {
     }
 
     public void Load(IGameDataReader reader) {
+      if (reader == null) {
+        throw new ArgumentNullException(nameof(reader));
+      }
+
       this.Scope = (TargetScope)reader.ReadInt();
 
       int costCount = reader.ReadInt();
@@ -78,6 +88,10 @@ namespace URF.Server.Useables {
     }
 
     public void Save(IGameDataWriter writer) {
+      if (writer == null) {
+        throw new ArgumentNullException(nameof(writer));
+      }
+
       writer.Write((int)this.Scope);
 
       writer.Write(this.costs.Count);
