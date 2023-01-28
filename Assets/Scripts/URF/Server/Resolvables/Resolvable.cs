@@ -66,9 +66,9 @@ namespace URF.Server.Resolvables {
       if (target == null) {
         throw new ArgumentNullException(nameof(target));
       } else if (this.resolvedTargets.Contains(target)) {
-        throw new ArgumentException($"{nameof(target)} already a resolved target");
+        throw new ArgumentException($"{nameof(target)} already resolved");
       } else if (!this.legalTargets.Contains(target)) {
-        throw new ArgumentException($"{nameof(target)} is not a legal target");
+        throw new ArgumentException($"{nameof(target)} is not legal");
       } else if (!this.IsTargetResolvable()) {
         throw new ArgumentException($"{nameof(target)} cannot be resolved");
       } else {
