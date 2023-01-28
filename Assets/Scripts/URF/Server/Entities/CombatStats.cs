@@ -1,4 +1,5 @@
 namespace URF.Server.Entities {
+  using System;
   using URF.Common.Entities;
   using URF.Common.Persistence;
 
@@ -6,21 +7,24 @@ namespace URF.Server.Entities {
 
     public bool CanFight {
       get; set;
-    } = false;
+    }
 
     public int MaxHealth {
       get; set;
-    } = 0;
+    }
 
     public int CurrentHealth {
       get; set;
-    } = 0;
+    }
 
     public int Damage {
       get; set;
-    } = 0;
+    }
 
     public void Load(IGameDataReader reader) {
+      if (reader == null) {
+        throw new ArgumentNullException(nameof(reader));
+      }
       this.CanFight = reader.ReadBool();
       if (!this.CanFight) {
         // A high % of entities can't fight, so we can save some disk space by not saving
@@ -33,6 +37,9 @@ namespace URF.Server.Entities {
     }
 
     public void Save(IGameDataWriter writer) {
+      if (writer == null) {
+        throw new ArgumentNullException(nameof(writer));
+      }
       writer.Write(this.CanFight);
       if (!this.CanFight) {
         // A high % of entities can't fight, so we can save some disk space by not saving
