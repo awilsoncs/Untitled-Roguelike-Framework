@@ -2,7 +2,7 @@ namespace URF.Common.Useables {
   using System.Collections.Generic;
   using URF.Common.Effects;
   using URF.Common.Persistence;
-  using URF.Server.Resolvables;
+  using URF.Server.Useables;
 
   /// <summary>
   /// A useable, e.g. an item or ability.

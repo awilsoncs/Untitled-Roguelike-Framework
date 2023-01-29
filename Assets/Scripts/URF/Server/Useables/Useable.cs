@@ -5,7 +5,6 @@ namespace URF.Server.Useables {
   using URF.Common.Persistence;
   using URF.Common.Useables;
   using URF.Server.Effects;
-  using URF.Server.Resolvables;
 
   /// <summary>
   /// A useable, e.g. an item or ability.
@@ -14,7 +13,7 @@ namespace URF.Server.Useables {
 
     /// <value>Represent the targeting strategy for the Useable, e.g. Self, OneCreature.</value>
     public TargetScope Scope {
-      get; set;
+      get; private set;
     }
 
     /// <value>The costs that must be paid when this useable is used.</value>
@@ -37,18 +36,18 @@ namespace URF.Server.Useables {
     /// Simple constructor with a single effect and no costs.
     public Useable(TargetScope scope, IEffectSpec effect) : this(
       scope,
-      new List<IEffectSpec> { effect },
-      new List<IEffectSpec> { }
+      new List<IEffectSpec> { },
+      new List<IEffectSpec> { effect }
     ) {
     }
 
     /// <summary>
     /// Simple constructor with a single cost and effect.
     /// </summary>
-    public Useable(TargetScope scope, IEffectSpec effect, IEffectSpec cost) : this(
+    public Useable(TargetScope scope, IEffectSpec cost, IEffectSpec effect) : this(
       scope,
-      new List<IEffectSpec> { effect },
-      new List<IEffectSpec> { cost }
+      new List<IEffectSpec> { cost },
+      new List<IEffectSpec> { effect }
     ) {
     }
 
@@ -56,11 +55,11 @@ namespace URF.Server.Useables {
     /// All purpose constructor with zero or more effects and costs.
     /// </summary>
     public Useable(
-      TargetScope scope, IList<IEffectSpec> effects, IList<IEffectSpec> costs) {
+      TargetScope scope, IList<IEffectSpec> costs, IList<IEffectSpec> effects) {
       // Multi-effect constructor
       this.Scope = scope;
-      this.effects = effects;
-      this.costs = costs;
+      this.effects = effects ?? throw new ArgumentNullException(nameof(effects));
+      this.costs = costs ?? throw new ArgumentNullException(nameof(costs));
     }
 
     public void Load(IGameDataReader reader) {

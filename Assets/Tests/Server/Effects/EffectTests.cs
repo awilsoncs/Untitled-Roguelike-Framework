@@ -1,4 +1,4 @@
-namespace Tests.Server {
+namespace Tests.Server.Effects {
   using System;
   using NUnit.Framework;
   using URF.Server;

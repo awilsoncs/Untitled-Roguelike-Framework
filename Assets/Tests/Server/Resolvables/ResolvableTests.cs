@@ -1,23 +1,24 @@
-namespace Tests.Server.Effects {
+namespace Tests.Server.Resolvables {
   using System;
   using System.Collections.Generic;
   using NUnit.Framework;
+  using URF.Common.Effects;
   using URF.Common.Entities;
   using URF.Server;
+  using URF.Server.Effects;
   using URF.Server.Resolvables;
   using URF.Server.Useables;
 
   public class ResolvableTests {
 
     private Resolvable resolvable;
+    private readonly EffectSpec effectSpec = new(EffectType.RestoreHealth, 1);
 
     [SetUp]
     public void Setup() {
       Entity agent = new();
       Entity source = new();
-      Useable useable = new() {
-        Scope = TargetScope.OneCreature
-      };
+      Useable useable = new(TargetScope.OneCreature, this.effectSpec);
       this.resolvable = new(agent, source, useable);
     }
 
@@ -114,9 +115,7 @@ namespace Tests.Server.Effects {
     public void Resolvable_Should_EnforceSelfScope() {
       Entity agent = new();
       Entity source = new();
-      Useable useable = new() {
-        Scope = TargetScope.Self
-      };
+      Useable useable = new(TargetScope.Self, this.effectSpec);
 
       Resolvable localResolvable = new(agent, source, useable);
       _ = Assert.Throws<ArgumentException>(() => localResolvable.AddLegalTarget(source));
@@ -126,9 +125,7 @@ namespace Tests.Server.Effects {
     public void Resolvable_Should_EnforceOneCreatureScope() {
       Entity agent = new();
       Entity source = new();
-      Useable useable = new() {
-        Scope = TargetScope.OneCreature
-      };
+      Useable useable = new(TargetScope.OneCreature, this.effectSpec);
 
       Resolvable resolvable = new(agent, source, useable);
       resolvable.AddLegalTarget(agent);

@@ -8,6 +8,7 @@ namespace URF.Server.RulesSystems {
   using URF.Server.Resolvables;
   using System;
   using URF.Server.Effects;
+  using URF.Server.Useables;
 
   /// <summary>
   /// Handle ResolvableEvents and related TargetEvents and EffectEvents. Emits ResolvableEvents,

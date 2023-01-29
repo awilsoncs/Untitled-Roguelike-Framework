@@ -3,6 +3,7 @@ namespace URF.Server.Resolvables {
   using System.Collections.Generic;
   using URF.Common.Entities;
   using URF.Common.Useables;
+  using URF.Server.Useables;
 
   /// <summary>
   /// Default implementation of IResolvable.

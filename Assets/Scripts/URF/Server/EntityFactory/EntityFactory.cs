@@ -101,9 +101,9 @@ namespace URF.Server.EntityFactory {
       entity.BlocksSight = false;
       entity.IsVisible = true;
       entity.UseableInfo.Useable = new Useable(
-        Resolvables.TargetScope.Self,
-        EffectType.RestoreHealth.WithMagnitude(1),
-        EffectType.ConsumeSource.WithMagnitude(0)
+        TargetScope.Self,
+        EffectType.ConsumeSource.WithMagnitude(0),
+        EffectType.RestoreHealth.WithMagnitude(1)
       );
     }
 
@@ -116,9 +116,9 @@ namespace URF.Server.EntityFactory {
       entity.BlocksSight = false;
       entity.IsVisible = true;
       entity.UseableInfo.Useable = new Useable(
-        Resolvables.TargetScope.OneCreature,
-        EffectType.DamageHealth.WithMagnitude(5),
-        EffectType.ConsumeSource.WithMagnitude(0)
+        TargetScope.OneCreature,
+        EffectType.ConsumeSource.WithMagnitude(0),
+        EffectType.DamageHealth.WithMagnitude(5)
       );
     }
 
