@@ -127,12 +127,12 @@ namespace Tests.Server.Resolvables {
       Entity source = new();
       Useable useable = new(TargetScope.OneCreature, this.effectSpec);
 
-      Resolvable resolvable = new(agent, source, useable);
-      resolvable.AddLegalTarget(agent);
-      resolvable.AddLegalTarget(source);
-      resolvable.ResolveTarget(agent);
+      Resolvable localResolvable = new(agent, source, useable);
+      localResolvable.AddLegalTarget(agent);
+      localResolvable.AddLegalTarget(source);
+      localResolvable.ResolveTarget(agent);
 
-      _ = Assert.Throws<ArgumentException>(() => resolvable.ResolveTarget(source));
+      _ = Assert.Throws<ArgumentException>(() => localResolvable.ResolveTarget(source));
     }
 
   }
