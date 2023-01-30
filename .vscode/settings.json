@@ -89,7 +89,8 @@
         "typeparam",
         "UGUI",
         "updateable",
-        "updateables"
+        "updateables",
+        "Useables"
     ],
     "grammarly.selectors": [
         {

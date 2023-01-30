@@ -20,9 +20,12 @@ namespace URF.Common.GameEvents {
       get;
     }
 
+
+
     public IEnumerable<IEntity> Targets => this.Resolvable.LegalTargets;
 
-    public IEnumerable<IEntity> SelectedTargets => this.Resolvable.ResolvedTargets;
+    public IEnumerable<IEntity> SelectedTargets => this.selectedTargets;
+    private readonly List<IEntity> selectedTargets = new();
 
     public TargetEvent(IResolvable resolvable) {
       this.Resolvable = resolvable;
@@ -35,11 +38,12 @@ namespace URF.Common.GameEvents {
     }
 
     public TargetEvent Select(IEntity target) {
-      this.Resolvable.ResolveTargets(new HashSet<IEntity>() { target });
-      return new(
+      TargetEvent ev = new(
         TargetEventMethod.Response,
         this.Resolvable
       );
+      ev.selectedTargets.Add(target);
+      return ev;
     }
 
     public void Visit(IEventHandler eventHandler) {

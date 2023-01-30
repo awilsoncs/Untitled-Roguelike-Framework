@@ -54,7 +54,7 @@ namespace URF.Server.RulesSystems {
       for (int i = 0; i < 2; i++) {
         int x = this.random.GetInt(1, this.MapWidth - 2);
         int y = this.random.GetInt(1, this.MapHeight - 2);
-        _ = this.PutEntity("healthPotion", (x, y));
+        _ = this.PutEntity("scrollOfLightning", (x, y));
       }
     }
 

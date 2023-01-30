@@ -1,7 +1,7 @@
 namespace URF.Server.Resolvables {
   using System.Collections.Generic;
-  using URF.Common.Effects;
   using URF.Common.Entities;
+  using URF.Common.Useables;
 
   /// <summary>
   /// Resolvables represent the concept of a live instance of an activated ability from a spell
@@ -19,17 +19,15 @@ namespace URF.Server.Resolvables {
     }
 
     /// <summary>
-    /// The targeting scope of the resolvable. Used during target determination to correctly
-    /// populate LegalTargets.
+    /// The IEntity that provided the capability to create this item, e.g. an item or the
+    /// spell caster.
     /// </summary>
-    TargetScope Scope {
+    /// <value></value>
+    IEntity Source {
       get;
     }
 
-    /// <summary>
-    /// The effects of the resolvable.
-    /// </summary>
-    IEnumerable<IEffect> Effects {
+    IUseable Useable {
       get;
     }
 
@@ -43,11 +41,6 @@ namespace URF.Server.Resolvables {
 
     void AddLegalTarget(IEntity entity);
 
-    void ResolveTargets(IEnumerable<IEntity> targets);
-
-    // Get Scope
-    // Self
-    // One Creature
-    // Resolve targets
+    void ResolveTarget(IEntity target);
   }
 }

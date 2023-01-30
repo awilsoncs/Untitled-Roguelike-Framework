@@ -1,7 +1,6 @@
 namespace URF.Common.Entities {
   using System.Collections.Generic;
   using URF.Common.Persistence;
-  using URF.Server.RulesSystems;
 
   /// <summary>
   /// High level representation of logical game objects.
@@ -15,6 +14,10 @@ namespace URF.Common.Entities {
       get; set;
     }
 
+    /// <summary>
+    /// The entity's name.
+    /// </summary>
+    /// <value></value>
     string Name {
       get; set;
     }
@@ -50,34 +53,6 @@ namespace URF.Common.Entities {
     }
 
     /// <summary>
-    /// True if this entity can attack and be attacked. False otherwise.
-    /// </summary>
-    bool CanFight {
-      get; set;
-    }
-
-    /// <summary>
-    /// This entity's maximum health.
-    /// </summary>
-    int MaxHealth {
-      get; set;
-    }
-
-    /// <summary>
-    /// This entity's current health.
-    /// </summary>
-    int CurrentHealth {
-      get; set;
-    }
-
-    /// <summary>
-    /// The amount of damage that this entity deals when attacking.
-    /// </summary>
-    int Damage {
-      get; set;
-    }
-
-    /// <summary>
     /// A list of entity IDs for entities contained within this object.
     /// </summary>
     List<int> Inventory {
@@ -85,6 +60,17 @@ namespace URF.Common.Entities {
     }
 
     List<IEntity> VisibleEntities {
+      get;
+    }
+
+    /// <summary>
+    /// This entity's combat information. E.g. health and attack stats.
+    /// </summary>
+    ICombatStats CombatStats {
+      get;
+    }
+
+    IUseableInfo UseableInfo {
       get;
     }
 

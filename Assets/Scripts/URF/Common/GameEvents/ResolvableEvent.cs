@@ -7,6 +7,9 @@ namespace URF.Common.GameEvents {
     public enum ResolvableEventStep {
       // Notify the targeting system that we need to deploy a target request
       TargetDetermination,
+      // We need to pay costs
+      CostDetermination,
+      CostsDetermined,
       // All requirements are fulfilled, we can generate effect events.
       Resolved,
       // The user canceled this action.

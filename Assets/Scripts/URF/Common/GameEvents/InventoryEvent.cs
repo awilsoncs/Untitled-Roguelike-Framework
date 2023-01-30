@@ -11,7 +11,7 @@ namespace URF.Common.GameEvents {
       WantsToGet,
       WantsToDrop,
       Used,
-      WantsToUse
+      WantsToUse,
     }
 
     /// <summary>The entity that picked the item up.</summary>

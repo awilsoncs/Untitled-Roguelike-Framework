@@ -1,7 +1,10 @@
 namespace URF.Server.EntityFactory {
   using System.Collections.Generic;
   using System.Diagnostics;
+  using URF.Common.Effects;
   using URF.Common.Entities;
+  using URF.Server.Effects;
+  using URF.Server.Useables;
 
   public class EntityFactory<TEntity> : IEntityFactory<TEntity> where TEntity : IEntity, new() {
 
@@ -14,7 +17,8 @@ namespace URF.Server.EntityFactory {
         { "player", BuildPlayer },
         { "crab", BuildCrab },
         { "wall", BuildWall },
-        { "healthPotion", BuildHealthPotion }
+        { "healthPotion", BuildHealthPotion },
+        { "scrollOfLightning", BuildScrollOfLightning }
       };
     }
 
@@ -57,10 +61,11 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
-      entity.CanFight = true;
-      entity.CurrentHealth = 10;
-      entity.MaxHealth = 10;
-      entity.Damage = 2;
+      entity.CombatStats.CanFight = true;
+      entity.CombatStats.CurrentHealth = 10;
+      entity.CombatStats.MaxHealth = 10;
+      entity.CombatStats.Damage = 10;
+
     }
 
     private static void BuildCrab(IEntity entity) {
@@ -71,10 +76,10 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.Monster;
       entity.BlocksSight = false;
       entity.IsVisible = true;
-      entity.CanFight = true;
-      entity.CurrentHealth = 2;
-      entity.MaxHealth = 2;
-      entity.Damage = 1;
+      entity.CombatStats.CanFight = true;
+      entity.CombatStats.CurrentHealth = 2;
+      entity.CombatStats.MaxHealth = 2;
+      entity.CombatStats.Damage = 1;
     }
 
     private static void BuildWall(IEntity entity) {
@@ -85,7 +90,6 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = true;
       entity.IsVisible = true;
-      entity.CanFight = false;
     }
 
     private static void BuildHealthPotion(IEntity entity) {
@@ -96,7 +100,26 @@ namespace URF.Server.EntityFactory {
       entity.ControlMode = ControlMode.None;
       entity.BlocksSight = false;
       entity.IsVisible = true;
-      entity.CanFight = false;
+      entity.UseableInfo.Useable = new Useable(
+        TargetScope.Self,
+        EffectType.ConsumeSource.WithMagnitude(0),
+        EffectType.RestoreHealth.WithMagnitude(1)
+      );
+    }
+
+    private static void BuildScrollOfLightning(IEntity entity) {
+      entity.Name = "Scroll of Lightning";
+      entity.Appearance = "scrollOfLightning";
+      entity.Description = "It sizzles and pops.";
+      entity.BlocksMove = false;
+      entity.ControlMode = ControlMode.None;
+      entity.BlocksSight = false;
+      entity.IsVisible = true;
+      entity.UseableInfo.Useable = new Useable(
+        TargetScope.OneCreature,
+        EffectType.ConsumeSource.WithMagnitude(0),
+        EffectType.DamageHealth.WithMagnitude(5)
+      );
     }
 
   }
